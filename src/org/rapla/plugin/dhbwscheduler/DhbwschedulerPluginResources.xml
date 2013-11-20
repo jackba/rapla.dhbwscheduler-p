@@ -2,7 +2,11 @@
 <!DOCTYPE resources SYSTEM "../../components/xmlbundle/resources.dtd">
 <resources default="en">
   <entry key="scheduler_help">
-    <text lang="en">english <strong>help</strong> text</text>
-    <text lang="de">Deutscher hilfe Text</text>
+    <text lang="en">english helptext</text>
+    <text lang="de">deutscher Hilfeext</text>
+  </entry>
+  <entry key="html_welcome_text">
+    <text lang="en"><h1>Hello!</h1></text>
+    <text lang="de"><h1>Guten Tag!</h1></text>
   </entry>
 </resources>

@@ -11,9 +11,11 @@
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
 package org.rapla.plugin.dhbwscheduler.server;
+import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.RaplaContextException;
+import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
 import org.rapla.server.ServerServiceContainer;
 
@@ -23,9 +25,10 @@ public class DhbwschedulerServerPlugin implements PluginDescriptor<ServerService
         if ( !config.getAttributeAsBoolean("enabled", false) )
         	return;
         
+        container.addContainerProvidedComponent( DhbwschedulerPlugin.RESOURCE_FILE, I18nBundleImpl.class,I18nBundleImpl.createConfig( DhbwschedulerPlugin.RESOURCE_FILE.getId() ) );
+        
         container.addRemoteMethodFactory(DhbwschedulerService.class, DhbwschedulerServiceImpl.class);
-
-//    	container.addWebpage("freiraum-ajax",FreiraumExportPageGenerator.class, config  );
+    	container.addWebpage("scheduler-constraints",SchedulerConstraintsPageGenerator.class, config  );
     }
 
 }

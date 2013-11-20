@@ -14,17 +14,21 @@ package org.rapla.plugin.dhbwscheduler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 
 import org.rapla.framework.RaplaContext;
+import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.IdentifiableMenuEntry;
+import org.rapla.gui.toolkit.RaplaWidget;
 
 
 public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements IdentifiableMenuEntry, ActionListener
 {
-	String id = "my UseCase";
+	String id = "help";
 	JMenuItem item;
 
 	public SchedulerHelpMenuExtension(RaplaContext sm)  {
@@ -38,7 +42,7 @@ public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements Ide
           try {
               final MyDialog myDialog = new MyDialog(getContext());
               DialogUI dialog = DialogUI.create( getContext(),getMainComponent(),true, myDialog.getComponent(), new String[] {getString("ok")});
-              dialog.setTitle( "My Usecase");
+              dialog.setTitle( "Help Usecase");
               dialog.setSize( 800, 600);
               dialog.startNoPack();
            } catch (Exception ex) {
@@ -54,7 +58,23 @@ public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements Ide
 		return item;
 	}
 
-   
+	class MyDialog extends RaplaGUIComponent implements  RaplaWidget
+	{
+
+	    JLabel label = new JLabel();
+
+	    public MyDialog(RaplaContext sm) throws RaplaException {
+	        super(sm);
+	        setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
+	        getLogger().info("Help Dialog started");
+	        String helpText = getString("scheduler_help");
+			label.setText( helpText);
+	    }
+
+	    public JComponent getComponent() {
+	        return label;
+	    }
+	}
 
    
 
