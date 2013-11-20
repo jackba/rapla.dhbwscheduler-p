@@ -10,7 +10,7 @@
  | program with every library, which license fulfills the Open Source       |
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
-package org.rapla.plugin.demo;
+package org.rapla.plugin.dhbwscheduler;
 import org.rapla.client.ClientServiceContainer;
 import org.rapla.client.RaplaClientExtensionPoints;
 import org.rapla.components.xmlbundle.I18nBundle;
@@ -19,27 +19,22 @@ import org.rapla.framework.Configuration;
 import org.rapla.framework.PluginDescriptor;
 import org.rapla.framework.TypedComponentRole;
 
-/**
-   This is a demonstration of a rapla-plugin. It adds a sample usecase and option
-   to the rapla-system.
- */
-
-public class MyPlugin
-    implements
-    PluginDescriptor<ClientServiceContainer>
+public class DhbwschedulerPlugin   implements   PluginDescriptor<ClientServiceContainer>
 {
 	
 	public static final boolean ENABLE_BY_DEFAULT = false;
-	public static final TypedComponentRole<I18nBundle> RESOURCE_FILE = new TypedComponentRole<I18nBundle>(MyPlugin.class.getPackage().getName() + ".MyPluginResources");
+	public static final TypedComponentRole<I18nBundle> RESOURCE_FILE = new TypedComponentRole<I18nBundle>(DhbwschedulerPlugin.class.getPackage().getName() + ".DhbwschedulerPluginResources");
 
     public void provideServices(ClientServiceContainer container, Configuration config) {
-        if ( !config.getAttributeAsBoolean("enabled", ENABLE_BY_DEFAULT) )
+        container.addContainerProvidedComponent( RaplaClientExtensionPoints.PLUGIN_OPTION_PANEL_EXTENSION,DhbwschedulerAdminOption.class);
+
+    	if ( !config.getAttributeAsBoolean("enabled", ENABLE_BY_DEFAULT) )
         	return;
 
         container.addContainerProvidedComponent( RESOURCE_FILE, I18nBundleImpl.class,I18nBundleImpl.createConfig( RESOURCE_FILE.getId() ) );
-        container.addContainerProvidedComponent( RaplaClientExtensionPoints.EXPORT_MENU_EXTENSION_POINT, MyExportMenuExtension.class);
-        container.addContainerProvidedComponent( RaplaClientExtensionPoints.HELP_MENU_EXTENSION_POINT, MyHelpMenuExtension.class);
-        container.addContainerProvidedComponent( RaplaClientExtensionPoints.USER_OPTION_PANEL_EXTENSION, MyOption.class);
+        container.addContainerProvidedComponent( RaplaClientExtensionPoints.HELP_MENU_EXTENSION_POINT, SchedulerHelpMenuExtension.class);
+        container.addContainerProvidedComponent( RaplaClientExtensionPoints.OBJECT_MENU_EXTENSION, SchedulerReservationMenuFactory.class, config);
+        
     }
 
 }

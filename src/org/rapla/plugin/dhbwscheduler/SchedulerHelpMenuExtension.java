@@ -10,7 +10,7 @@
  | program with every library, which license fulfills the Open Source       |
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
-package org.rapla.plugin.demo;
+package org.rapla.plugin.dhbwscheduler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -22,12 +22,12 @@ import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.IdentifiableMenuEntry;
 
 
-public class MyHelpMenuExtension extends RaplaGUIComponent implements IdentifiableMenuEntry, ActionListener
+public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements IdentifiableMenuEntry, ActionListener
 {
 	String id = "my UseCase";
 	JMenuItem item;
 
-	public MyHelpMenuExtension(RaplaContext sm)  {
+	public SchedulerHelpMenuExtension(RaplaContext sm)  {
         super(sm);
 		item = new JMenuItem( id );
         item.setIcon( getIcon("icon.help") );

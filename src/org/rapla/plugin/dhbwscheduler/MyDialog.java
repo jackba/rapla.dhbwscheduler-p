@@ -10,7 +10,7 @@
  | program with every library, which license fulfills the Open Source       |
  | Definition as published by the Open Source Initiative (OSI).             |
  *--------------------------------------------------------------------------*/
-package org.rapla.plugin.demo;
+package org.rapla.plugin.dhbwscheduler;
 
 import java.awt.BorderLayout;
 
@@ -39,7 +39,7 @@ class MyDialog extends RaplaGUIComponent implements  RaplaWidget
 
     public MyDialog(RaplaContext sm) throws RaplaException {
         super(sm);
-        setChildBundleName( MyPlugin.RESOURCE_FILE);
+        setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
         getLogger().info("MyUseCase started");
         Reservation[] reservations = getQuery().getReservations(getUser(),null,null,null);
         tree = new JTree(getTreeFactory().createClassifiableModel(reservations));
@@ -50,7 +50,8 @@ class MyDialog extends RaplaGUIComponent implements  RaplaWidget
         panel.setLayout(new BorderLayout());
         panel.add(label,BorderLayout.NORTH);
         panel.add(tree,BorderLayout.CENTER);
-        label.setText( getString("my_reservations"));
+        String helpText = getString("scheduler_help");
+		label.setText( helpText);
     }
 
     private TreeFactory getTreeFactory()
