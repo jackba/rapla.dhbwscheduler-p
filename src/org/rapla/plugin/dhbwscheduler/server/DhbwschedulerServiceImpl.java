@@ -5,11 +5,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
+import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
 import org.rapla.server.RemoteMethodFactory;
@@ -93,12 +95,21 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	}
 	
 	/**
+	 * Holt zu der übergebenen Id das gewünschte Attribut und gibt dieses zurück
+	 * 
 	 * @param id
 	 * @param attribute
 	 * @return
+	 * @throws RaplaContextException 
+	 * @throws EntityNotFoundException 
 	 */
-	private Object getClassification(SimpleIdentifier id, String attribute) {
-		return null;
+	private Object getClassification(SimpleIdentifier id, String attribute) throws RaplaContextException, EntityNotFoundException {
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		//Veranstaltung als Objekt besorgen
+		Reservation veranstaltung = (Reservation) lookup.resolve(id);
+		
+		//Attribut auslesen & zurückgeben
+		return veranstaltung.getClassification().getValue(attribute);		
 	}
 	
 	/**
