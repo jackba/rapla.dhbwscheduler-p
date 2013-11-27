@@ -19,17 +19,30 @@ import org.rapla.storage.StorageOperator;
 import solver.constraints.IntConstraint;
 import solver.variables.IntVar;
 
+/**
+ * @author DHBW
+ *
+ */
 public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMethodFactory<DhbwschedulerService>, DhbwschedulerService {
 
+	/**
+	 * @param context
+	 */
 	public DhbwschedulerServiceImpl(RaplaContext context) {
 		super(context);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rapla.server.RemoteMethodFactory#createService(org.rapla.server.RemoteSession)
+	 */
 	@Override
 	public DhbwschedulerService createService(RemoteSession remoteSession) {
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
+	 */
 	@Override
 	public String schedule(SimpleIdentifier[] reservationIds)  throws RaplaException {
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
@@ -48,48 +61,105 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 		return result.toString();
 	}
 	
+	/**
+	 * @param start
+	 * @param ende
+	 * @param dauer
+	 * @param dozentenConstraint
+	 * @return
+	 */
 	private int[] buildDozentenConstraint(Date start, Date ende, int dauer, String dozentenConstraint){
 		return null;
 	}
 	
+	/**
+	 * @param start
+	 * @param ende
+	 * @param dauer
+	 * @param reservation
+	 * @return
+	 */
 	private int[] buildAllocatableVerfügbarkeit(Date start, Date ende, int dauer, Reservation[] reservation) {
 		return null;
 	}
 	
+	/**
+	 * @param Dozentenconstraint
+	 * @param day
+	 * @return
+	 */
 	private String[] splitDozentenConstraint(String Dozentenconstraint, int day) {
 		return null;
 	}
 	
+	/**
+	 * @param id
+	 * @param attribute
+	 * @return
+	 */
 	private Object getClassification(SimpleIdentifier id, String attribute) {
 		return null;
 	}
 	
+	/**
+	 * @param dozentenconstraint
+	 * @param allocatableverfügbarkeit
+	 * @param nebenbedingungen
+	 * @return
+	 */
 	private String solveSchedule(int[] dozentenconstraint, int[] allocatableverfügbarkeit, IntConstraint[] nebenbedingungen) {
 		return null;
 	}
 	
+	/**
+	 * @param dozentenVariable
+	 * @param allocatableVariable
+	 * @return
+	 */
 	private IntConstraint[] buildNebenbedingungen(IntVar dozentenVariable, IntVar allocatableVariable) {
 		return null;
 	}
-	
-	private int getReservationDauer(SimpleIdentifier id) {
+
+	/**
+	 * @param reservationId
+	 * @return
+	 */
+	private int getReservationDauer(SimpleIdentifier reservationId) {
 		return -1;
 	}
 	
-	private int getReservationWiederholung(SimpleIdentifier id) {
+	/**
+	 * @param reservationId
+	 * @return
+	 */
+	private int getReservationWiederholung(SimpleIdentifier reservationId) {
 		return -1;
 	}
 	
+	/**
+	 * @param reservations
+	 * @return
+	 */
 	private Map<SimpleIdentifier, int[]> sortReservations(Map<SimpleIdentifier, int[]> reservations) {
 		//int[] Stelle 0 = Dauer, Stelle 1 =Wdh
 		return null;
 	}
 	
-	private boolean editReservation(SimpleIdentifier id, Date startNeu) {
+	/**
+	 * @param reservationId
+	 * @param startNeu
+	 * @return
+	 */
+	private boolean editReservation(SimpleIdentifier reservationId, Date startNeu) {
 		return false;
 	}
 	
-	private boolean editAppointment(SimpleIdentifier id, Date startNeu) {
+	/**
+	 * @param appointmentId
+	 * @param startNeu
+	 * @return
+	 */
+	private boolean editAppointment(SimpleIdentifier appointmentId, Date startNeu) {
 		return false;
 	}
 	
