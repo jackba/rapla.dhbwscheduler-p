@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test-src"/>
+	<classpathentry kind="src" path="lib"/>
 	<classpathentry exported="true" kind="src" path="/rapla">
 		<accessrules>
 			<accessrule kind="discouraged" pattern="org/rapla/**/internal/**"/>
