@@ -47,7 +47,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 */
 	@Override
 	public String schedule(SimpleIdentifier[] reservationIds)  throws RaplaException {
-		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+/*		//Original-Quellcode Hr. Kohlhaas		
+  		StorageOperator lookup = getContext().lookup( StorageOperator.class);
 		List<Reservation> reservations = new ArrayList<Reservation>();
 		for ( SimpleIdentifier id :reservationIds)
 		{
@@ -61,6 +62,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 			result.append( ", ");
 		}
 		return result.toString();
+		
+*/
+		String result = "";
+		return result;
 	}
 	
 	/**
@@ -70,7 +75,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param dozentenConstraint
 	 * @return
 	 */
-	private int[] buildDozentenConstraint(Date start, Date ende, int dauer, String dozentenConstraint){
+	protected int[] buildDozentenConstraint(Date start, Date ende, int dauer, String dozentenConstraint){
 		return null;
 	}
 	
@@ -81,7 +86,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param reservation
 	 * @return
 	 */
-	private int[] buildAllocatableVerfügbarkeit(Date start, Date ende, int dauer, Reservation[] reservation) {
+	protected int[] buildAllocatableVerfügbarkeit(Date start, Date ende, int dauer, Reservation[] reservation) {
 		return null;
 	}
 	
@@ -90,7 +95,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param day
 	 * @return
 	 */
-	private String[] splitDozentenConstraint(String Dozentenconstraint, int day) {
+	protected String[] splitDozentenConstraint(String Dozentenconstraint, int day) {
 		return null;
 	}
 	
@@ -103,7 +108,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @throws RaplaContextException 
 	 * @throws EntityNotFoundException 
 	 */
-	private Object getClassification(SimpleIdentifier id, String attribute) throws RaplaContextException, EntityNotFoundException {
+	protected Object getClassification(SimpleIdentifier id, String attribute) throws RaplaContextException, EntityNotFoundException {
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
 		//Veranstaltung als Objekt besorgen
 		Reservation veranstaltung = (Reservation) lookup.resolve(id);
@@ -118,7 +123,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param nebenbedingungen
 	 * @return
 	 */
-	private String solveSchedule(int[] dozentenconstraint, int[] allocatableverfügbarkeit, IntConstraint[] nebenbedingungen) {
+	protected String solveSchedule(int[] dozentenconstraint, int[] allocatableverfügbarkeit, IntConstraint[] nebenbedingungen) {
 		return null;
 	}
 	
@@ -127,7 +132,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param allocatableVariable
 	 * @return
 	 */
-	private IntConstraint[] buildNebenbedingungen(IntVar dozentenVariable, IntVar allocatableVariable) {
+	protected IntConstraint[] buildNebenbedingungen(IntVar dozentenVariable, IntVar allocatableVariable) {
 		return null;
 	}
 
@@ -135,7 +140,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param reservationId
 	 * @return
 	 */
-	private int getReservationDauer(SimpleIdentifier reservationId) {
+	protected int getReservationDauer(SimpleIdentifier reservationId) {
 		return -1;
 	}
 	
@@ -143,7 +148,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param reservationId
 	 * @return
 	 */
-	private int getReservationWiederholung(SimpleIdentifier reservationId) {
+	protected int getReservationWiederholung(SimpleIdentifier reservationId) {
 		return -1;
 	}
 	
@@ -151,7 +156,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param reservations
 	 * @return
 	 */
-	private Map<SimpleIdentifier, int[]> sortReservations(Map<SimpleIdentifier, int[]> reservations) {
+	protected Map<SimpleIdentifier, int[]> sortReservations(Map<SimpleIdentifier, int[]> reservations) {
 		//int[] Stelle 0 = Dauer, Stelle 1 =Wdh
 		return null;
 	}
@@ -161,7 +166,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param startNeu
 	 * @return
 	 */
-	private boolean editReservation(SimpleIdentifier reservationId, Date startNeu) {
+	protected boolean editReservation(SimpleIdentifier reservationId, Date startNeu) {
 		return false;
 	}
 	
@@ -170,7 +175,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * @param startNeu
 	 * @return
 	 */
-	private boolean editAppointment(SimpleIdentifier appointmentId, Date startNeu) {
+	protected boolean editAppointment(SimpleIdentifier appointmentId, Date startNeu) {
 		return false;
 	}
 	
