@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>lib/choco-solver-3.1.0-jar-with-dependencies.jar</name>
+			<type>1</type>
+			<location>C:/Users/Benjamin Werner/Dropbox/Rapla/Scheduler/choco-solver-3.1.0-jar-with-dependencies.jar</location>
+		</link>
+	</linkedResources>
 </projectDescription>

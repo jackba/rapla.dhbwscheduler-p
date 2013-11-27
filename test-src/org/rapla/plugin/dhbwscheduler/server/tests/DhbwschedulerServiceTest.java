@@ -36,12 +36,5 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
         facade.logout();
         super.tearDown();
     }
-
-	public void testRessourcenVerfuegbarkeit() throws Exception {
-		DhbwschedulerServiceImpl service = new DhbwschedulerServiceImpl(getContext());
-		int[] ergebnis = new int[10];
-//		service.
-	}
-
-    
+  
 }

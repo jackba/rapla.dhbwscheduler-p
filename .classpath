@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test-src"/>
 	<classpathentry exported="true" kind="src" path="/rapla">
 		<accessrules>
 			<accessrule kind="discouraged" pattern="org/rapla/**/internal/**"/>
@@ -8,7 +9,7 @@
 			<accessrule kind="accessible" pattern="org/rapla/entities/**"/>
 			<accessrule kind="accessible" pattern="org/rapla/facade/*"/>
 			<accessrule kind="accessible" pattern="javax/servlet/**"/>
-		    <accessrule kind="accessible" pattern="junit/**"/>
+			<accessrule kind="accessible" pattern="junit/**"/>
 			<accessrule kind="accessible" pattern="org/rapla/components/**"/>
 			<accessrule kind="accessible" pattern="org/rapla/gui/*"/>
 			<accessrule kind="accessible" pattern="org/rapla/*"/>
@@ -25,5 +26,6 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/choco-solver-3.1.0-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>
