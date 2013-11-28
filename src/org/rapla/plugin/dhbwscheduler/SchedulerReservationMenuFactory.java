@@ -72,7 +72,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
     	}
     	List<RaplaMenuItem> menus = new ArrayList<RaplaMenuItem>();
         // create the menu entry
-        {
+/*        {
 		    final RaplaMenuItem menu = new RaplaMenuItem("MY_ACTION_1");
 		    menu.setText( "My Action1" );
 		    // Last the action for the marked menu 
@@ -95,10 +95,64 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		     });
 		    menus.add( menu );
         }
-        
+*/
+    	{
+		    final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_ABSCHLIESSEN");
+		    menu.setText( "Planung abschliessen" );
+		    // Last the action for the marked menu 
+		    menu.addActionListener( new ActionListener()
+		    {
+		        public void actionPerformed( ActionEvent e )
+		        {
+		            try 
+		            {
+		                Entity event = selectedReservations.get( 0);
+						Reservation editableEvent = getClientFacade().edit( event);
+		                // do something with the reservation
+						boolean geplant = (boolean) editableEvent.getClassification().getValue("geplant");
+						if (!geplant) {
+							editableEvent.getClassification().setValue("geplant", true);
+						}
+		                getClientFacade().store( editableEvent ); 
+		            }
+		            catch (RaplaException ex )
+		            {
+		                showException( ex, menuContext.getComponent());
+		            }
+		        }
+		     });
+		    menus.add( menu );
+        }
         {
-	        final RaplaMenuItem menu = new RaplaMenuItem("MY_ACTION_2");
-	        menu.setText( "My Action2" );
+		    final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_OEFFNEN");
+		    menu.setText( "Planung oeffnen" );
+		    // Last the action for the marked menu 
+		    menu.addActionListener( new ActionListener()
+		    {
+		        public void actionPerformed( ActionEvent e )
+		        {
+		            try 
+		            {
+		                Entity event = selectedReservations.get( 0);
+						Reservation editableEvent = getClientFacade().edit( event);
+		                // do something with the reservation
+						boolean geplant = (boolean) editableEvent.getClassification().getValue("geplant");
+						if (geplant) {
+							editableEvent.getClassification().setValue("geplant", false);
+						}
+		                getClientFacade().store( editableEvent ); 
+		            }
+		            catch (RaplaException ex )
+		            {
+		                showException( ex, menuContext.getComponent());
+		            }
+		        }
+		     });
+		    menus.add( menu );
+        }
+        {
+	        final RaplaMenuItem menu = new RaplaMenuItem("SCHEDULING_ANSTOSSEN");
+	        menu.setText( "Scheduling anstossen" );
 	        //menu.setIcon( getIcon("icon.help"));
 	        menu.addActionListener( new ActionListener()
 	            {
@@ -137,7 +191,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	             });
 		    menus.add( menu );
         }
-	        
+	    
         return menus.toArray(new RaplaMenuItem[] {});
     }
     
