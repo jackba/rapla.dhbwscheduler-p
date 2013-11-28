@@ -114,6 +114,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							editableEvent.getClassification().setValue("geplant", true);
 						}
 		                getClientFacade().store( editableEvent ); 
+						createMessage("Plannung abgeschlossen", 200, 100,"Planungsstatus", menuContext);
 		            }
 		            catch (RaplaException ex )
 		            {
@@ -140,7 +141,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						if (geplant) {
 							editableEvent.getClassification().setValue("geplant", false);
 						}
-		                getClientFacade().store( editableEvent ); 
+		                getClientFacade().store( editableEvent );
+						createMessage("Plannung geoeffnet", 200, 100, "Planungsstatus", menuContext);
+
 		            }
 		            catch (RaplaException ex )
 		            {
@@ -195,5 +198,17 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
         return menus.toArray(new RaplaMenuItem[] {});
     }
     
+    private void createMessage(String message, int x, int y, String title, final MenuContext menuContext) throws RaplaException {
+        JTextArea content = new JTextArea();
+        content.setText(message);
+        DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
+        dialogUI.setSize(x,y);
+        dialogUI.setTitle(title);
+        if (menuContext.getPoint() != null)
+        {    
+            dialogUI.setLocation( menuContext.getPoint() );
+        }
+        dialogUI.startNoPack();
+    }
     
 }
