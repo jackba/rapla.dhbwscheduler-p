@@ -36,12 +36,18 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		java.io.PrintWriter out = response.getWriter();
 		out.print(getString("html_welcome_text"));
 		
+		out.print("Hier steht Chichis Formular!");		
+		out.print(request.getParameter("id"));
+		out.print(request.getParameter("name"));
+		out.print(request.getParameter("kurs"));
 		
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
 		out.println("<form action=\""+linkPrefix + "rapla\" method=\"get\">");
 		
 		out.println(getHiddenField("page", "scheduler-constraints"));
 		out.println(getHiddenField("ID", "test"));
+		
+		
 		
 		if(request.getParameter("ID") != null)
 		{

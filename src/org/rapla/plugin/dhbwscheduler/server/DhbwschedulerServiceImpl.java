@@ -125,6 +125,33 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 		return stringconstraint;
 	}
 
+	
+
+	public String getInformation(SimpleIdentifier[] reservationIds)  throws RaplaException {
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		List<Reservation> reservations = new ArrayList<Reservation>();
+		int key = 0;
+		for ( SimpleIdentifier id :reservationIds)
+		{
+			RefEntity<?> object = lookup.resolve( id);
+			reservations.add( (Reservation) object);
+			key = id.getKey();
+		}
+		StringBuilder result = new StringBuilder();
+		for ( Reservation r : reservations)
+		{
+			//Veranstaltung ID
+			result.append(key);
+			result.append( ",");
+			//Veranstaltung Name
+			result.append( r.getName(getLocale()));
+			result.append( ",");
+			//Resource Kurs
+			result.append(r.getResources()[0].getName(getLocale()));
+
+		}
+		return result.toString();
+	}
 	/* (non-Javadoc)
 	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */
