@@ -51,11 +51,46 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	public void leseDaten(int reservationID, int[][] constraints, Date[] ausnahmen) throws RaplaContextException, EntityNotFoundException
 	{
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
-		SimpleIdentifier idtype = new SimpleIdentifier(Allocatable.TYPE, 2); 
+		SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, reservationID); 
 		Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
 		
-		//Attribut auslesen & zurückgeben
-		veranstaltung.getClassification().setValue("planungsconstraints", "12");	
+		
+		// Constraints auslesen und als String zusammenbauen
+		String stringconstraint = "";
+		
+		for (int day = 0; day < constraints.length; day++){
+			
+			stringconstraint = stringconstraint + String.valueOf(day+1) + ":"; 
+			for (int hour = 0; hour < constraints[day].length; hour++){
+				
+				if (constraints[day][hour] == 1 && constraints[day][hour-1] == 0){
+					
+					stringconstraint = stringconstraint + String.valueOf(hour+1);
+					
+				}
+				if (constraints[day][hour] == 1 && constraints[day][hour+1] == 0){
+					stringconstraint = stringconstraint + "-" + String.valueOf(hour+1) + ",";
+				}
+			}
+			if (stringconstraint.endsWith(",")){
+				stringconstraint = stringconstraint.substring(0, stringconstraint.length()-1);
+			}
+			stringconstraint = stringconstraint + ";";
+			
+		}
+		
+		//Attribute setzen
+		try {
+			Reservation editVeranstaltung =getClientFacade().edit(veranstaltung);
+			
+			editVeranstaltung.getClassification().setValue("planungsconstraints", stringconstraint);
+			getClientFacade().store( editVeranstaltung );
+		} catch (RaplaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+			
 	}
 	
 	/* (non-Javadoc)

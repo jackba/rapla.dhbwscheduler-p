@@ -35,6 +35,8 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		java.io.PrintWriter out = response.getWriter();
 		out.print(getString("html_welcome_text"));
+		
+		
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
 		out.println("<form action=\""+linkPrefix + "rapla\" method=\"get\">");
 		
@@ -48,8 +50,20 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			if (id.equals("2"))
 			{
 				DhbwschedulerServiceImpl service234 = new DhbwschedulerServiceImpl(this.getContext());
-				int[][] cxd = new int[2][3];
+				int[][] cxd = new int[7][25];
 				Date[] ausnahme = new Date[2];
+				
+				
+				cxd[0][8] = 1;
+				cxd[0][9] = 1;
+				cxd[0][10] = 0;
+				cxd[0][11] = 1;
+				cxd[0][21] = 1;
+				cxd[0][22] = 1;
+				cxd[0][23] = 1;
+				
+				ausnahme[0] = new Date();
+				
 				try {
 					service234.leseDaten(2,cxd,ausnahme);
 					
