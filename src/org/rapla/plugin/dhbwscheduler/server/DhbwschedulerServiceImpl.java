@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.rapla.entities.EntityNotFoundException;
+import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
@@ -41,7 +42,22 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	public DhbwschedulerService createService(RemoteSession remoteSession) {
 		return this;
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * Test Daten aus HTML Seite lesen
+	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
+	 */
+	public void leseDaten(int reservationID, int[][] constraints, Date[] ausnahmen) throws RaplaContextException, EntityNotFoundException
+	{
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		SimpleIdentifier idtype = new SimpleIdentifier(Allocatable.TYPE, 2); 
+		Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
+		
+		//Attribut auslesen & zurückgeben
+		veranstaltung.getClassification().setValue("planungsconstraints", "12");	
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */
