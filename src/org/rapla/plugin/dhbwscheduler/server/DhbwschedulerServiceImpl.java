@@ -1,10 +1,12 @@
 package org.rapla.plugin.dhbwscheduler.server;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.rapla.components.util.DateTools;
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
@@ -56,6 +58,48 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 		
 		
 		// Constraints auslesen und als String zusammenbauen
+		String stringconstraint = constraintToString(constraints);
+		String stringausnahmeDatum = ausnahmenToString(ausnahmen);
+		
+		
+		//Attribute setzen
+		try {
+			Reservation editVeranstaltung =getClientFacade().edit(veranstaltung);
+			
+			editVeranstaltung.getClassification().setValue("planungsconstraints", stringconstraint);
+			editVeranstaltung.getClassification().setValue("ausnahmeconstraints", stringausnahmeDatum);
+			
+			getClientFacade().store( editVeranstaltung );
+		} catch (RaplaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+			
+	}
+	
+	private String ausnahmenToString(Date[] ausnahmen) {
+		
+		String ausnahmenString = "";
+		
+		for (int i = 0; i< ausnahmen.length ; i++)
+		{
+			if (ausnahmen[i] != null){
+				ausnahmenString = ausnahmenString + DateTools.formatDate(ausnahmen[i]) + "," ;
+			}
+			
+		}
+		
+		if (ausnahmenString.endsWith(",")){
+			ausnahmenString = ausnahmenString.substring(0, ausnahmenString.length()-1);
+		}
+		
+		return ausnahmenString;
+		
+	}
+
+	private String constraintToString(int[][] constraints) {
+		
 		String stringconstraint = "";
 		
 		for (int day = 0; day < constraints.length; day++){
@@ -78,21 +122,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 			stringconstraint = stringconstraint + ";";
 			
 		}
-		
-		//Attribute setzen
-		try {
-			Reservation editVeranstaltung =getClientFacade().edit(veranstaltung);
-			
-			editVeranstaltung.getClassification().setValue("planungsconstraints", stringconstraint);
-			getClientFacade().store( editVeranstaltung );
-		} catch (RaplaException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-			
+		return stringconstraint;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */

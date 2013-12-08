@@ -1,6 +1,7 @@
 package org.rapla.plugin.dhbwscheduler.server;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.ServletContext;
@@ -14,7 +15,6 @@ import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
-import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.*;
 import org.rapla.servletpages.RaplaPageGenerator;
 
@@ -63,6 +63,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				cxd[0][23] = 1;
 				
 				ausnahme[0] = new Date();
+				ausnahme[1] = new Date();
 				
 				try {
 					service234.leseDaten(2,cxd,ausnahme);
