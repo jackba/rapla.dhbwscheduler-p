@@ -225,7 +225,65 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	             });
 		    menus.add( menu );
         }
-	    
+        {
+	        final RaplaMenuItem menu = new RaplaMenuItem("ERFASSUNG");
+	        menu.setText( "Erfassungslink" );
+	        //menu.setIcon( getIcon("icon.help"));
+	        menu.addActionListener( new ActionListener()
+	            {
+
+	                public void actionPerformed( ActionEvent e )
+	                {
+	                    try 
+	                    {
+	                    	
+	                    	
+	                    	List<SimpleIdentifier> reservationIds = new ArrayList<SimpleIdentifier>();
+	                    
+	                    	for ( Reservation obj: selectedReservations)
+	                    	{
+                    			Comparable id = ((RefEntity<?>) obj).getId();
+								reservationIds.add((SimpleIdentifier)id);
+	                    	}
+	                    	
+	                    	SimpleIdentifier[] ids = reservationIds.toArray( new SimpleIdentifier[] {});
+							//Methode neu erstellt. Muss noch bearbeitet werden
+	                    	//String result = service.getInformation(ids);
+	                    	String result = "";
+	                        JTextArea content = new JTextArea();
+	                        //content.setText( result);
+	                        
+	                        
+	                        String[] resultArray = result.split(",");
+	                        String strId = resultArray[0];
+	                        String strName = resultArray[1];
+	                        String strKurs = resultArray[2];
+	                        result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId + "&name=" + strName + "&kurs=" + strKurs;
+	                        //result = URLEncoder.encode(result, "ISO-8859-1");
+	                        content.setText(result);
+	                        
+	                        DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
+	                        dialogUI.setSize( 300, 300);
+	                        dialogUI.setTitle("Example Dialog");
+	                        if (menuContext.getPoint() != null)
+	                        {    
+	                            dialogUI.setLocation( menuContext.getPoint() );
+	                        }
+	                        dialogUI.startNoPack();
+	                    }
+	                    catch (RaplaException ex )
+	                    {
+	                        showException( ex, menuContext.getComponent());
+	                    } 
+// catch (UnsupportedEncodingException e1) {
+//							// TODO Auto-generated catch block
+//							e1.printStackTrace();
+//						}
+	                }
+	             });
+		    menus.add( menu );
+        }
+        
         return menus.toArray(new RaplaMenuItem[] {});
     }
     

@@ -1,11 +1,14 @@
 package org.rapla.plugin.dhbwscheduler.server;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.rapla.components.util.DateTools;
 import org.rapla.entities.EntityNotFoundException;
+import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
@@ -41,7 +44,129 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	public DhbwschedulerService createService(RemoteSession remoteSession) {
 		return this;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * Test Daten aus HTML Seite lesen
+	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
+	 */
+	public void storeIntoReservation(int reservationID, int[][] calendar, Date[] ausnahmeDatum) throws RaplaContextException, EntityNotFoundException
+	{
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, reservationID); 
+		Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
+		
+		
+		// Constraints auslesen und als String zusammenbauen
+		String constraint = constraintToString(calendar);
+		String stringausnahmeDatum = ausnahmenToString(ausnahmeDatum);
+		
+		
+		//Attribute setzen
+		try {
+			Reservation editVeranstaltung =getClientFacade().edit(veranstaltung);
+			
+			editVeranstaltung.getClassification().setValue("planungsconstraints", constraint);
+			editVeranstaltung.getClassification().setValue("ausnahmeconstraints", stringausnahmeDatum);
+			
+			getClientFacade().store( editVeranstaltung );
+			
+			
+		} catch (RaplaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+			
+	}
+	
+	private String ausnahmenToString(Date[] ausnahmeDatum) {
+		
+		String ausnahmenString = "";
+		
+		for (int i = 0; i< ausnahmeDatum.length ; i++)
+		{
+			if (ausnahmeDatum[i] != null){
+				ausnahmenString = ausnahmenString + DateTools.formatDate(ausnahmeDatum[i]) + "," ;
+			}
+			
+		}
+		
+		if (ausnahmenString.endsWith(",")){
+			ausnahmenString = ausnahmenString.substring(0, ausnahmenString.length()-1);
+		}
+		
+		return ausnahmenString;
+		
+	}
 
+	private String constraintToString(int[][] constraints) {
+		
+		String stringconstraint = "";
+		
+		for (int day = 0; day < constraints.length; day++){
+			
+			int Time1 = 0;
+			int Time2 = 0;
+			int Marker = 0;
+			stringconstraint = stringconstraint + String.valueOf(day+1) + ":"; 
+			for (int hour = 0; hour < constraints[day].length; hour++){
+				
+				if (constraints[day][hour] == 1 && Marker == 0){
+					
+					Time1 = hour;
+					stringconstraint = stringconstraint + String.valueOf(Time1);
+					
+					//start
+					Marker = 1;
+				}
+				
+				if (constraints[day][hour] == 0 && Marker == 1){
+					
+					Time2 = hour;
+					stringconstraint = stringconstraint + "-" + String.valueOf(Time2) + ",";
+					//end
+					Marker = 0;
+					
+				}
+			
+			}
+			if (stringconstraint.endsWith(",")){
+				stringconstraint = stringconstraint.substring(0, stringconstraint.length()-1);
+			}
+			stringconstraint = stringconstraint + ";";
+			
+		}
+		return stringconstraint;
+	}
+
+	
+
+	public String getInformation(SimpleIdentifier[] reservationIds)  throws RaplaException {
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		List<Reservation> reservations = new ArrayList<Reservation>();
+		int key = 0;
+		for ( SimpleIdentifier id :reservationIds)
+		{
+			RefEntity<?> object = lookup.resolve( id);
+			reservations.add( (Reservation) object);
+			key = id.getKey();
+		}
+		StringBuilder result = new StringBuilder();
+		for ( Reservation r : reservations)
+		{
+			//Veranstaltung ID
+			result.append(key);
+			result.append( ",");
+			//Veranstaltung Name
+			result.append( r.getName(getLocale()));
+			result.append( ",");
+			//Resource Kurs
+			result.append(r.getResources()[0].getName(getLocale()));
+
+		}
+		return result.toString();
+	}
 	/* (non-Javadoc)
 	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */
