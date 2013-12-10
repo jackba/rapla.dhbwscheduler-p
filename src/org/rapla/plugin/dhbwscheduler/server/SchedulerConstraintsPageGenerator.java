@@ -72,7 +72,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				ausnahme[1] = new Date();
 				
 				try {
-					service234.leseDaten(2,cxd,ausnahme);
+					service234.storeIntoReservation(2,cxd,ausnahme);
 					
 				} catch (RaplaContextException e) {
 					// TODO Auto-generated catch block
