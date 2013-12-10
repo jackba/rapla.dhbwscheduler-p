@@ -217,8 +217,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	                    	
 	                    	SimpleIdentifier[] ids = reservationIds.toArray( new SimpleIdentifier[] {});
 							//Methode neu erstellt. Muss noch bearbeitet werden
-	                    	//String result = service.getInformation(ids);
-	                    	String result = "";
+	                    	String result = service.getInformation(ids);
+	                    	//String result = "";
 	                        JTextArea content = new JTextArea();
 	                        //content.setText( result);
 	                        
@@ -227,7 +227,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	                        String strId = resultArray[0];
 	                        String strName = resultArray[1];
 	                        String strKurs = resultArray[2];
-	                        result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId + "&name=" + strName + "&kurs=" + strKurs;
+	                        String strDozent = resultArray[3] + "," + resultArray[4];
+	                        String strBegin = resultArray[5];
+	                        String strEnd = resultArray[6];
+	                        result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId + "&name=" + strName + "&kurs=" + strKurs + "&dozent=" + strDozent + "&begin=" + strBegin + "&end=" + strEnd;
 	                        //result = URLEncoder.encode(result, "ISO-8859-1");
 	                        content.setText(result);
 	                        

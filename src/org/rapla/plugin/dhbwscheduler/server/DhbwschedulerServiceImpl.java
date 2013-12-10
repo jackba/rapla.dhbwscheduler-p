@@ -147,8 +147,34 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 			result.append( r.getName(getLocale()));
 			result.append( ",");
 			//Resource Kurs
-			result.append(r.getResources()[0].getName(getLocale()));
-
+			String kurs = "";
+			for (int i = 0; i < r.getResources().length; i++)
+			{
+				if (kurs=="")
+				{
+					kurs = r.getResources()[i].getName(getLocale()); 
+				}
+				else
+				{
+					kurs = kurs + "/" + r.getResources()[i].getName(getLocale());
+				}
+			}
+			result.append(kurs);
+			result.append( ",");
+			//Resource Dozent, Nachname
+			result.append(r.getPersons()[0].getName(getLocale()));
+			result.append( ",");
+			//Event Begin
+			result.append(r.getFirstDate());
+			result.append( ",");
+			//Event End
+			result.append(r.getMaxEnd());
+			result.append( ",");
+			
+			
+			//E-Mail auslesen von Dozent
+			//Meilenstein 3
+			//result.append(r.getPersons()[0].getClassification().getValue("email"));
 		}
 		return result.toString();
 	}
