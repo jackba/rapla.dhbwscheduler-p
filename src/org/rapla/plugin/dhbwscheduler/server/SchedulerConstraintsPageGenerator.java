@@ -47,8 +47,6 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println(getHiddenField("page", "scheduler-constraints"));
 		out.println(getHiddenField("ID", "test"));
 		
-		
-		
 		if(request.getParameter("ID") != null)
 		{
 			String id = request.getParameter("ID");
