@@ -30,7 +30,9 @@ import org.rapla.gui.toolkit.RaplaMenuItem;
 
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
-
+	public static final String closed = new String("geplant");
+	public static final String planning_open = new String("in Planung offen");
+	public static final String planning_closed = new String("in Planung geschlossen");
 	DhbwschedulerService service;
 	public SchedulerReservationMenuFactory( RaplaContext context, Configuration config, DhbwschedulerService service) throws RaplaException
 	{
@@ -112,9 +114,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Entity event = selectedReservations.get( 0);
 						Reservation editableEvent = getClientFacade().edit( event);
 						// do something with the reservation
-						boolean geplant = (boolean) editableEvent.getClassification().getValue("geplant");
-						if (!geplant) {
-							editableEvent.getClassification().setValue("geplant", true);
+						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
+						if (design_status != closed) {
+							editableEvent.getClassification().setValue("Planungsstatus", closed);
 						}
 						getClientFacade().store( editableEvent ); 
 						createMessage("Plannung abgeschlossen", 200, 100,"Planungsstatus", menuContext);
@@ -140,9 +142,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Entity event = selectedReservations.get( 0);
 						Reservation editableEvent = getClientFacade().edit( event);
 						// do something with the reservation
-						boolean geplant = (boolean) editableEvent.getClassification().getValue("geplant");
-						if (geplant) {
-							editableEvent.getClassification().setValue("geplant", false);
+						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
+						if (design_status != planning_open) {
+							editableEvent.getClassification().setValue("Planungsstatus", planning_open);
 						}
 						getClientFacade().store( editableEvent );
 						createMessage("Plannung geoeffnet", 200, 100, "Planungsstatus", menuContext);
@@ -157,6 +159,35 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			menus.add( menu );
 		}
 		{
+		    final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_SCHLIESSEN");
+		    menu.setText( "Planung schliessen" );
+		    // Last the action for the marked menu 
+		    menu.addActionListener( new ActionListener()
+		    {
+		        public void actionPerformed( ActionEvent e )
+		        {
+		            try 
+		            {
+		                Entity event = selectedReservations.get( 0);
+						Reservation editableEvent = getClientFacade().edit( event);
+		                // do something with the reservation
+						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
+						if (design_status != planning_closed) {
+							editableEvent.getClassification().setValue("Planungsstatus", planning_closed);
+						}
+		                getClientFacade().store( editableEvent );
+						createMessage("Plannung geschlossen", 200, 100, "Planungsstatus", menuContext);
+
+		            }
+		            catch (RaplaException ex )
+		            {
+		                showException( ex, menuContext.getComponent());
+		            }
+		        }
+		     });
+		    menus.add( menu );
+        }
+        {
 			final RaplaMenuItem menu = new RaplaMenuItem("SCHEDULING_ANSTOSSEN");
 			menu.setText( "Scheduling anstossen" );
 			//menu.setIcon( getIcon("icon.help"));

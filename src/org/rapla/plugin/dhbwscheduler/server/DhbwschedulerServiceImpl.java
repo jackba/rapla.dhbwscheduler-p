@@ -50,7 +50,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 	 * Test Daten aus HTML Seite lesen
 	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */
-	public void leseDaten(int reservationID, int[][] constraints, Date[] ausnahmen) throws RaplaContextException, EntityNotFoundException
+	public void storeIntoReservation(int reservationID, int[][] calendar, Date[] ausnahmeDatum) throws RaplaContextException, EntityNotFoundException
 	{
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
 		SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, reservationID); 
@@ -58,18 +58,20 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 		
 		
 		// Constraints auslesen und als String zusammenbauen
-		String stringconstraint = constraintToString(constraints);
-		String stringausnahmeDatum = ausnahmenToString(ausnahmen);
+		String constraint = constraintToString(calendar);
+		String stringausnahmeDatum = ausnahmenToString(ausnahmeDatum);
 		
 		
 		//Attribute setzen
 		try {
 			Reservation editVeranstaltung =getClientFacade().edit(veranstaltung);
 			
-			editVeranstaltung.getClassification().setValue("planungsconstraints", stringconstraint);
+			editVeranstaltung.getClassification().setValue("planungsconstraints", constraint);
 			editVeranstaltung.getClassification().setValue("ausnahmeconstraints", stringausnahmeDatum);
 			
 			getClientFacade().store( editVeranstaltung );
+			
+			
 		} catch (RaplaException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,14 +80,14 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 			
 	}
 	
-	private String ausnahmenToString(Date[] ausnahmen) {
+	private String ausnahmenToString(Date[] ausnahmeDatum) {
 		
 		String ausnahmenString = "";
 		
-		for (int i = 0; i< ausnahmen.length ; i++)
+		for (int i = 0; i< ausnahmeDatum.length ; i++)
 		{
-			if (ausnahmen[i] != null){
-				ausnahmenString = ausnahmenString + DateTools.formatDate(ausnahmen[i]) + "," ;
+			if (ausnahmeDatum[i] != null){
+				ausnahmenString = ausnahmenString + DateTools.formatDate(ausnahmeDatum[i]) + "," ;
 			}
 			
 		}
@@ -104,17 +106,30 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements RemoteMe
 		
 		for (int day = 0; day < constraints.length; day++){
 			
+			int Time1 = 0;
+			int Time2 = 0;
+			int Marker = 0;
 			stringconstraint = stringconstraint + String.valueOf(day+1) + ":"; 
 			for (int hour = 0; hour < constraints[day].length; hour++){
 				
-				if (constraints[day][hour] == 1 && constraints[day][hour-1] == 0){
+				if (constraints[day][hour] == 1 && Marker == 0){
 					
-					stringconstraint = stringconstraint + String.valueOf(hour+1);
+					Time1 = hour;
+					stringconstraint = stringconstraint + String.valueOf(Time1);
+					
+					//start
+					Marker = 1;
+				}
+				
+				if (constraints[day][hour] == 0 && Marker == 1){
+					
+					Time2 = hour;
+					stringconstraint = stringconstraint + "-" + String.valueOf(Time2) + ",";
+					//end
+					Marker = 0;
 					
 				}
-				if (constraints[day][hour] == 1 && constraints[day][hour+1] == 0){
-					stringconstraint = stringconstraint + "-" + String.valueOf(hour+1) + ",";
-				}
+			
 			}
 			if (stringconstraint.endsWith(",")){
 				stringconstraint = stringconstraint.substring(0, stringconstraint.length()-1);
