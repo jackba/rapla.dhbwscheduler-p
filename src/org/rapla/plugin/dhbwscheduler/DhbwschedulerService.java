@@ -8,5 +8,4 @@ import org.rapla.framework.RaplaException;
 @WebService
 public interface DhbwschedulerService {
 	String schedule(SimpleIdentifier[] reservationIds) throws RaplaException;
-	String getInformation(SimpleIdentifier[] reservationIds) throws RaplaException;
 }
