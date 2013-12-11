@@ -28,7 +28,7 @@ import org.rapla.gui.toolkit.RaplaMenuItem;
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
 	public static final String closed = new String("geplant");
-	public static final String planning_open = new String("in Planung offen");
+	public static final String planning_open = new String("in Planung");
 	public static final String planning_closed = new String("in Planung geschlossen");
 	DhbwschedulerService service;
     public SchedulerReservationMenuFactory( RaplaContext context, Configuration config, DhbwschedulerService service) throws RaplaException
@@ -113,7 +113,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		                // do something with the reservation
 						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
 						if (design_status != closed) {
-							editableEvent.getClassification().setValue("Planungsstatus", closed);
+							editableEvent.getClassification().setValue("planungsstatus", closed);
 						}
 		                getClientFacade().store( editableEvent ); 
 						createMessage("Plannung abgeschlossen", 200, 100,"Planungsstatus", menuContext);
@@ -141,7 +141,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		                // do something with the reservation
 						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
 						if (design_status != planning_open) {
-							editableEvent.getClassification().setValue("Planungsstatus", planning_open);
+							editableEvent.getClassification().setValue("planungsstatus", planning_open);
 						}
 		                getClientFacade().store( editableEvent );
 						createMessage("Plannung geoeffnet", 200, 100, "Planungsstatus", menuContext);
@@ -170,7 +170,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		                // do something with the reservation
 						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
 						if (design_status != planning_closed) {
-							editableEvent.getClassification().setValue("Planungsstatus", planning_closed);
+							editableEvent.getClassification().setValue("planungsstatus", planning_closed);
 						}
 		                getClientFacade().store( editableEvent );
 						createMessage("Plannung geschlossen", 200, 100, "Planungsstatus", menuContext);
