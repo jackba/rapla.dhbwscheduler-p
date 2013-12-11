@@ -18,6 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 
+import org.rapla.entities.domain.Reservation;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
@@ -57,7 +58,7 @@ public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements Ide
 	public JMenuItem getMenuElement() {
 		return item;
 	}
-
+	
 	class MyDialog extends RaplaGUIComponent implements  RaplaWidget
 	{
 
@@ -74,12 +75,8 @@ public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements Ide
 	    public JComponent getComponent() {
 	        return label;
 	    }
+	    	    
 	}
-
-   
-
-
-
 
 }
 

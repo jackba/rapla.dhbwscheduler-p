@@ -21,7 +21,9 @@ import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
+import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
+import org.rapla.framework.TypedComponentRole;
 import org.rapla.gui.MenuContext;
 import org.rapla.gui.ObjectMenuFactory;
 import org.rapla.gui.RaplaGUIComponent;
@@ -113,12 +115,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					{
 						Entity event = selectedReservations.get( 0);
 						Reservation editableEvent = getClientFacade().edit( event);
-						// do something with the reservation
-						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
-						if (design_status != closed) {
-							editableEvent.getClassification().setValue("planungsstatus", closed);
-						}
-						getClientFacade().store( editableEvent ); 
+
+						setDesignStatus(editableEvent, closed);
 						createMessage("Plannung abgeschlossen", 200, 100,"Planungsstatus", menuContext);
 					}
 					catch (RaplaException ex )
@@ -142,11 +140,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Entity event = selectedReservations.get( 0);
 						Reservation editableEvent = getClientFacade().edit( event);
 						// do something with the reservation
-						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
-						if (design_status != planning_open) {
-							editableEvent.getClassification().setValue("planungsstatus", planning_open);
-						}
-						getClientFacade().store( editableEvent );
+						setDesignStatus(editableEvent, planning_open);
 						createMessage("Plannung geoeffnet", 200, 100, "Planungsstatus", menuContext);
 
 					}
@@ -170,12 +164,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		            {
 		                Entity event = selectedReservations.get( 0);
 						Reservation editableEvent = getClientFacade().edit( event);
-		                // do something with the reservation
-						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
-						if (design_status != planning_closed) {
-							editableEvent.getClassification().setValue("planungsstatus", planning_closed);
-						}
-		                getClientFacade().store( editableEvent );
+		                setDesignStatus(editableEvent, planning_closed);
 						createMessage("Plannung geschlossen", 200, 100, "Planungsstatus", menuContext);
 
 		            }
@@ -330,5 +319,14 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		return result;
 
 	}
+	
+	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
+    	String istStatus = (String) editableEvent.getClassification().getValue("planungsstatus");
+		if (istStatus != zielStatus) {
+			editableEvent.getClassification().setValue("planungsstatus", zielStatus);
+		}
+		getClientFacade().store( editableEvent ); 
+    }
+
 
 }
