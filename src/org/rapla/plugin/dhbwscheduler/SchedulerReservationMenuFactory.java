@@ -184,7 +184,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							editableEvent.getClassification().setValue("Planungsstatus", planning_closed);
 						}
 						getClientFacade().store( editableEvent );
-		                setDesignStatus(editableEvent, planning_closed);
+						setDesignStatus(editableEvent, planning_closed);
 						createMessage("Plannung geschlossen", 200, 100, "Planungsstatus", menuContext);
 
 					}
@@ -248,68 +248,81 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				{
 					try 
 					{
-						JLabel[] label = new JLabel[selectedReservations.size()];
+						//Anzahl benötigter Felder emitteln
+						int felder = 0;
+						for (Reservation r : selectedReservations)
+						{
+							for (int t = 0; t < r.getPersons().length; t++)
+							{
+								felder++;
+							}
+						}
+
+						JLabel[] label = new JLabel[felder];
 						JPanel panel = new JPanel();
 						panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-						JTextField[] urlField = new JTextField[selectedReservations.size()];
-						RaplaButton[] copyButton = new RaplaButton[selectedReservations.size()];
-						RaplaButton[] bt = new RaplaButton[selectedReservations.size()];
-
+						JTextField[] urlField = new JTextField[felder];
+						RaplaButton[] copyButton = new RaplaButton[felder];
+						RaplaButton[] bt = new RaplaButton[felder];
+						
 						try {
 							int i = 0;
 							for (Reservation r : selectedReservations)
 							{
-								//for-Schleife -->Anzahl Pesonen d.h. Dozent
-								//pro Dozent ein Link
-								//Link besteht aus Veranstaltungsid und Dozent
-								
-								label[i] = new JLabel();
-								label[i].setText("Veranstaltung: " + r.getName(getLocale()) + " Dozent: " 
-							 + r.getPersons()[0].getClassification().getValue("surname").toString()
-							 + " " + r.getPersons()[0].getClassification().getValue("firstname").toString());
-								
-								bt[i] = new RaplaButton();
-								bt[i].setText("Link öffnen");
-								urlField[i] = new JTextField();
-								urlField[i].setText(getUrl(r));
-								urlField[i].setSize(100, 20);
-								urlField[i].setEditable(false);
-								copyButton[i] = new RaplaButton();
-								copyButton[i].setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-								copyButton[i].setFocusable(false);
-								copyButton[i].setRolloverEnabled(false);
-								copyButton[i].setIcon(getIcon("icon.copy"));
-								copyButton[i].setToolTipText(getString("copy_to_clipboard"));
-								addCopyPaste(urlField[i]);
-								final String help = urlField[i].getText();
-								final URI uri = new URI(urlField[i].getText());
-								bt[i].addActionListener(new ActionListener() {
-									public void actionPerformed(ActionEvent e) {
-										if (Desktop.isDesktopSupported())
-										{
-											try {
-												Desktop.getDesktop().browse(uri);
-											}
-											catch (IOException ex)
+								for (int t = 0; t < r.getPersons().length; t++)
+								{
+									
+									Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
+									SimpleIdentifier pID = (SimpleIdentifier) pTest;
+
+									label[i] = new JLabel();
+									label[i].setText("Veranstaltung: " + r.getName(getLocale()) + " Dozent: " 
+											+ r.getPersons()[t].getClassification().getValue("surname").toString()
+											+ " " + r.getPersons()[t].getClassification().getValue("firstname").toString());
+
+									bt[i] = new RaplaButton();
+									bt[i].setText("Link öffnen");
+									urlField[i] = new JTextField();
+									urlField[i].setText(getUrl(r,pID.getKey()));
+									urlField[i].setSize(100, 20);
+									urlField[i].setEditable(false);
+									copyButton[i] = new RaplaButton();
+									copyButton[i].setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+									copyButton[i].setFocusable(false);
+									copyButton[i].setRolloverEnabled(false);
+									copyButton[i].setIcon(getIcon("icon.copy"));
+									copyButton[i].setToolTipText(getString("copy_to_clipboard"));
+									addCopyPaste(urlField[i]);
+									final String help = urlField[i].getText();
+									final URI uri = new URI(urlField[i].getText());
+									bt[i].addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent e) {
+											if (Desktop.isDesktopSupported())
 											{
-												;
+												try {
+													Desktop.getDesktop().browse(uri);
+												}
+												catch (IOException ex)
+												{
+													;
+												}
 											}
 										}
-									}
-								});
-								copyButton[i].addActionListener(new ActionListener() {
-									public void actionPerformed(ActionEvent e) {
-										StringSelection stringSelection = new StringSelection(help);
-										Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
-										clipBoard.setContents(stringSelection, stringSelection);
-									}
+									});
+									copyButton[i].addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent e) {
+											StringSelection stringSelection = new StringSelection(help);
+											Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
+											clipBoard.setContents(stringSelection, stringSelection);
+										}
 
-								});
-								panel.add(label[i]);
-								panel.add(urlField[i]);
-								panel.add(copyButton[i]);
-								panel.add(bt[i]);
-								i++;
+									});
+									panel.add(label[i]);
+									panel.add(urlField[i]);
+									panel.add(copyButton[i]);
+									panel.add(bt[i]);
+									i++;
+								}
 							}
 
 						} catch (UnsupportedEncodingException e1) {
@@ -335,7 +348,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					} 
 				}
 			});
-								menus.add( menu );
+			menus.add( menu );
 		}
 
 		return menus.toArray(new RaplaMenuItem[] {});
@@ -354,7 +367,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		dialogUI.startNoPack();
 	}
 
-	private String getUrl(Reservation selectedReservation) throws UnsupportedEncodingException
+	private String getUrl(Reservation selectedReservation, int dozentId) throws UnsupportedEncodingException
 	{
 		Comparable test = ((RefEntity<?>) selectedReservation).getId();
 		SimpleIdentifier id = (SimpleIdentifier) test;
@@ -369,7 +382,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				if (strKurs=="")
 				{
 					strKurs = selectedReservation.getResources()[i].getClassification().getValue("name").toString(); 
-					
+
 				}
 				else
 				{
@@ -383,7 +396,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		strDozent = strDozent + "," + selectedReservation.getPersons()[0].getClassification().getValue("firstname").toString();
 		String strBegin = selectedReservation.getFirstDate().toString();
 		String strEnd = selectedReservation.getMaxEnd().toString();
-		
+
 		try {
 			strId = URLEncoder.encode(strId,"UTF-8");
 			strName = URLEncoder.encode(strName, "UTF-8");
@@ -396,26 +409,26 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			e.printStackTrace();
 		}
 		String result;
-//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
-//				+ "&name=" + strName + "&kurs=" + strKurs + "&dozent=" + strDozent
-//				+ "&begin=" + strBegin + "&end=" + strEnd;
+		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
+		//				+ "&name=" + strName + "&kurs=" + strKurs + "&dozent=" + strDozent
+		//				+ "&begin=" + strBegin + "&end=" + strEnd;
 
-		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId;
-		
+		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
+				+ "&dozent=" + String.valueOf(dozentId);
 		//E-Mail auslesen von Dozent
 		//Meilenstein 3
 		//result.append(r.getPersons()[0].getClassification().getValue("email"));
 		return result;
 
 	}
-	
+
 	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
-    	String istStatus = (String) editableEvent.getClassification().getValue("planungsstatus");
+		String istStatus = (String) editableEvent.getClassification().getValue("planungsstatus");
 		if (istStatus != zielStatus) {
 			editableEvent.getClassification().setValue("planungsstatus", zielStatus);
 		}
 		getClientFacade().store( editableEvent ); 
-    }
+	}
 
 
 }
