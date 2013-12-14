@@ -14,6 +14,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -346,6 +347,19 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					{
 						showException( ex, menuContext.getComponent());
 					} 
+				}
+			});
+			menus.add( menu );
+		}
+		{
+			final RaplaMenuItem menu = new RaplaMenuItem("EMAIL_SENDEN");
+			menu.setText( "E-Mail senden" );
+			// Last the action for the marked menu 
+			menu.addActionListener( new ActionListener()
+			{
+				public void actionPerformed( ActionEvent e )
+				{
+					;
 				}
 			});
 			menus.add( menu );
