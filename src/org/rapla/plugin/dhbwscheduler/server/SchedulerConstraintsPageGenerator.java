@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.rapla.components.util.DateTools;
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.domain.Reservation;
+import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.Configuration;
@@ -25,8 +26,8 @@ import org.rapla.storage.StorageOperator;
 
 
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
-	
-	
+
+	String dozent;					//Name Dozent
 	String semester;				//Zahl des Semesters (Beispiel: 2.)
 	String studiengang;				//Studiengang
 	String kursName="";				//Kursname
@@ -72,14 +73,61 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 		//String[] parameter = URLDecoder.decode(request.getQueryString(),"UTF-8").split("&");
 		String eventId = request.getParameter("id");	//ID der Veranstaltung
-		String dozent = request.getParameter("dozent");	//ID des Dozenten
+		String dozentId = request.getParameter("dozent");	//ID des Dozenten
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
-		
+
+		StorageOperator lookup;
+		try {
+			lookup = getContext().lookup( StorageOperator.class);
+			SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
+			Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
+			veranst = veranstaltung.getName(getLocale());
+			for (int i = 0; i < veranstaltung.getPersons().length; i++)
+			{
+				Comparable pTest = ((RefEntity<?>) veranstaltung.getPersons()[i]).getId();
+				SimpleIdentifier pID = (SimpleIdentifier) pTest;
+				if (pID.getKey()==Integer.parseInt(dozentId))
+				{
+					dozent = veranstaltung.getPersons()[i].getClassification().getValue("surname").toString();
+					dozent = dozent + ", " + veranstaltung.getPersons()[i].getClassification().getValue("firstname").toString();
+				}
+			}
+			for (int i = 0; i < veranstaltung.getResources().length; i++)
+			{
+				if (veranstaltung.getResources()[i].getClassification().getType().getElementKey().equals("kurs"))
+				{
+					if (i==0)
+					{
+						kursName = veranstaltung.getResources()[i].getClassification().getValue("name").toString(); 
+						studiengang = veranstaltung.getResources()[i].getClassification().getValue("abteilung").toString();
+						int pos = studiengang.indexOf(" ");
+						studiengang = studiengang.substring(0, pos);
+					}
+					else
+					{
+						kursName = kursName + "/" + veranstaltung.getResources()[i].getClassification().getValue("name").toString();
+					}
+					
+				}
+			}
+			beginZeit = veranstaltung.getFirstDate().toLocaleString();
+			endZeit = veranstaltung.getMaxEnd().toLocaleString();
+			beginZeit = beginZeit.substring(0,beginZeit.indexOf(" "));
+			endZeit = endZeit.substring(0,endZeit.indexOf(" "));
+		} catch (RaplaContextException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 		out.println("<!DOCTYPE html>"); // we have HTML5 
 		out.println("<html>");
 		out.println("<head>");
 		out.println("  <title>MyPage</title>");
-		
+
 		//out.println(" <link REL=\"stylesheet\" href=\""+linkPrefix + "calendar.css\" type=\"text/css\">");
 		out.println("	<link REL=\"stylesheet\" type=\"text/css\" href=\""+linkPrefix+"dhbw-scheduler/AnfrageformularStylesheet.css\">");
 		out.println("	<script type=\"text/javascript\" src=\""+linkPrefix+"dhbw-scheduler/jquery-2.0.3.min.js\"></script>");
@@ -91,17 +139,17 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("<input id='inpHidden' type='hidden' name='' value='"+linkPrefix+"rapla\'>");
 		out.print("<div id='wrapper' style='margin:0 auto 0 auto;width:900px;''>");
 		out.println("<h3>");
-		out.print("Planung des 2. Semesters Wirtschaftsinformatik</br>");
-		out.print("Kurs "+kursName+", "+beginZeit+" bis "+endZeit+" (Ende der Vorlesungszeit: 18.5.2013)");
+		out.print("Planung des 2. Semesters " + studiengang + "</br>");
+		out.print("Kurs " + kursName + ", "+beginZeit+" bis "+endZeit+" (Ende der Vorlesungszeit: 18.5.2013)");
 		out.print("</h3>");
 		out.println("<table id='tableForm1'>");
 		out.print("		<tr>");
 		out.print("			<th>Dozent/in:</td>");
-		out.print("			<td><input disabled='disabled' type='text' value=''/></td>");
+		out.print("			<td><input disabled='disabled' type='text' value='" + dozent + "'/></td>");
 		out.print("		</tr>");
 		out.print("		<tr>");
 		out.print("			<th>Lehrveranst.:</td>");
-		out.print("			<td><input disabled='disabled' type='text' value=''/></td>");
+		out.print("			<td><input disabled='disabled' type='text' value='" + veranst + "'/></td>");
 		out.print("		</tr>");
 		out.println("</table>");
 		out.println("<p>");
@@ -142,9 +190,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("		</tr>");
 		out.println("	</thead>");
 		out.println(" <tbody id='timeTableBody'>");
-		
+
 		for(int i=8;i<18;i++){
-			
+
 			out.print("<tr>");
 			out.print("<th>"+i+".00 - "+(i+1)+".00</th>");
 			out.print("<td class='tdNeutral'></td>");
@@ -154,9 +202,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.print("<td class='tdNeutral'></td>");
 			out.print("<td class='tdNeutral'></td>");
 			out.print("</tr>");
-			
+
 		}
-		
+
 		out.println(" </tbody>");
 		out.println("</table>");
 		out.println("<p><b>3.</b>  Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
@@ -173,17 +221,17 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("</div>");
 		out.println("</body>");
 		out.println("</html>");
-		
+
 		/*out.println("<form action=\""+linkPrefix + "rapla\" method=\"get\">");
-		
+
 		out.println(getHiddenField("page", "scheduler-constraints"));
 		out.println(getHiddenField("ID", "test"));
-		
-		
+
+
 		out.print("<input type ='submit' value='anlegen'/>");*/
 		out.close();
-				
-	}
+
+					}
 	String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
