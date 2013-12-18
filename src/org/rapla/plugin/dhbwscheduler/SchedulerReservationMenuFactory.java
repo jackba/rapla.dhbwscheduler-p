@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import javax.swing.JTextField;
 
 import org.rapla.entities.Entity;
 import org.rapla.entities.RaplaObject;
+import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
@@ -352,6 +354,80 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					{
 						showException( ex, menuContext.getComponent());
 					} 
+				}
+			});
+			menus.add( menu );
+		}
+		{
+			final RaplaMenuItem menu = new RaplaMenuItem("EMAIL_SENDEN");
+			menu.setText( "E-Mail senden" );
+			// Last the action for the marked menu 
+			menu.addActionListener( new ActionListener()
+			{
+				public void actionPerformed( ActionEvent e )
+				{
+					
+					//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
+					for (Reservation r : selectedReservations)
+					{
+						//Überprüfung ob es nötig ist eine E-Mail zu versenden.
+						if(EmailVersendeBerechtigung(r)){
+							
+							//Jeder Dozent bekommt eine E-Mail
+							for (int t = 0; t < r.getPersons().length; t++)
+							{
+								Sende_mail(r,r.getPersons()[t]);
+							}
+						}
+						
+						
+					}
+				}
+
+				/*
+				 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
+				 */
+				private boolean EmailVersendeBerechtigung(Reservation r) {
+					
+					String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
+					boolean returnvalue = false;
+					
+					if(r.getClassification().getValue("Planungsstatus").equals(planning_closed) ||
+							r.getClassification().getValue("Planungsstatus").equals(closed)){
+						returnvalue = false;
+					}else{
+						switch(erfassungsstatus){
+						case "uneingeladen":
+							returnvalue = true;
+							break;
+						case "eingeladen":
+							returnvalue = true;
+							break;
+						case "erfasst":
+							returnvalue = false;
+							break;
+						default:
+							break;
+						}
+					}
+					
+					
+					return returnvalue;
+				}
+
+				private void Sende_mail(Reservation r, Allocatable Dozent) {
+					// TODO Auto-generated method stub
+					if (Dozent.isPerson()){
+						
+						;
+						//Link generieren
+						// Text einfügen
+						//Senden!
+						
+					}else{
+						return;
+					}
+						
 				}
 			});
 			menus.add( menu );
