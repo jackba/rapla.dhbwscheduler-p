@@ -70,9 +70,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		java.io.PrintWriter out = response.getWriter();
 		//out.print(getString("html_welcome_text"));
 
-		String[] parameter = URLDecoder.decode(request.getQueryString(),"UTF-8").split("&");
-		String eventId = getInformation(parameter,"id");	//ID der Veranstaltung
-		String dozent = getInformation(parameter,"dozent");	//ID des Dozenten
+		//String[] parameter = URLDecoder.decode(request.getQueryString(),"UTF-8").split("&");
+		String eventId = request.getParameter("id");	//ID der Veranstaltung
+		String dozent = request.getParameter("dozent");	//ID des Dozenten
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
 		
 		out.println("<!DOCTYPE html>"); // we have HTML5 

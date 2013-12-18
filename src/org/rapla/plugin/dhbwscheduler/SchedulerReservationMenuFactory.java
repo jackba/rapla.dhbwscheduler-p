@@ -7,11 +7,14 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +42,7 @@ import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
+import org.rapla.framework.StartupEnvironment;
 import org.rapla.framework.TypedComponentRole;
 import org.rapla.gui.MenuContext;
 import org.rapla.gui.ObjectMenuFactory;
@@ -48,7 +52,10 @@ import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.RaplaButton;
 import org.rapla.gui.toolkit.RaplaMenuItem;
+import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.servletpages.RaplaPageGenerator;
+import org.rapla.plugin.urlencryption.*;
+import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
 
 import com.sun.xml.internal.ws.api.server.Container;
 
@@ -68,7 +75,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	{
 		Collection selectedObjects = menuContext.getSelectedObjects();
 		Collection selectionList = new HashSet();
-		
+
 		if ( selectedObjects != null )
 		{
 			selectionList.addAll( selectedObjects);
@@ -248,7 +255,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("ERFASSUNG");
 			menu.setText( "Erfassungslink öffnen" );
-			//menu.setIcon( getIcon("icon.help"));
 			menu.addActionListener( new ActionListener()
 			{
 
@@ -256,7 +262,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				{
 					try 
 					{
-						//Anzahl benötigter Felder emitteln
+						//Anzahl benötigter Felder ermitteln
 						int felder = 0;
 						for (Reservation r : selectedReservations)
 						{
@@ -366,21 +372,21 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					
+
 					//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
 					for (Reservation r : selectedReservations)
 					{
 						//Überprüfung ob es nötig ist eine E-Mail zu versenden.
 						if(EmailVersendeBerechtigung(r)){
-							
+
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
 							{
 								Sende_mail(r,r.getPersons()[t]);
 							}
 						}
-						
-						
+
+
 					}
 				}
 
@@ -388,10 +394,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
 				 */
 				private boolean EmailVersendeBerechtigung(Reservation r) {
-					
+
 					String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
 					boolean returnvalue = false;
-					
+
 					if(r.getClassification().getValue("Planungsstatus").equals(planning_closed) ||
 							r.getClassification().getValue("Planungsstatus").equals(closed)){
 						returnvalue = false;
@@ -410,24 +416,24 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							break;
 						}
 					}
-					
-					
+
+
 					return returnvalue;
 				}
 
 				private void Sende_mail(Reservation r, Allocatable Dozent) {
 					// TODO Auto-generated method stub
 					if (Dozent.isPerson()){
-						
+
 						;
 						//Link generieren
 						// Text einfügen
 						//Senden!
-						
+
 					}else{
 						return;
 					}
-						
+
 				}
 			});
 			menus.add( menu );
@@ -454,64 +460,74 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		Comparable test = ((RefEntity<?>) selectedReservation).getId();
 		SimpleIdentifier id = (SimpleIdentifier) test;
 		String strId = String.valueOf(id.getKey());
-		String strName = selectedReservation.getName(getLocale());
-		String strKurs = "";
-		String studiengang = "";
-		for (int i = 0; i < selectedReservation.getResources().length; i++)
-		{
-			if (selectedReservation.getResources()[i].getClassification().getType().getElementKey().equals("kurs"))
-			{
-				if (strKurs=="")
-				{
-					strKurs = selectedReservation.getResources()[i].getClassification().getValue("name").toString(); 
+		//		String strName = selectedReservation.getName(getLocale());
+		//		String strKurs = "";
+		//		String studiengang = "";
+		//		for (int i = 0; i < selectedReservation.getResources().length; i++)
+		//		{
+		//			if (selectedReservation.getResources()[i].getClassification().getType().getElementKey().equals("kurs"))
+		//			{
+		//				if (strKurs=="")
+		//				{
+		//					strKurs = selectedReservation.getResources()[i].getClassification().getValue("name").toString(); 
+		//
+		//				}
+		//				else
+		//				{
+		//					strKurs = strKurs + "," + selectedReservation.getResources()[i].getClassification().getValue("name").toString();
+		//				}
+		//				//studiengang = selectedReservation.getResources()[i].getClassification().getValue("abteilung").toString();
+		//			}
+		//		}
 
-				}
-				else
-				{
-					strKurs = strKurs + "," + selectedReservation.getResources()[i].getClassification().getValue("name").toString();
-				}
-				//studiengang = selectedReservation.getResources()[i].getClassification().getValue("abteilung").toString();
-			}
-		}
+		//		String strDozent = selectedReservation.getPersons()[0].getClassification().getValue("surname").toString();
+		//		strDozent = strDozent + "," + selectedReservation.getPersons()[0].getClassification().getValue("firstname").toString();
+		//		String strBegin = selectedReservation.getFirstDate().toString();
+		//		String strEnd = selectedReservation.getMaxEnd().toString();
 
-		String strDozent = selectedReservation.getPersons()[0].getClassification().getValue("surname").toString();
-		strDozent = strDozent + "," + selectedReservation.getPersons()[0].getClassification().getValue("firstname").toString();
-		String strBegin = selectedReservation.getFirstDate().toString();
-		String strEnd = selectedReservation.getMaxEnd().toString();
-
-		try {
-			strId = URLEncoder.encode(strId,"UTF-8");
-			strName = URLEncoder.encode(strName, "UTF-8");
-			strKurs = URLEncoder.encode(strKurs, "UTF-8");
-			strDozent = URLEncoder.encode(strDozent, "UTF-8");
-			strBegin = URLEncoder.encode(strBegin, "UTF-8");
-			strEnd = URLEncoder.encode(strEnd, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//		try {
+		//			strId = URLEncoder.encode(strId,"UTF-8");
+		//			strName = URLEncoder.encode(strName, "UTF-8");
+		//			strKurs = URLEncoder.encode(strKurs, "UTF-8");
+		//			strDozent = URLEncoder.encode(strDozent, "UTF-8");
+		//			strBegin = URLEncoder.encode(strBegin, "UTF-8");
+		//			strEnd = URLEncoder.encode(strEnd, "UTF-8");
+		//		} catch (UnsupportedEncodingException e) {
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
 		String result;
 		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
 		//				+ "&name=" + strName + "&kurs=" + strKurs + "&dozent=" + strDozent
 		//				+ "&begin=" + strBegin + "&end=" + strEnd;
-		
-		//Dynamische Generierung von "Servername:Port" und page-Name???
+		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
+		//		+ "&dozent=" + String.valueOf(dozentId);
 
-//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
-//				+ "&dozent=" + String.valueOf(dozentId);
-		result = "http://localhost:8051/rapla?page=scheduler-constraints&";
-		
-		//Meilenstein 3 Verschlüsselung
-		//Verschlüsselung kompletter Link? -->wie wird dieser dann vom Server erkannt?
-		//Verschlüssleung der Parameter --> nur ID´s -->werden nicht verändert
-		result = result  + URLEncoder.encode("id=" + strId + "&dozent=" + String.valueOf(dozentId), "UTF-8");
-		
-		//Meilenstein 3 - E-Mail auslesen von Dozent
-		//result.append(r.getPersons()[0].getClassification().getValue("email"));
-		
-		return result;
+		//Dynamische Generierung "Servername:Port"
+        StartupEnvironment env = getService( StartupEnvironment.class );
+        //Dynamische Generierung "webpage"
+        
+        URL codeBase;
+		UrlEncryption webservice;
+		String key;
+        try {
+			codeBase = env.getDownloadURL();
+			result = codeBase + "rapla?page=scheduler-constraints&id=" + strId + "&dozent=" + String.valueOf(dozentId);
+			webservice = getWebservice(UrlEncryption.class);
+			String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + strId + "&dozent=" + String.valueOf(dozentId));
+			key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
+			return new URL( codeBase,"rapla?" + key).toExternalForm();
+		} catch (RaplaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "Error";
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "Error";
+		}
+		}
 
-	}
 
 	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
 		String istStatus = (String) editableEvent.getClassification().getValue("planungsstatus");
