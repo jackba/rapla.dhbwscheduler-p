@@ -7,6 +7,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -39,10 +40,15 @@ import org.rapla.framework.RaplaException;
 import org.rapla.framework.TypedComponentRole;
 import org.rapla.gui.MenuContext;
 import org.rapla.gui.ObjectMenuFactory;
+import org.rapla.gui.PublishExtension;
+import org.rapla.gui.PublishExtensionFactory;
 import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.RaplaButton;
 import org.rapla.gui.toolkit.RaplaMenuItem;
+import org.rapla.servletpages.RaplaPageGenerator;
+
+import com.sun.xml.internal.ws.api.server.Container;
 
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
@@ -60,7 +66,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	{
 		Collection selectedObjects = menuContext.getSelectedObjects();
 		Collection selectionList = new HashSet();
-
+		
 		if ( selectedObjects != null )
 		{
 			selectionList.addAll( selectedObjects);
@@ -239,7 +245,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("ERFASSUNG");
-			menu.setText( "Erfassungslink" );
+			menu.setText( "Erfassungslink öffnen" );
 			//menu.setIcon( getIcon("icon.help"));
 			menu.addActionListener( new ActionListener()
 			{
@@ -264,14 +270,14 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						JTextField[] urlField = new JTextField[felder];
 						RaplaButton[] copyButton = new RaplaButton[felder];
 						RaplaButton[] bt = new RaplaButton[felder];
-						
+
 						try {
 							int i = 0;
 							for (Reservation r : selectedReservations)
 							{
 								for (int t = 0; t < r.getPersons().length; t++)
 								{
-									
+
 									Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
 									SimpleIdentifier pID = (SimpleIdentifier) pTest;
 
@@ -412,12 +418,21 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
 		//				+ "&name=" + strName + "&kurs=" + strKurs + "&dozent=" + strDozent
 		//				+ "&begin=" + strBegin + "&end=" + strEnd;
+		
+		//Dynamische Generierung von "Servername:Port" und page-Name???
 
-		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
-				+ "&dozent=" + String.valueOf(dozentId);
-		//E-Mail auslesen von Dozent
-		//Meilenstein 3
+//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
+//				+ "&dozent=" + String.valueOf(dozentId);
+		result = "http://localhost:8051/rapla?page=scheduler-constraints&";
+		
+		//Meilenstein 3 Verschlüsselung
+		//Verschlüsselung kompletter Link? -->wie wird dieser dann vom Server erkannt?
+		//Verschlüssleung der Parameter --> nur ID´s -->werden nicht verändert
+		result = result  + URLEncoder.encode("id=" + strId + "&dozent=" + String.valueOf(dozentId), "UTF-8");
+		
+		//Meilenstein 3 - E-Mail auslesen von Dozent
 		//result.append(r.getPersons()[0].getClassification().getValue("email"));
+		
 		return result;
 
 	}
