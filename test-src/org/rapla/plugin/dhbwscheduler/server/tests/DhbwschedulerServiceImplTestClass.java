@@ -8,6 +8,7 @@ import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
+import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 
 import solver.constraints.IntConstraint;
@@ -16,15 +17,14 @@ import solver.variables.IntVar;
 public class DhbwschedulerServiceImplTestClass extends DhbwschedulerServiceImpl {
 
 	@Override
-	public int[] buildAllocatableVerfügbarkeit(Date start, Date ende,
-			int dauer, Reservation[] reservation) {
-		return super.buildAllocatableVerfügbarkeit(start, ende, dauer, reservation);
+	public int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende,
+			Reservation[] reservation) throws RaplaException {
+		return super.buildAllocatableVerfuegbarkeit(start, ende, reservation);
 	}
 
 	@Override
-	public String[] splitDozentenConstraint(String Dozentenconstraint,
-			int day) {
-		return super.splitDozentenConstraint(Dozentenconstraint, day);
+	public int[] splitDozentenConstraint(String Dozentenconstraint) {
+		return super.splitDozentenConstraint(Dozentenconstraint);
 	}
 
 	@Override
@@ -34,32 +34,8 @@ public class DhbwschedulerServiceImplTestClass extends DhbwschedulerServiceImpl 
 	}
 
 	@Override
-	public String solveSchedule(int[] dozentenconstraint,
-			int[] allocatableverfügbarkeit, IntConstraint[] nebenbedingungen) {
-		return super.solveSchedule(dozentenconstraint, allocatableverfügbarkeit,
-				nebenbedingungen);
-	}
-
-	@Override
-	public IntConstraint[] buildNebenbedingungen(IntVar dozentenVariable,
-			IntVar allocatableVariable) {
-		return super.buildNebenbedingungen(dozentenVariable, allocatableVariable);
-	}
-
-	@Override
-	public int getReservationDauer(SimpleIdentifier reservationId) {
-		return super.getReservationDauer(reservationId);
-	}
-
-	@Override
-	public int getReservationWiederholung(SimpleIdentifier reservationId) {
-		return super.getReservationWiederholung(reservationId);
-	}
-
-	@Override
-	public Map<SimpleIdentifier, int[]> sortReservations(
-			Map<SimpleIdentifier, int[]> reservations) {
-		return super.sortReservations(reservations);
+	public String solveSchedule() {
+		return super.solveSchedule();
 	}
 
 	@Override
@@ -78,8 +54,8 @@ public class DhbwschedulerServiceImplTestClass extends DhbwschedulerServiceImpl 
 		super(context);
 	}
 	
-	public int[] buildDozentenConstraint (Date start, Date ende, int dauer, String dozentenConstraint){
-		return super.buildDozentenConstraint(start, ende, dauer, dozentenConstraint);
+	public int[][] buildDozentenConstraint (Date start, Date ende, String dozentenConstraint){
+		return super.buildDozentenConstraint(start, ende, dozentenConstraint);
 	}
 
 }
