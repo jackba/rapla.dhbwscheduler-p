@@ -89,8 +89,15 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				if (pID.getKey()==Integer.parseInt(dozentId))
 				{
 					
-					dozent = veranstaltung.getPersons()[i].getClassification().getValue("firstname").toString();
-					dozent = dozent + " " + veranstaltung.getPersons()[i].getClassification().getValue("surname").toString();
+					if (veranstaltung.getPersons()[i].getClassification().getValue("surname")!=null)
+					{
+						dozent = veranstaltung.getPersons()[i].getClassification().getValue("surname").toString();
+					}
+					if (veranstaltung.getPersons()[i].getClassification().getValue("firstname")!=null)
+					{
+						dozent = dozent + ", " + veranstaltung.getPersons()[i].getClassification().getValue("firstname").toString();
+					}
+
 				}
 			}
 			for (int i = 0; i < veranstaltung.getResources().length; i++)
@@ -99,14 +106,35 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				{
 					if (i==0)
 					{
-						kursName = veranstaltung.getResources()[i].getClassification().getValue("name").toString(); 
-						//studiengang = veranstaltung.getResources()[i].getClassification().getValue("abteilung").toString();
-						//int pos = studiengang.indexOf(" ");
-						//studiengang = studiengang.substring(0, pos);
+
+						if (veranstaltung.getResources()[i].getClassification().getValue("name")!=null)
+						{
+							kursName = veranstaltung.getResources()[i].getClassification().getValue("name").toString(); 
+						}
+						else
+						{
+							kursName = "";
+						}
+						if (veranstaltung.getResources()[i].getClassification().getValue("abteilung")!=null)
+						{
+							studiengang = veranstaltung.getResources()[i].getClassification().getValue("abteilung").toString();
+							if (studiengang.contains(" "))
+							{
+								int pos = studiengang.indexOf(" ");
+								studiengang = studiengang.substring(0, pos);
+							}
+						}
+						else
+						{
+							studiengang = "";
+						}
 					}
 					else
 					{
-						kursName = kursName + "/" + veranstaltung.getResources()[i].getClassification().getValue("name").toString();
+						if (veranstaltung.getResources()[i].getClassification().getValue("name")!=null)
+						{
+							kursName = kursName + "/" + veranstaltung.getResources()[i].getClassification().getValue("name").toString();
+						}
 					}
 					
 				}
