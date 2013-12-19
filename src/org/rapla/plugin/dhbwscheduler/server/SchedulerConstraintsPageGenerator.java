@@ -27,21 +27,21 @@ import org.rapla.storage.StorageOperator;
 
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 
-	String dozent;					//Name Dozent
-	String semester;				//Zahl des Semesters (Beispiel: 2.)
-	String studiengang;				//Studiengang
-	String kursName="";				//Kursname
-	String beginZeit="";			//Beginn der Veranstaltung
-	String endZeit="";				//Ende der Veranstaltung
-	String vorlesungsZeit ="";		//Ende der Vorlesungszeit
-	String veranst="";				//Veranstaltungsname
-	String[] kontaktdatenArray;		//Liste mit geänderten Kontaktdaten 
-	int[][] timeTableArray;			//Inhalt der StundenTabelle
-	String[] ausnahmenArray;		//Liste mit Daten der Ausnahmen
-	int stunden;					//Vorlesungsstunden am Stück
-	String bemerkung;				//Inhalt des Bemerkungsfeldes
-	String dayTimeStart;			//Benötigt zum Aufbauen der Stundentabelle
-	String dayTimeEnd;				//Benötigt zum Aufbauen der Stundentabelle
+	String dozent = "Unbekannt";			//Name Dozent
+	String semester ="?";					//Zahl des Semesters (Beispiel: 2.)
+	String studiengang = "Unbekannt";		//Studiengang
+	String kursName="Unbekannt";			//Kursname
+	String beginZeit="dd.mm.jjjj";			//Beginn der Veranstaltung
+	String endZeit="dd.mm.jjjj";			//Ende der Veranstaltung
+	String vorlesungsZeit ="dd.mm.jj";		//Ende der Vorlesungszeit
+	String veranst="Unbekannt";				//Veranstaltungsname
+	String[] kontaktdatenArray;				//Liste mit geänderten Kontaktdaten 
+	int[][] timeTableArray;					//Inhalt der StundenTabelle
+	String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
+	int stunden = 4;						//Vorlesungsstunden am Stück
+	String bemerkung = "";					//Inhalt des Bemerkungsfeldes
+	int dayTimeStart = 8;					//Benötigt zum Aufbauen der Stundentabelle
+	int dayTimeEnd = 18;					//Benötigt zum Aufbauen der Stundentabelle
 
 	public SchedulerConstraintsPageGenerator(RaplaContext context,Configuration config) {
 		super(context);
@@ -88,8 +88,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				SimpleIdentifier pID = (SimpleIdentifier) pTest;
 				if (pID.getKey()==Integer.parseInt(dozentId))
 				{
-					dozent = veranstaltung.getPersons()[i].getClassification().getValue("surname").toString();
-					dozent = dozent + ", " + veranstaltung.getPersons()[i].getClassification().getValue("firstname").toString();
+					
+					dozent = veranstaltung.getPersons()[i].getClassification().getValue("firstname").toString();
+					dozent = dozent + " " + veranstaltung.getPersons()[i].getClassification().getValue("surname").toString();
 				}
 			}
 			for (int i = 0; i < veranstaltung.getResources().length; i++)
@@ -99,9 +100,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 					if (i==0)
 					{
 						kursName = veranstaltung.getResources()[i].getClassification().getValue("name").toString(); 
-						studiengang = veranstaltung.getResources()[i].getClassification().getValue("abteilung").toString();
-						int pos = studiengang.indexOf(" ");
-						studiengang = studiengang.substring(0, pos);
+						//studiengang = veranstaltung.getResources()[i].getClassification().getValue("abteilung").toString();
+						//int pos = studiengang.indexOf(" ");
+						//studiengang = studiengang.substring(0, pos);
 					}
 					else
 					{
@@ -121,8 +122,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-
+		
 		out.println("<!DOCTYPE html>"); // we have HTML5 
 		out.println("<html>");
 		out.println("<head>");
@@ -134,91 +134,116 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("	<script type=\"text/javascript\" src=\""+linkPrefix+"dhbw-scheduler/AnfrageformularScript.js\"></script>");
 		out.println("<script type='text/javascript'>");
 		out.println("</script>");
-		out.print("</head>");
-		out.print("<body>");
-		out.print("<input id='inpHidden' type='hidden' name='' value='"+linkPrefix+"rapla\'>");
-		out.print("<div id='wrapper' style='margin:0 auto 0 auto;width:900px;''>");
-		out.println("<h3>");
-		out.print("Planung des 2. Semesters " + studiengang + "</br>");
-		out.print("Kurs " + kursName + ", "+beginZeit+" bis "+endZeit+" (Ende der Vorlesungszeit: 18.5.2013)");
-		out.print("</h3>");
-		out.println("<table id='tableForm1'>");
-		out.print("		<tr>");
-		out.print("			<th>Dozent/in:</td>");
-		out.print("			<td><input disabled='disabled' type='text' value='" + dozent + "'/></td>");
-		out.print("		</tr>");
-		out.print("		<tr>");
-		out.print("			<th>Lehrveranst.:</td>");
-		out.print("			<td><input disabled='disabled' type='text' value='" + veranst + "'/></td>");
-		out.print("		</tr>");
-		out.println("</table>");
-		out.println("<p>");
-		out.print("	Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&auml;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:");
-		out.print("</p>");
-		out.println("<input id='inpKontaktdaten' type='text' value='' list='kontaktdaten'/>");
-		out.println("<datalist id='kontaktdaten'>");
-		out.print("	<option value='E-mail'/>");
-		out.print("	<option value='Telefonnummer'/>");
-		out.print("	<option value='Handynummer'/>");
-		out.print("	<option value='Adresse'/>");
-		out.print("	<option value='Firma'/>");
-		out.println("</datalist>");
-		out.println("<p>");
-		out.print("	Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:");
-		out.print("</p>");
-		out.println("<p><b>1.</b>Setzen Sie ein <b>- (Minus)</b> in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</p>");
-		out.println("<p><b>2.</b>Setzen Sie ein <b>+ (Plus)</b> in alle Zeitfelder, die f&uuml;r Sie besonders angenehm sind!</p>");
-		out.println("<table id='timeTable'>");
-		out.println("	<thead>");
-		out.print("		<tr>");
-		out.print(" 		<th colspan='6' style='font-size:large;text-align:left;vertical-align:center;height:50px;'>Stundentabelle</th>");
-		out.print(" 		<td>");
-		out.print(" 			<input id='btnPlus'  style='width:30px;height:30px;font-weight:bold;coursor:pointer;' type='button' value='+'/>");
-		out.print(" 			<input id='btnMinus'  style='width:30px;height:30px;font-weight:bold;coursor:pointer;' type='button' value='-'/>");
-		out.print(" 			<input id='btnClear'  style='width:30px;height:30px;font-weight:bold;coursor:pointer;' type='button' value='X'/>");
-		out.print(" 			<input id='btnTest'  style='width:30px;height:30px;font-weight:bold;coursor:pointer;' type='button' value='tst'/>");
-		out.print(" 		</td>");
-		out.print(" 	</tr>");
-		out.print(" 	<tr>");
-		out.print("			<th style='border-right:1px solid;border-bottom:1px solid;'>Zeit</th>");
-		out.print("			<th>Montag</th>");
-		out.print("			<th>Dienstag</th>");
-		out.print("			<th>Mittwoch</th>");
-		out.print("			<th>Donnerstag</th>");
-		out.print("			<th>Freitag</th>");
-		out.print("			<th>Samstag</th>");
-		out.print("		</tr>");
-		out.println("	</thead>");
-		out.println(" <tbody id='timeTableBody'>");
+		out.println("</head>");
+		out.println("<body>");
+		out.print("		<input id='hiddenUrl' type='hidden' name='' value='"+linkPrefix+"rapla\'>");
+		out.print("		<div id='wrapper'>");
+		out.println("		<h3>");
+		out.print("				Planung des "+semester+". Semesters " + studiengang + "</br>");
+		out.print("				Kurs " + kursName + ", "+beginZeit+" bis "+endZeit+" (Ende der Vorlesungszeit: "+vorlesungsZeit+")");
+		out.println("		</h3>");
+		
+		out.println("		<table id='tableForm1'>");
+		out.print("				<tr>");
+		out.print("					<th>Dozent/in:</td>");
+		out.print("					<td><input disabled='disabled' type='text' value='" + dozent + "'/></td>");
+		out.print("				</tr>");
+		out.print("				<tr>");
+		out.print("					<th>Lehrveranst.:</td>");
+		out.print("					<td><input disabled='disabled' type='text' value='" + veranst + "'/></td>");
+		out.print("				</tr>");
+		out.println("		</table>");
+		
+		out.println("		<p>Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&auml;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:</p>");
+		
+		out.println("		<input id='inpKontaktdaten' type='text' value='' list='kontaktdaten'/>");
+		out.println("		<datalist id='kontaktdaten'>");
+		out.print("				<option value='E-mail'/>");
+		out.print("				<option value='Telefonnummer'/>");
+		out.print("				<option value='Handynummer'/>");
+		out.print("				<option value='Adresse'/>");
+		out.print("				<option value='Firma'/>");
+		out.println("		</datalist>");
+		
+		out.println("		<p><b>1.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
+		out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' max='10' value='"+stunden+"'/>");
+		out.println("		<label for='inpVorlesungsstunden'>Vorlesungsstunden</label>");
+		
+		out.println("		<p>Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:</p>");
+		
+		out.println("		<p><b>2.</b>Setzen Sie ein <b>- (Minus)</b> in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</p>");
+		out.println("		<p><b>3.</b>Setzen Sie ein <b>+ (Plus)</b> in alle Zeitfelder, die f&uuml;r Sie besonders angenehm sind!</p>");
+		out.println("		<table id='timeTable'>");
+		out.println("			<thead>");
+		out.print("					<tr>");
+		out.print(" 					<th colspan='6' style='font-size:large;text-align:left;vertical-align:center;height:50px;'>Stundentabelle</th>");
+		out.print(" 					<td>");
+		out.print(" 						<input id='btnPlus' class='timeTableButtons' type='button' value='+'/>");
+		out.print(" 						<input id='btnMinus' class='timeTableButtons' type='button' value='-'/>");
+		out.print("				 			<input id='btnClear' class='timeTableButtons' type='button' value='X'/>");
+		out.print(" 					</td>");
+		out.print(" 				</tr>");
+		out.print("				 	<tr>");
+		out.print("						<th id='firstCell'>Zeit</th>");
+		out.print("						<th>Montag</th>");
+		out.print("						<th>Dienstag</th>");
+		out.print("						<th>Mittwoch</th>");
+		out.print("						<th>Donnerstag</th>");
+		out.print("						<th>Freitag</th>");
+		out.print("						<th>Samstag</th>");
+		out.print("					</tr>");
+		out.println("			</thead>");
+		out.println(" 			<tbody id='timeTableBody'>");
 
-		for(int i=8;i<18;i++){
+		for(int i=dayTimeStart;i<dayTimeEnd;i++){
 
 			out.print("<tr>");
-			out.print("<th>"+i+".00 - "+(i+1)+".00</th>");
-			out.print("<td class='tdNeutral'></td>");
-			out.print("<td class='tdNeutral'></td>");
-			out.print("<td class='tdNeutral'></td>");
-			out.print("<td class='tdNeutral'></td>");
-			out.print("<td class='tdNeutral'></td>");
-			out.print("<td class='tdNeutral'></td>");
+			out.print("	<th>"+i+".00 - "+(i+1)+".00</th>");
+			//Schleife zum Erstellen der Zellen pro Wochentag (Mo-Sa)
+			for(int j=0;j<6;j++){
+				//timeTableArray
+				out.print("	<td class='tdNeutral'></td>");
+			}
 			out.print("</tr>");
 
 		}
 
-		out.println(" </tbody>");
-		out.println("</table>");
-		out.println("<p><b>3.</b>  Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
-		out.println("<input id='inpDatepicker' type='date' min='' max='' value='2013-12-05'/>");
-		out.print("<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
-		out.println("<ul id='dateList' style='overflow-y:scroll;border:1px solid;height:100px;width:300px;'></ul>");
-		out.println("<p><b>4.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
-		out.println("<input type='number' step='1' min='1' max='10' value='4' style='text-align:center;margin-right:10px;coursor:pointer;'/><label>Vorlesungsstunden</label>");
-		out.println("<p><b>5.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen. NEIN</p>");
-		out.println("<p>Platz f&uuml;r weitere Bemerkungen :</p>");
-		out.println("<textarea id='testTA' style='resize:none;width:500px;' rows='5' col='65'></textarea>");
-		out.print("<input id='btnSubmit' type='button' value='Flickis Submitbutton'");
-		out.print("");
-		out.println("</div>");
+		out.println(" 			</tbody>");
+		out.println("		</table>");
+		
+		
+		
+		out.println("		<p><b>4.</b>  Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
+		//Datum für input type=date (id=inpDatepicker) formatieren
+		try{
+			String[] splitResult = beginZeit.split(".");
+			beginZeit= splitResult[2]+"-"+splitResult[1]+"-"+splitResult[0];				
+			splitResult = endZeit.split(".");
+			endZeit = splitResult[2]+"-"+splitResult[1]+"-"+splitResult[0];
+		}
+		catch(Exception e){
+			String error = "DatumFormat: "+e;			
+		}
+		out.print("			<input id='inpDatepicker' type='date' min='"+beginZeit+"' max='"+endZeit+"' value='"+beginZeit+"'/>");
+		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
+		out.println("		<ul id='ulDateList'>");
+		try{
+			for(int i=0;i<ausnahmenArray.length;i++)
+				out.print("<li>"+ausnahmenArray[i]+"</li>");
+		}
+		catch(Exception e){}
+		out.println("		</ul>");	
+		out.println("		<p><b>5.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
+		out.print("			<input id='cbYes' type='checkbox' group='cbGroupKlausur' value='1'/>");
+		out.print("			<label for='cbYes'>Ja</label>");
+		out.print("			<input id='cbNo' type='checkbox' group='cbGroupKlausur' value='0' checked='checked'/>");
+		out.print("			<label for='cbNo'>Nein</label>");
+		
+		out.println("		<p>Platz f&uuml;r weitere Bemerkungen :</p>");
+		out.println("		<textarea id='taBemerkungen' rows='5' col='65'>"+bemerkung+"</textarea>");
+		
+		out.print("			<input id='btnSubmit' type='button' value='Flickis Submitbutton'");
+		out.println("	</div>");
 		out.println("</body>");
 		out.println("</html>");
 

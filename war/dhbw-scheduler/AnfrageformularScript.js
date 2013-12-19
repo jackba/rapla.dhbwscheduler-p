@@ -1,7 +1,7 @@
 $('document').ready(function(){		
 	$('#btnSubmit').on('click',function(){
 		var objData={timeTableArray:formatArray(),datelist:getDatelist()};
-		var url=$('#inpHidden').val();
+		var url=$('#hiddenUrl').val();
 		$.ajax({
 			 url: url,
 		     type: 'POST',
@@ -39,7 +39,7 @@ $('document').ready(function(){
 	$('#btnSetDate').on('click',function(){
 		var write= true;
 		var value=$('#inpDatepicker').val();
-		$('#dateList li').each(function(){
+		$('#ulDateList li').each(function(){
 			if($(this).html() == value){
 				write= false;
 				alert("Datum: "+$(this).html()+" ist bereits vorhanden!");
@@ -47,7 +47,7 @@ $('document').ready(function(){
 		});
 		if(write ==true){
 			var item='<li>'+value+'</li>';
-			$('#dateList').append(item);
+			$('#ulDateList').append(item);
 		}
 	});
 	//Markiert alle ausgewählten Zellen mit +
@@ -152,7 +152,7 @@ function formatArray(){
 function getDatelist(){
 	var dateArray=new Array();
 	var counter=0;
-	$('#dateList li').each(function(){
+	$('#ulDateList li').each(function(){
 		dateArray[counter]=$(this).html();
 		counter++;
 	});

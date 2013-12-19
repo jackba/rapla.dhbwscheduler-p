@@ -1,3 +1,50 @@
+#wrapper{
+	width:900px;
+	margin:0 auto 0 auto;
+}
+#numberVorlesungsstunden{
+	text-align:center;
+	margin-right:10px;
+	coursor:pointer;
+}
+#ulDateList{
+	overflow-y:scroll;
+	border:1px solid;
+	height:100px;
+	width:300px;
+}
+#taBemerkungen{
+	resize:none;
+	width:500px;
+}
+.timeTableButtons{
+	width:30px;
+	height:30px;
+	font-weight:bold;
+	coursor:pointer;	
+}
+/*Stundentabelle*/
+#firstCell{
+	border-right:1px solid;
+	border-bottom:1px solid;
+	width:120px;
+}
+#timeTableBody {
+	text-align:center;
+	vertical-align:center;
+}
+#timeTableBody td{
+	cursor:pointer;
+	width:120px;
+}
+#timeTableBody th{
+	width:120px;
+}
+#timeTable{
+	text-align:center;
+	border-collapse:collapse;		
+}
+/*Klassen für Stundentabellenzellen*/
 .tdNeutral{
 	background-color:white;
 	border: 1px solid;
@@ -18,21 +65,8 @@
 	background-color:red;
 	border:1px solid;
 }
-#timeTableBody {
-	text-align:center;
-	vertical-align:center;
-}
-#timeTableBody td{
-	cursor:pointer;
-	width:120px;
-}
-#timeTableBody th{
-	width:120px;
-}
-#timeTable{
-	text-align:center;
-	border-collapse:collapse;		
-}
+/***************************************/
+
 
 	
 
