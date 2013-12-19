@@ -27,7 +27,12 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/choco-solver-3.1.0-jar-with-dependencies.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/rapla.urlencryption-p"/>
+	<classpathentry kind="lib" path="lib/glpk-java.jar" sourcepath="lib/glpk-java-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/rapla.dhbwscheduler-p/lib/glpk-java-javadoc.jar!/"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="rapla.dhbwscheduler-p/lib"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>
