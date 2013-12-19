@@ -27,22 +27,6 @@ import org.rapla.storage.StorageOperator;
 
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 
-	String dozent = "Unbekannt";			//Name Dozent
-	String semester ="?";					//Zahl des Semesters (Beispiel: 2.)
-	String studiengang = "Unbekannt";		//Studiengang
-	String kursName="Unbekannt";			//Kursname
-	String beginZeit="dd.mm.jjjj";			//Beginn der Veranstaltung
-	String endZeit="dd.mm.jjjj";			//Ende der Veranstaltung
-	String vorlesungsZeit ="dd.mm.jj";		//Ende der Vorlesungszeit
-	String veranst="Unbekannt";				//Veranstaltungsname
-	String[] kontaktdatenArray;				//Liste mit geänderten Kontaktdaten 
-	int[][] timeTableArray;					//Inhalt der StundenTabelle
-	String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
-	int stunden = 4;						//Vorlesungsstunden am Stück
-	String bemerkung = "";					//Inhalt des Bemerkungsfeldes
-	int dayTimeStart = 8;					//Benötigt zum Aufbauen der Stundentabelle
-	int dayTimeEnd = 18;					//Benötigt zum Aufbauen der Stundentabelle
-
 	public SchedulerConstraintsPageGenerator(RaplaContext context,Configuration config) {
 		super(context);
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
@@ -69,9 +53,23 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		response.setContentType("content-type text/html");
 
 		java.io.PrintWriter out = response.getWriter();
-		//out.print(getString("html_welcome_text"));
-
-		//String[] parameter = URLDecoder.decode(request.getQueryString(),"UTF-8").split("&");
+		
+		String dozent = "Unbekannt";			//Name Dozent
+		String semester ="?";					//Zahl des Semesters (Beispiel: 2.)
+		String studiengang = "Unbekannt";		//Studiengang
+		String kursName="Unbekannt";			//Kursname
+		String beginZeit="dd.mm.jjjj";			//Beginn der Veranstaltung
+		String endZeit="dd.mm.jjjj";			//Ende der Veranstaltung
+		String vorlesungsZeit ="dd.mm.jj";		//Ende der Vorlesungszeit
+		String veranst="Unbekannt";				//Veranstaltungsname
+		String[] kontaktdatenArray;				//Liste mit geänderten Kontaktdaten 
+		int[][] timeTableArray;					//Inhalt der StundenTabelle
+		String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
+		int stunden = 4;						//Vorlesungsstunden am Stück
+		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
+		int dayTimeStart = 8;					//Benötigt zum Aufbauen der Stundentabelle
+		int dayTimeEnd = 18;					//Benötigt zum Aufbauen der Stundentabelle		
+		
 		String eventId = request.getParameter("id");	//ID der Veranstaltung
 		String dozentId = request.getParameter("dozent");	//ID des Dozenten
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
@@ -88,15 +86,15 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				SimpleIdentifier pID = (SimpleIdentifier) pTest;
 				if (pID.getKey()==Integer.parseInt(dozentId))
 				{
-					
-					if (veranstaltung.getPersons()[i].getClassification().getValue("surname")!=null)
-					{
-						dozent = veranstaltung.getPersons()[i].getClassification().getValue("surname").toString();
-					}
 					if (veranstaltung.getPersons()[i].getClassification().getValue("firstname")!=null)
 					{
-						dozent = dozent + ", " + veranstaltung.getPersons()[i].getClassification().getValue("firstname").toString();
+						dozent =  veranstaltung.getPersons()[i].getClassification().getValue("firstname").toString();
 					}
+					if (veranstaltung.getPersons()[i].getClassification().getValue("surname")!=null)
+					{
+						dozent = dozent + " " + veranstaltung.getPersons()[i].getClassification().getValue("surname").toString();
+					}
+					
 
 				}
 			}
@@ -255,11 +253,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("			<input id='inpDatepicker' type='date' min='"+beginZeit+"' max='"+endZeit+"' value='"+beginZeit+"'/>");
 		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
 		out.println("		<ul id='ulDateList'>");
-		try{
-			for(int i=0;i<ausnahmenArray.length;i++)
-				out.print("<li>"+ausnahmenArray[i]+"</li>");
-		}
-		catch(Exception e){}
+		/*Schleife um Ausnahmenauszulesen*/
 		out.println("		</ul>");	
 		out.println("		<p><b>5.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
 		out.print("			<input id='cbYes' type='checkbox' group='cbGroupKlausur' value='1'/>");
