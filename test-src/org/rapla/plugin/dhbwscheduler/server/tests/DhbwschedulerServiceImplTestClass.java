@@ -1,7 +1,6 @@
 package org.rapla.plugin.dhbwscheduler.server.tests;
 
 import java.util.Date;
-import java.util.Map;
 
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.domain.Reservation;
@@ -10,9 +9,6 @@ import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
-
-import solver.constraints.IntConstraint;
-import solver.variables.IntVar;
 
 public class DhbwschedulerServiceImplTestClass extends DhbwschedulerServiceImpl {
 
