@@ -197,6 +197,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @throws RaplaException 
 	 */
 	protected int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, Reservation[] reservation) throws RaplaException {
+		//build array, first all times are allowed
 		int[][] vor_res = new int[reservation.length][10];
 		for (int i = 0; i < reservation.length; i++){
 			for (int j = 0; j < 10; j++){
@@ -205,24 +206,35 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
 		int vorlesungNr = 0;
 		for (Reservation vorlesung : reservation) {
+			//get all resources from all reservations
 			Allocatable[] allocatables = vorlesung.getAllocatables();
+			//get all other reservations for these resources
 			Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, start, ende, null);
 			for (Reservation vorlesungMitGleicherResource : vorlesungenMitGleichenResourcen){
+				//for each of these reservations, get all appointments 
 				Appointment[] termine = vorlesungMitGleicherResource.getAppointments();
 				for (Appointment termin : termine){
 					Date beginn = termin.getStart();
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(beginn);
 					if(cal.HOUR_OF_DAY < 12){
+						//set the field for the vorlesungNr and the slot to zero
+						//if the appointment starts before 12 a.m., the appointment will block
+						//the slot at the morning
 						vor_res[vorlesungNr][timeSlots[cal.DAY_OF_WEEK][0]] = 0;
 					} else {
+						//else the appointment is after 12 a.m. and it will block
+						//the slot at the afternoon
 						vor_res[vorlesungNr][timeSlots[cal.DAY_OF_WEEK][1]] = 0;
 					}
 				}
 			}
+			//get the planungsconstraints 
 			String planungsconstraint = vorlesung.getClassification().getValue("planungsconstraints").toString();
+			//get the slots blocked by the planungsconstraints
 			int[] belegteSlots = splitDozentenConstraint(planungsconstraint);
 			for(int i = 0; i < 10; i++){
+				//copy the blocking only if the slot turns from (not) allowed to not allowed
 				if(belegteSlots[i] == 0){
 					vor_res[vorlesungNr][i] = belegteSlots[i];
 				}
@@ -242,11 +254,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @return
 	 */
 	protected int[] splitDozentenConstraint(String dozentenConstraint) {
+		//first, all slots aren't allowed
 		int[] belegteSlots = {0,0,0,0,0,0,0,0,0,0};
 		int idIndex = dozentenConstraint.indexOf('_');
 		dozentenConstraint = dozentenConstraint.substring(idIndex + 1);
 		String[] constraintsTage = dozentenConstraint.split(";");
 		for(String constraint : constraintsTage){
+			//get the day of week
 			int dayOfWeek = Calendar.MONDAY;
 			char day = constraint.charAt(0);
 			switch(day){
@@ -265,17 +279,24 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				dayOfWeek = Calendar.FRIDAY;
 				break;
 			}
+			//get time at that day
 			String timepoint = constraint.substring(constraint.indexOf(':') + 1, constraint.indexOf('-'));
 			int hourOfDay = Integer.valueOf(timepoint);
 			if(hourOfDay < 12){
+				//if the time is before 12 a.m., the slot at the morning will 
+				//be allowed
 				belegteSlots[timeSlots[dayOfWeek][0]] = 1;
 			} else {
+				//else the slot in the afternoon will be allowed
 				belegteSlots[timeSlots[dayOfWeek][1]] = 1;
 			}
+			//look for more constraints separated by commas
 			if(constraint.contains(",")){
 				timepoint = constraint.substring(constraint.indexOf(',') + 1, constraint.indexOf('-'));
 				hourOfDay = Integer.valueOf(timepoint);
+				//normally, the next available slot should be the the afternoon slot
 				if(hourOfDay > 12){
+					//check, if it's really the afternoon slot
 					belegteSlots[timeSlots[dayOfWeek][1]] = 1;
 				}
 			}
@@ -319,22 +340,28 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	protected int[][] buildZuordnungDozentenVorlesung(Reservation[] reservation) {
 		Set<Allocatable> dozenten = new HashSet<Allocatable>();
 		for (Reservation veranstaltung : reservation){
+			//get all resources for all reservations
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
 			for (Allocatable a : ressourcen){
+				//if the resource is a professor, add it to the set (no duplicate elements allowed)
 				if(a.getClassification().getType().getName().toString() == "professor"){
 					dozenten.add(a);
 				}
 			}
 		}
 		Allocatable[] dozentenArray = (Allocatable[]) dozenten.toArray();
+		//build the array to assign the professors to their reservations 
 		int[][] doz_vor = new int[dozentenArray.length][reservation.length];
 		int i = 0;
 		for (Allocatable a : dozentenArray){
 			int j = 0;
 			for(Reservation veranstaltung : reservation){
+				//check, if the reservation has allocated the professor
 				if(veranstaltung.hasAllocated(a)){
+					//yes
 					doz_vor[i][j] = 1;
 				} else {
+					//no
 					doz_vor[i][j] = 0;
 				}
 				j++;
@@ -351,22 +378,28 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	protected int[][] buildZuordnungKursVorlesung(Reservation[] reservation){
 		Set<Allocatable> kurse = new HashSet<Allocatable>();
 		for (Reservation veranstaltung : reservation){
+			//get all resources for all reservations
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
 			for (Allocatable a : ressourcen){
 				if(a.getClassification().getType().getName().toString() == "kurs"){
+					//if the resource is a kurs, add it to the set (no duplicate elements allowed)
 					kurse.add(a);
 				}
 			}
 		}
 		Allocatable[] kursArray = (Allocatable[]) kurse.toArray();
+		//build the array to assign the kurse to their reservations 
 		int[][] kurs_vor = new int[kursArray.length][reservation.length];
 		int i = 0;
 		for (Allocatable a : kursArray){
 			int j = 0;
 			for(Reservation veranstaltung : reservation){
+				//check, if the reservation has allocated the kurs
 				if(veranstaltung.hasAllocated(a)){
+					//yes
 					kurs_vor[i][j] = 1;
 				} else {
+					//no
 					kurs_vor[i][j] = 0;
 				}
 				j++;
