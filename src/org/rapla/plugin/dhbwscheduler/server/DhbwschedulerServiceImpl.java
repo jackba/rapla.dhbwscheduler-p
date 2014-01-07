@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.gnu.glpk.GLPK;
@@ -48,6 +50,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 
 	int[][] timeSlots = {{},{},{0,1},{2,3},{4,5},{6,7},{8,9}};
     private boolean hookUsed = false;
+    // Variable zum wiederfinden, welche Reservierung mit welchem Index in den Scheduler gegeben wird
+    private Reservation[] reservations_scheduler;
     
 	/**
 	 * @param context
@@ -69,35 +73,38 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 */
 	@Override
 	public String schedule(SimpleIdentifier[] reservationIds)  throws RaplaException {
-/*		//Original-Quellcode Hr. Kohlhaas		
-  		StorageOperator lookup = getContext().lookup( StorageOperator.class);
-		List<Reservation> reservations = new ArrayList<Reservation>();
-		for ( SimpleIdentifier id :reservationIds)
-		{
-			RefEntity<?> object = lookup.resolve( id);
-			reservations.add( (Reservation) object);
-		}
-		StringBuilder result = new StringBuilder();
-		for ( Reservation r : reservations)
-		{
-			result.append( r.getName(getLocale()));
-			result.append( ", ");
-		}
-		return result.toString();
-		
-*/
-    	String model = "scheduler_gmpl.mod";
-    	String data = "scheduler_data.dat";
-    	String solution = "scheduler_solution.dat";
+		String model = "scheduler_gmpl" + new Date().getTime() + ".mod";
+		String data = "scheduler_data" + new Date().getTime() + ".dat";
+		String solution = "scheduler_solution" + new Date().getTime() + ".dat";
 
-		int doz_vor[][] = { { 0, 0, 1, 1 }, { 1, 0, 0, 0 }, { 0, 1, 0, 0 } };
+/*		int doz_vor[][] = { { 0, 0, 1, 1 }, { 1, 0, 0, 0 }, { 0, 1, 0, 0 } };
 		int vor_res[][] = { { 1, 0, 0, 0, 1, 0, 1, 0, 1, 0 },
 				{ 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
 				{ 1, 1, 0, 0, 1, 1, 0, 0, 1, 1 },
 				{ 1, 1, 0, 0, 1, 1, 0, 0, 1, 1 } };
 		int kurs_vor[][] = { { 1, 1, 0, 1 }, { 0, 0, 1, 0 }, { 1, 0, 0, 1 },
 				{ 0, 1, 0, 0 } };
+*/
 
+		int doz_vor[][];
+		int vor_res[][];
+		int kurs_vor[][];
+		
+		Date start = new Date();   // #################### Auf jeden Fall noch zu füllen #############################
+		Date ende = new Date();    // #################### Auf jeden Fall noch zu füllen #############################
+
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		List<Reservation> reservations = new ArrayList<Reservation>();
+		for ( SimpleIdentifier id :reservationIds)
+		{
+			RefEntity<?> object = lookup.resolve( id);
+			reservations.add( (Reservation) object);
+		}
+		
+		Reservation[] r = (Reservation[]) reservations.toArray();
+		doz_vor = buildZuordnungDozentenVorlesung(r);
+		kurs_vor = buildZuordnungKursVorlesung(r);
+		vor_res = buildAllocatableVerfuegbarkeit(start, ende, r);
 		
 		aufbau_scheduler_mod(model);
 		
@@ -220,6 +227,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 					vor_res[vorlesungNr][i] = belegteSlots[i];
 				}
 			}
+		    // Zwischenspeichern welche Reservierung mit welchem Index in den 
+			// Scheduler gegeben wird. Nötig um später das Ergebnis wieder der Reservierung zuordnen zu können
+			reservations_scheduler[vorlesungNr] = vorlesung;
+			
 			vorlesungNr++;
 		}
 		return vor_res;
@@ -398,7 +409,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         }
     }
     
-    public static void aufbau_scheduler_data(String data_file, int[][] doz_vor, int[][] kurs_vor, int[][] vor_res){
+    private void aufbau_scheduler_data(String data_file, int[][] doz_vor, int[][] kurs_vor, int[][] vor_res){
     	String file = "data; \n";
     	
     	//Anzahl Vorlesungen
@@ -485,7 +496,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
     }
     
-    public void aufbau_scheduler_mod(String mod_file) {
+    private void aufbau_scheduler_mod(String mod_file) {
     	String file = "param f, symbolic := \"scheduler_solution.dat\"; \n\n";
     	file += "#Anzahl Vorlesungen\n";
     	file += "set I;\n";
@@ -531,7 +542,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
     }
     
-    public String auslese_Solution(String sol_file) {
+    private String auslese_Solution(String sol_file) {
     	String auslese = "";
 		String zeile; 
     	
