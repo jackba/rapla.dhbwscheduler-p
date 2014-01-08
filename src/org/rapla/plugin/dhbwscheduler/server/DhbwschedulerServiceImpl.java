@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.gnu.glpk.GLPK;
@@ -51,8 +49,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 
 	int[][] timeSlots = {{},{},{0,1},{2,3},{4,5},{6,7},{8,9}};
     private boolean hookUsed = false;
-    // Variable zum wiederfinden, welche Reservierung mit welchem Index in den Scheduler gegeben wird
-    private Reservation[] reservations_scheduler;
     
 	/**
 	 * @param context
@@ -137,7 +133,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         return result; 
 	}
 	
-	public void solve(String model, String data, String solution) {
+	private void solve(String model, String data, String solution) {
         glp_prob lp = null;
         glp_tran tran;
         glp_iocp iocp;
@@ -202,9 +198,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param start
 	 * @param ende
 	 * @param dozentenConstraint
-	 * @return
+	 * @return int[][]
 	 */
-	protected int[][] buildDozentenConstraint(Date start, Date ende, String dozentenConstraint){
+	private int[][] buildDozentenConstraint(Date start, Date ende, String dozentenConstraint){
 		//TODO: Kostenmatrix für Dozentenwünsche
 		return null;
 	}
@@ -213,10 +209,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param start - Anfang der Woche
 	 * @param ende - Ende der Woche
 	 * @param reservation
-	 * @return
+	 * @return int[][]
 	 * @throws RaplaException 
 	 */
-	protected int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, ArrayList<Reservation> reservation) throws RaplaException {
+	private int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, ArrayList<Reservation> reservation) throws RaplaException {
 		//build array, first all times are allowed
 		int[][] vor_res = new int[reservation.size()][10];
 		for (int i = 0; i < reservation.size(); i++){
@@ -278,10 +274,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	
 	/**
 	 * @param Dozentenconstraint
-	 * @param day
-	 * @return
+	 * @return int[]
 	 */
-	protected int[] splitDozentenConstraint(String dozentenConstraint) {
+	private int[] splitDozentenConstraint(String dozentenConstraint) {
 		//first, all slots aren't allowed
 		int[] belegteSlots = {0,0,0,0,0,0,0,0,0,0};
 		int idIndex = dozentenConstraint.indexOf('_');
@@ -333,40 +328,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	}
 	
 	/**
-	 * Holt zu der übergebenen Id das gewünschte Attribut und gibt dieses zurück
-	 * 
-	 * @param id
-	 * @param attribute
-	 * @return
-	 * @throws RaplaContextException 
-	 * @throws EntityNotFoundException 
-	 */
-	protected Object getClassification(SimpleIdentifier id, String attribute) throws RaplaContextException, EntityNotFoundException {
-		StorageOperator lookup = getContext().lookup( StorageOperator.class);
-		//Veranstaltung als Objekt besorgen
-		Reservation veranstaltung = (Reservation) lookup.resolve(id);
-		
-		//Attribut auslesen & zurückgeben
-		return veranstaltung.getClassification().getValue(attribute);		
-	}
-	
-	/**
-	 * @param dozentenconstraint
-	 * @param allocatableverfügbarkeit
-	 * @param nebenbedingungen
-	 * @return
-	 */
-	protected String solveSchedule() {
-		return null;
-	}
-	
-	/**
-	 * @param dozentenVariable
-	 * @param allocatableVariable
-	 * @return
+	 * @param reservation
+	 * @return int[][]
 	 * @throws RaplaException 
 	 */
-	protected int[][] buildZuordnungDozentenVorlesung(ArrayList<Reservation> reservation) throws RaplaException {
+	private int[][] buildZuordnungDozentenVorlesung(ArrayList<Reservation> reservation) throws RaplaException {
 		Set<Allocatable> dozenten = new HashSet<Allocatable>();
 		ArrayList<Reservation> veranstaltungenOhneDozent = new ArrayList<Reservation>();
 		for (Reservation veranstaltung : reservation){
@@ -414,10 +380,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	
 	/**
 	 * @param reservation
-	 * @return
+	 * @return int[][]
 	 * @throws RaplaException 
 	 */
-	protected int[][] buildZuordnungKursVorlesung(ArrayList<Reservation> reservation) throws RaplaException{
+	private int[][] buildZuordnungKursVorlesung(ArrayList<Reservation> reservation) throws RaplaException{
 		Set<Allocatable> kurse = new HashSet<Allocatable>();
 		ArrayList<Reservation> veranstaltungenOhneKurse = new ArrayList<Reservation>();
 		for (Reservation veranstaltung : reservation){
@@ -466,28 +432,36 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	/**
 	 * @param reservationId
 	 * @param startNeu
-	 * @return
+	 * @return boolean
 	 */
-	protected boolean editReservation(SimpleIdentifier reservationId, Date startNeu) {
+	private boolean editReservation(SimpleIdentifier reservationId, Date startNeu) {
 		return false;
 	}
 	
 	/**
 	 * @param appointmentId
 	 * @param startNeu
-	 * @return
+	 * @return boolean
 	 */
-	protected boolean editAppointment(SimpleIdentifier appointmentId, Date startNeu) {
+	private boolean editAppointment(SimpleIdentifier appointmentId, Date startNeu) {
 		return false;
 	}
 
+    /* (non-Javadoc)
+	 * @see org.gnu.glpk.GLPK
+     * 
+     */
     @Override
     public boolean output(String str) {
         hookUsed = true;
         System.out.print(str);
         return false;
     }
-
+    
+    /* (non-Javadoc)
+	 * @see org.gnu.glpk.GLPK
+     * 
+     */
     @Override
     public void callback(glp_tree tree) {
         int reason = GLPK.glp_ios_reason(tree);
@@ -496,6 +470,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         }
     }
     
+    /**
+     * 
+     * @param data_file
+     * @param doz_vor
+     * @param kurs_vor
+     * @param vor_res
+     */
     private void aufbau_scheduler_data(String data_file, int[][] doz_vor, int[][] kurs_vor, int[][] vor_res){
     	String file = "data; \n";
     	
@@ -583,6 +564,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
     }
     
+    /**
+     * 
+     * @param mod_file
+     * @param sol_file
+     */
     private void aufbau_scheduler_mod(String mod_file, String sol_file) {
     	String file = "param f, symbolic := \"" + sol_file + "\"; \n\n";
     	file += "#Anzahl Vorlesungen\n";
@@ -629,6 +615,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
     }
     
+    /**
+     * 
+     * @param sol_file
+     * @return String
+     */
     private String auslese_Solution(String sol_file) {
     	String auslese = "";
 		String zeile; 
