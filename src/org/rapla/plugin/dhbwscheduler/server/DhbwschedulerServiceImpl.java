@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.gnu.glpk.GLPK;
@@ -90,8 +91,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		int vor_res[][];
 		int kurs_vor[][];
 		
-		Date start = new Date();   // #################### Auf jeden Fall noch zu füllen #############################
-		Date ende = new Date();    // #################### Auf jeden Fall noch zu füllen #############################
+		Date start = new Date();   // TODO: Auf jeden Fall noch zu füllen 
+		Date ende = new Date();    // TODO: Auf jeden Fall noch zu füllen 
 
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
 		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
@@ -203,6 +204,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				vor_res[i][j] = 1;
 			}
 		}
+		ArrayList<Reservation> veranstaltungenOhnePlanungsconstraints = new ArrayList<Reservation>();
 		int vorlesungNr = 0;
 		for (Reservation vorlesung : reservation) {
 			//get all resources from all reservations
@@ -230,15 +232,26 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			}
 			//get the planungsconstraints 
 			String planungsconstraint = vorlesung.getClassification().getValue("planungsconstraints").toString();
-			//get the slots blocked by the planungsconstraints
-			int[] belegteSlots = splitDozentenConstraint(planungsconstraint);
-			for(int i = 0; i < 10; i++){
-				//copy the blocking only if the slot turns from (not) allowed to not allowed
-				if(belegteSlots[i] == 0){
-					vor_res[vorlesungNr][i] = belegteSlots[i];
+			if(planungsconstraint.isEmpty()){
+				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
+			} else {
+				//get the slots blocked by the planungsconstraints
+				int[] belegteSlots = splitDozentenConstraint(planungsconstraint);
+				for(int i = 0; i < 10; i++){
+					//copy the blocking only if the slot turns from (not) allowed to not allowed
+					if(belegteSlots[i] == 0){
+						vor_res[vorlesungNr][i] = belegteSlots[i];
+					}
 				}
 			}
 			vorlesungNr++;
+		}
+		if(!(veranstaltungenOhnePlanungsconstraints.isEmpty())){
+			String veranstaltungenOhnePlanungsconstraintsListe = "";
+			for(Reservation r : veranstaltungenOhnePlanungsconstraints){
+				veranstaltungenOhnePlanungsconstraintsListe = veranstaltungenOhnePlanungsconstraints + r.getName(getLocale()) + "/n";
+			}
+			throw(new RaplaException("Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten: /n" + veranstaltungenOhnePlanungsconstraintsListe));
 		}
 		return vor_res;
 	}
@@ -331,18 +344,32 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param dozentenVariable
 	 * @param allocatableVariable
 	 * @return
+	 * @throws RaplaException 
 	 */
-	protected int[][] buildZuordnungDozentenVorlesung(ArrayList<Reservation> reservation) {
+	protected int[][] buildZuordnungDozentenVorlesung(ArrayList<Reservation> reservation) throws RaplaException {
 		Set<Allocatable> dozenten = new HashSet<Allocatable>();
+		ArrayList<Reservation> veranstaltungenOhneDozent = new ArrayList<Reservation>();
 		for (Reservation veranstaltung : reservation){
+			boolean hasProfessor = false;
 			//get all resources for all reservations
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
 			for (Allocatable a : ressourcen){
-				//if the resource is a professor, add it to the set (no duplicate elements allowed)
+				//TODO: if the resource is a professor, add it to the set (no duplicate elements allowed)
 				if(a.getClassification().getType().getName().toString().equals("ProfessorInnen")){
 					dozenten.add(a);
+					hasProfessor = true;
 				}
 			}
+			if(!hasProfessor){
+				veranstaltungenOhneDozent.add(veranstaltung);
+			}
+		}
+		if(!(veranstaltungenOhneDozent.isEmpty())){
+			String veranstaltungenOhneDozentenListe = "";
+			for(Reservation r : veranstaltungenOhneDozent){
+				veranstaltungenOhneDozentenListe = veranstaltungenOhneDozentenListe + r.getName(getLocale()) + "/n";
+			}
+			throw(new RaplaException("Bei folgenden Verantstaltungen fehlt ein Dozent: /n" + veranstaltungenOhneDozentenListe));
 		}
 		//build the array to assign the professors to their reservations 
 		int[][] doz_vor = new int[dozenten.size()][reservation.size()];
@@ -368,18 +395,32 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	/**
 	 * @param reservation
 	 * @return
+	 * @throws RaplaException 
 	 */
-	protected int[][] buildZuordnungKursVorlesung(ArrayList<Reservation> reservation){
+	protected int[][] buildZuordnungKursVorlesung(ArrayList<Reservation> reservation) throws RaplaException{
 		Set<Allocatable> kurse = new HashSet<Allocatable>();
+		ArrayList<Reservation> veranstaltungenOhneKurse = new ArrayList<Reservation>();
 		for (Reservation veranstaltung : reservation){
 			//get all resources for all reservations
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
+			boolean hasKurs = false;
 			for (Allocatable a : ressourcen){
 				if(a.getClassification().getType().getName().toString().equals("Kurs")){
 					//if the resource is a kurs, add it to the set (no duplicate elements allowed)
 					kurse.add(a);
+					hasKurs = true;
 				}
 			}
+			if(!hasKurs){
+				veranstaltungenOhneKurse.add(veranstaltung);
+			}
+		}
+		if(!(veranstaltungenOhneKurse.isEmpty())){
+			String veranstaltungenOhneKurseListe = "";
+			for(Reservation r : veranstaltungenOhneKurse){
+				veranstaltungenOhneKurseListe = veranstaltungenOhneKurseListe + r.getName(getLocale()) + "/n";
+			}
+			throw(new RaplaException("Bei folgenden Verantstaltungen fehlt ein Kurs: /n" + veranstaltungenOhneKurseListe));
 		}
 		//build the array to assign the kurse to their reservations 
 		int[][] kurs_vor = new int[kurse.size()][reservation.size()];
