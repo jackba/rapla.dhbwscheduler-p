@@ -50,7 +50,16 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 
 	int[][] timeSlots = {{},{},{0,1},{2,3},{4,5},{6,7},{8,9}};
     private boolean hookUsed = false;
-    
+	private String model = "scheduler_gmpl" + new Date().getTime() + ".mod";
+	private String data = "scheduler_data" + new Date().getTime() + ".dat";
+	private String solution = "scheduler_solution" + new Date().getTime() + ".dat";
+
+	private int doz_vor[][] = {{}};
+	private int vor_res[][] = {{}};
+	private int kurs_vor[][] = {{}};
+	private ArrayList<Reservation> reservations;
+	//TODO: Parameterlisten anpassen
+	
 	/**
 	 * @param context
 	 */
@@ -70,34 +79,15 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @see org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */
 	@Override
-	public String schedule(SimpleIdentifier[] reservationIds)  throws RaplaException {
-		String model = "scheduler_gmpl" + new Date().getTime() + ".mod";
-		String data = "scheduler_data" + new Date().getTime() + ".dat";
-		String solution = "scheduler_solution" + new Date().getTime() + ".dat";
-
-/*		int doz_vor[][] = { { 0, 0, 1, 1 }, { 1, 0, 0, 0 }, { 0, 1, 0, 0 } };
-		int vor_res[][] = { { 1, 0, 0, 0, 1, 0, 1, 0, 1, 0 },
-				{ 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 },
-				{ 1, 1, 0, 0, 1, 1, 0, 0, 1, 1 },
-				{ 1, 1, 0, 0, 1, 1, 0, 0, 1, 1 } };
-		int kurs_vor[][] = { { 1, 1, 0, 1 }, { 0, 0, 1, 0 }, { 1, 0, 0, 1 },
-				{ 0, 1, 0, 0 } };
-*/
-
-		int doz_vor[][] = {{}};
-		int vor_res[][] = {{}};
-		int kurs_vor[][] = {{}};
-		
-		String build_err = "";
-		
+	public String schedule(SimpleIdentifier[] reservationIds)  throws RaplaException {		
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
-		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
+		reservations = new ArrayList<Reservation>();
 		for ( SimpleIdentifier id :reservationIds)
 		{
 			RefEntity<?> object = lookup.resolve( id);
 			reservations.add( (Reservation) object);
 		}
-
+		
 		Calendar tmp = Calendar.getInstance(Locale.GERMAN);
 		tmp.set(Calendar.DAY_OF_MONTH, 6);
 		tmp.set(Calendar.MONTH, 1);
@@ -107,59 +97,37 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		tmp.set(Calendar.SECOND, 0);
 		tmp.set(Calendar.MILLISECOND, 0);
         
-		Date start = new Date(tmp.getTimeInMillis());   // TODO: Auf jeden Fall noch zu füllen 
+		Date startDatum = new Date(tmp.getTimeInMillis());   // TODO: Auf jeden Fall noch zu füllen 
 
 		tmp.set(Calendar.DAY_OF_MONTH, 10);
 
-		Date ende = new Date(tmp.getTimeInMillis());    // TODO: Auf jeden Fall noch zu füllen 
-
-		try {
-			doz_vor = buildZuordnungDozentenVorlesung(reservations);
-		} catch(RaplaException e) {
-			build_err = e.getMessage();
-		}
+		Date endeDatum = new Date(tmp.getTimeInMillis());    // TODO: Auf jeden Fall noch zu füllen 
 		
-		try {
-			kurs_vor = buildZuordnungKursVorlesung(reservations);
-		} catch(RaplaException e) {
-			build_err += e.getMessage();
-		}
+		//PRE-Processing
+		preProcessing(startDatum, endeDatum);
 		
-		try {
-			vor_res = buildAllocatableVerfuegbarkeit(start, ende, reservations);
-		} catch(RaplaException e) {
-			build_err += e.getMessage();
-		}
-		
-		if (!build_err.isEmpty()) {
-			throw new RaplaException(build_err);
-		}
-		
+		//Schedule
 		aufbau_scheduler_mod(model, solution);
 		
 		aufbau_scheduler_data(data, doz_vor, kurs_vor, vor_res);
     	
-        GLPK.glp_java_set_numeric_locale("C");
-        solve(model, data, solution);
+        solve();
         
-        String result = auslese_Solution(solution);
+        //POST-Processing
+        return postProcessing(startDatum, endeDatum);
         
-        //Dateien aufräumen
-        new File(model).delete();
-        new File(data).delete();
-        new File(solution).delete();
-        
-        return result; 
+//        return "Scheduler durchgeführt";         	
 	}
 	
-	private void solve(String model, String data, String solution) {
+	private void solve() throws RaplaException {
         glp_prob lp = null;
         glp_tran tran;
         glp_iocp iocp;
 
         int skip = 0;
         int ret;
-
+        GLPK.glp_java_set_numeric_locale("C");
+        
         // listen to callbacks
         GlpkCallback.addListener(this);
         // listen to terminal output
@@ -173,13 +141,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         if (ret != 0) {
             GLPK.glp_mpl_free_wksp(tran);
             GLPK.glp_delete_prob(lp);
-            throw new RuntimeException("Model file not found: " + model);
+            throw new RaplaException("Internal: Model file not found: " + model);
         }
         ret = GLPK.glp_mpl_read_data(tran, data);
         if (ret != 0) {
             GLPK.glp_mpl_free_wksp(tran);
             GLPK.glp_delete_prob(lp);
-            throw new RuntimeException("Data file not found: " + data);
+            throw new RaplaException("Internal: Data file not found: " + data);
         }
 
         // generate model
@@ -212,6 +180,54 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         }
     }
 	
+	/**
+	 * 
+	 * @param startDatum
+	 * @param endeDatum
+	 * @return
+	 */
+	private void preProcessing(Date startDatum, Date endeDatum) throws RaplaException{
+		String result = "";
+		
+		try {
+			doz_vor = buildZuordnungDozentenVorlesung(reservations);
+		} catch(RaplaException e) {
+			result += e.getMessage();
+		}
+		
+		try {
+			kurs_vor = buildZuordnungKursVorlesung(reservations);
+		} catch(RaplaException e) {
+			result += e.getMessage();
+		}
+		
+		try {
+			vor_res = buildAllocatableVerfuegbarkeit(startDatum, endeDatum, reservations);
+		} catch(RaplaException e) {
+			result += e.getMessage();
+		}
+		
+		if (!result.isEmpty()) {
+			throw new RaplaException(result);
+		}
+	}
+
+	/**
+	 * 
+	 * @param startDatum
+	 * @param endeDatum
+	 */
+	private String postProcessing(Date startDatum, Date endeDatum) {
+        String result = auslese_Solution(solution);
+        
+        //Dateien aufräumen
+        new File(model).delete();
+        new File(data).delete();
+        new File(solution).delete();
+        
+        return result;
+	}
+	
 	
 	/**
 	 * @param start
@@ -231,6 +247,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @return int[][]
 	 * @throws RaplaException 
 	 */
+	
 	private int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, ArrayList<Reservation> reservation) throws RaplaException {
 		//build array, first all times are allowed
 		int[][] vor_res = new int[reservation.size()][10];
