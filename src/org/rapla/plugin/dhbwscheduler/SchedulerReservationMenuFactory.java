@@ -298,7 +298,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 											+ " " + r.getPersons()[t].getClassification().getValue("firstname").toString());
 
 									bt[i] = new RaplaButton();
-									bt[i].setText("Link öffnen");
+									bt[i].setText(getString("Link_oeffnen2"));
+									bt[i].setToolTipText(getString("Link_oeffnen"));
 									urlField[i] = new JTextField();
 									urlField[i].setText(getUrl(r,pID.getKey()));
 									urlField[i].setSize(100, 20);
@@ -458,10 +459,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						//Dozent.getClassification().getValue("");
 						if(isPerson){	
 							String studiengang = "";
-							for (int i=0;i<r.getResources().length;i++)
+							if (r.getClassification().getValue("studiengang")!=null)
 							{
-								studiengang = (String) r.getResources()[i].getClassification().getValue("abteilung").toString();
-								if (studiengang.contains(" "))
+								studiengang = r.getClassification().getValue("studiengang").toString();
 								{
 									int pos = studiengang.indexOf(" ");
 									studiengang = studiengang.substring(0, pos);
@@ -485,8 +485,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									getString("email_Signatur") + "\n" + 
 									getUser().getName() + "\n"; 
 							//getUser().getEmail();
-
-
 
 							createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
 							//Link generieren

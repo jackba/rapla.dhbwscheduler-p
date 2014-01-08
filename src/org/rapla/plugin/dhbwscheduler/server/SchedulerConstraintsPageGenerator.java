@@ -113,9 +113,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 						{
 							kursName = "";
 						}
-						if (veranstaltung.getResources()[i].getClassification().getValue("abteilung")!=null)
+						if (veranstaltung.getClassification().getValue("studiengang")!=null)
 						{
-							studiengang = veranstaltung.getResources()[i].getClassification().getValue("abteilung").toString();
+							studiengang = veranstaltung.getClassification().getValue("studiengang").toString();
 							if (studiengang.contains(" "))
 							{
 								int pos = studiengang.indexOf(" ");

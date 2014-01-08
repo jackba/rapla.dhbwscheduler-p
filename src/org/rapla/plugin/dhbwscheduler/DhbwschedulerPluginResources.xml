@@ -27,10 +27,18 @@
 	</entry>
 	<entry key="email_Inhalt">
 		<text lang="en">please do the planning for the following course: </text>
-		<text lang="de">bitte nehmen Sie die Planung für folgende Veranstaltung: </text>
+		<text lang="de">bitte nehmen Sie die Planung für folgendeVeranstaltung: </text>
 	</entry>
 	<entry key="email_Signatur">
 		<text lang="en">Best regards </text>
 		<text lang="de">Mit freundlichen Grüßen </text>
+	</entry>
+	<entry key="Link_oeffnen">
+		<text lang="en">Link will open in dafault browser</text>
+		<text lang="de">Link wird im Standardbrowser geöffnet</text>
+	</entry>
+	<entry key="Link_oeffnen2">
+		<text lang="en">Open Link</text>
+		<text lang="de">Link öffnen</text>
 	</entry>
 </resources>
