@@ -1,12 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?><!--*- coding: utf-8 -*-->
+<?xml version="1.0" encoding="utf-8"?><!--*- coding: utf-8 -* -->
 <!DOCTYPE resources SYSTEM "../../components/xmlbundle/resources.dtd">
 <resources default="en">
-  <entry key="scheduler_help">
-    <text lang="en">english helptext</text>
-    <text lang="de">deutscher Hilfeext</text>
-  </entry>
-  <entry key="html_welcome_text">
-    <text lang="en"><h1>Hello!</h1></text>
-    <text lang="de"><h1>Guten Tag!</h1></text>
-  </entry>
+	<entry key="scheduler_help">
+		<text lang="en">english helptext</text>
+		<text lang="de">deutscher Hilfeext</text>
+	</entry>
+	<entry key="html_welcome_text">
+		<text lang="en">
+			<h1>Hello!</h1>
+		</text>
+		<text lang="de">
+			<h1>Guten Tag!</h1>
+		</text>
+	</entry>
+	<entry key="email_anrede">
+		<text lang="en">Dear </text>
+		<text lang="de">Sehr geehrte(r) </text>
+	</entry>
+	<entry key="email_Betreff_Einladung">
+		<text lang="en">Invitation for </text>
+		<text lang="de">Einladung für </text>
+	</entry>
+	<entry key="email_Betreff_Erinnerung">
+		<text lang="en">Reminder for </text>
+		<text lang="de">Erinnerung für </text>
+	</entry>
+	<entry key="email_Inhalt">
+		<text lang="en">please do the planning for the following course: </text>
+		<text lang="de">bitte nehmen Sie die Planung für folgendeVeranstaltung: </text>
+	</entry>
+	<entry key="email_Signatur">
+		<text lang="en">Best regards </text>
+		<text lang="de">Mit freundlichen Grüßen </text>
+	</entry>
+	<entry key="Link_oeffnen">
+		<text lang="en">Link will open in dafault browser</text>
+		<text lang="de">Link wird im Standardbrowser geöffnet</text>
+	</entry>
+	<entry key="Link_oeffnen2">
+		<text lang="en">Open Link</text>
+		<text lang="de">Link öffnen</text>
+	</entry>
 </resources>

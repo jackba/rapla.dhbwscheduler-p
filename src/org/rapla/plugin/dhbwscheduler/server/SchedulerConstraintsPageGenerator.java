@@ -53,7 +53,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		response.setContentType("content-type text/html");
 
 		java.io.PrintWriter out = response.getWriter();
-		
+
 		String dozent = "Unbekannt";			//Name Dozent
 		String semester ="?";					//Zahl des Semesters (Beispiel: 2.)
 		String studiengang = "Unbekannt";		//Studiengang
@@ -69,7 +69,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
 		int dayTimeStart = 8;					//Benötigt zum Aufbauen der Stundentabelle
 		int dayTimeEnd = 18;					//Benötigt zum Aufbauen der Stundentabelle		
-		
+
 		String eventId = request.getParameter("id");	//ID der Veranstaltung
 		String dozentId = request.getParameter("dozent");	//ID des Dozenten
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
@@ -94,7 +94,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 					{
 						dozent = dozent + " " + veranstaltung.getPersons()[i].getClassification().getValue("surname").toString();
 					}
-					
+
 
 				}
 			}
@@ -113,9 +113,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 						{
 							kursName = "";
 						}
-						if (veranstaltung.getResources()[i].getClassification().getValue("abteilung")!=null)
+						if (veranstaltung.getClassification().getValue("studiengang")!=null)
 						{
-							studiengang = veranstaltung.getResources()[i].getClassification().getValue("abteilung").toString();
+							studiengang = veranstaltung.getClassification().getValue("studiengang").toString();
 							if (studiengang.contains(" "))
 							{
 								int pos = studiengang.indexOf(" ");
@@ -134,7 +134,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 							kursName = kursName + "/" + veranstaltung.getResources()[i].getClassification().getValue("name").toString();
 						}
 					}
-					
+
 				}
 			}
 			beginZeit = veranstaltung.getFirstDate().toLocaleString();
@@ -148,7 +148,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		out.println("<!DOCTYPE html>"); // we have HTML5 
 		out.println("<html>");
 		out.println("<head>");
@@ -168,7 +168,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("				Planung des "+semester+". Semesters " + studiengang + "</br>");
 		out.print("				Kurs " + kursName + ", "+beginZeit+" bis "+endZeit+" (Ende der Vorlesungszeit: "+vorlesungsZeit+")");
 		out.println("		</h3>");
-		
+
 		out.println("		<table id='tableForm1'>");
 		out.print("				<tr>");
 		out.print("					<th>Dozent/in:</td>");
@@ -179,9 +179,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("					<td><input disabled='disabled' type='text' value='" + veranst + "'/></td>");
 		out.print("				</tr>");
 		out.println("		</table>");
-		
+
 		out.println("		<p>Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&auml;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:</p>");
-		
+
 		out.println("		<input id='inpKontaktdaten' type='text' value='' list='kontaktdaten'/>");
 		out.println("		<datalist id='kontaktdaten'>");
 		out.print("				<option value='E-mail'/>");
@@ -190,13 +190,13 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("				<option value='Adresse'/>");
 		out.print("				<option value='Firma'/>");
 		out.println("		</datalist>");
-		
+
 		out.println("		<p><b>1.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
 		out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' max='10' value='"+stunden+"'/>");
 		out.println("		<label for='inpVorlesungsstunden'>Vorlesungsstunden</label>");
-		
+
 		out.println("		<p>Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:</p>");
-		
+
 		out.println("		<p><b>2.</b>Setzen Sie ein <b>- (Minus)</b> in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</p>");
 		out.println("		<p><b>3.</b>Setzen Sie ein <b>+ (Plus)</b> in alle Zeitfelder, die f&uuml;r Sie besonders angenehm sind!</p>");
 		out.println("		<table id='timeTable'>");
@@ -236,9 +236,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 		out.println(" 			</tbody>");
 		out.println("		</table>");
-		
-		
-		
+
+
+
 		out.println("		<p><b>4.</b>  Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
 		//Datum für input type=date (id=inpDatepicker) formatieren
 		try{
@@ -260,10 +260,10 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("			<label for='cbYes'>Ja</label>");
 		out.print("			<input id='cbNo' type='checkbox' group='cbGroupKlausur' value='0' checked='checked'/>");
 		out.print("			<label for='cbNo'>Nein</label>");
-		
+
 		out.println("		<p>Platz f&uuml;r weitere Bemerkungen :</p>");
 		out.println("		<textarea id='taBemerkungen' rows='5' col='65'>"+bemerkung+"</textarea>");
-		
+
 		out.print("			<input id='btnSubmit' type='button' value='Flickis Submitbutton'");
 		out.println("	</div>");
 		out.println("</body>");
