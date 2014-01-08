@@ -86,13 +86,15 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				{ 0, 1, 0, 0 } };
 */
 
-		int doz_vor[][];
-		int vor_res[][];
-		int kurs_vor[][];
+		int doz_vor[][] = {{}};
+		int vor_res[][] = {{}};
+		int kurs_vor[][] = {{}};
 		
 		Date start = new Date();   // #################### Auf jeden Fall noch zu füllen #############################
 		Date ende = new Date();    // #################### Auf jeden Fall noch zu füllen #############################
 
+		String build_err = "";
+		
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
 		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 		for ( SimpleIdentifier id :reservationIds)
@@ -101,9 +103,27 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			reservations.add( (Reservation) object);
 		}
 		
-		doz_vor = buildZuordnungDozentenVorlesung(reservations);
-		kurs_vor = buildZuordnungKursVorlesung(reservations);
-		vor_res = buildAllocatableVerfuegbarkeit(start, ende, reservations);
+		try {
+			doz_vor = buildZuordnungDozentenVorlesung(reservations);
+		} catch(RaplaException e) {
+			build_err = e.getMessage();
+		}
+		
+		try {
+			kurs_vor = buildZuordnungKursVorlesung(reservations);
+		} catch(RaplaException e) {
+			build_err += e.getMessage();
+		}
+		
+		try {
+			vor_res = buildAllocatableVerfuegbarkeit(start, ende, reservations);
+		} catch(RaplaException e) {
+			build_err += e.getMessage();
+		}
+		
+		if (!build_err.isEmpty()) {
+			throw new RaplaException(build_err);
+		}
 		
 		aufbau_scheduler_mod(model, solution);
 		
