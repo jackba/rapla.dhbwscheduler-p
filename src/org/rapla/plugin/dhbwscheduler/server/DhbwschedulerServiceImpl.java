@@ -130,6 +130,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         solve(model, data, solution);
         
         String result = auslese_Solution(solution);
+        
+        //Dateien aufräumen
+        new File(model).delete();
+        new File(data).delete();
+        new File(solution).delete();
+        
         return result; 
 	}
 	
