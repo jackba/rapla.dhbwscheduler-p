@@ -194,11 +194,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Entity event = selectedReservations.get( 0);
 						Reservation editableEvent = getClientFacade().edit( event);
 						// do something with the reservation
-						String design_status = (String) editableEvent.getClassification().getValue("planungsstatus");
-						if (design_status != planning_closed) {
-							editableEvent.getClassification().setValue("Planungsstatus", planning_closed);
-						}
-						getClientFacade().store( editableEvent );
 						setDesignStatus(editableEvent, planning_closed);
 						createMessage("Plannung geschlossen", 200, 100, "Planungsstatus", menuContext);
 
