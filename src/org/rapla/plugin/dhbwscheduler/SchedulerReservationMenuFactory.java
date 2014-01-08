@@ -56,6 +56,8 @@ import org.rapla.gui.toolkit.RaplaMenuItem;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
+import org.rapla.plugin.mail.MailException;
+import org.rapla.plugin.mail.server.MailapiClient;
 import org.rapla.plugin.urlencryption.*;
 import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
 
@@ -460,6 +462,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							String studiengang = "";
 							for (int i=0;i<r.getResources().length;i++)
 							{
+								
 								studiengang = (String) r.getResources()[i].getClassification().getValue("abteilung").toString();
 								if (studiengang.contains(" "))
 								{
@@ -486,7 +489,14 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									getUser().getName() + "\n"; 
 							//getUser().getEmail();
 
-
+							MailapiClient mailClient = new MailapiClient();
+							try {
+								mailClient.sendMail("flickinger@gmx.de", email, betreff, Inhalt);
+							} catch (MailException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
 
 							createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
 							//Link generieren
