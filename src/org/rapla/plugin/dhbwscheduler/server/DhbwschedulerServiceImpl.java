@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.gnu.glpk.GLPK;
@@ -87,9 +88,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		int vor_res[][] = {{}};
 		int kurs_vor[][] = {{}};
 		
-		Date start = new Date();   // TODO: Auf jeden Fall noch zu füllen 
-		Date ende = new Date();    // TODO: Auf jeden Fall noch zu füllen 
-
 		String build_err = "";
 		
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
@@ -99,7 +97,22 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			RefEntity<?> object = lookup.resolve( id);
 			reservations.add( (Reservation) object);
 		}
-		
+
+		Calendar tmp = Calendar.getInstance(Locale.GERMAN);
+		tmp.set(Calendar.DAY_OF_MONTH, 6);
+		tmp.set(Calendar.MONTH, 1);
+		tmp.set(Calendar.YEAR, 2014);
+		tmp.set(Calendar.HOUR_OF_DAY, 0);
+		tmp.set(Calendar.MINUTE, 0);
+		tmp.set(Calendar.SECOND, 0);
+		tmp.set(Calendar.MILLISECOND, 0);
+        
+		Date start = new Date(tmp.getTimeInMillis());   // TODO: Auf jeden Fall noch zu füllen 
+
+		tmp.set(Calendar.DAY_OF_MONTH, 10);
+
+		Date ende = new Date(tmp.getTimeInMillis());    // TODO: Auf jeden Fall noch zu füllen 
+
 		try {
 			doz_vor = buildZuordnungDozentenVorlesung(reservations);
 		} catch(RaplaException e) {
