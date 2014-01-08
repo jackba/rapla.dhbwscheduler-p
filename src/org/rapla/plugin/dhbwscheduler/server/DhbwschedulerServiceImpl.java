@@ -101,7 +101,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			reservations.add( (Reservation) object);
 		}
 		
-//		Reservation[] r = (Reservation[]) reservations.toArray();
 		doz_vor = buildZuordnungDozentenVorlesung(reservations);
 		kurs_vor = buildZuordnungKursVorlesung(reservations);
 		vor_res = buildAllocatableVerfuegbarkeit(start, ende, reservations);
@@ -196,7 +195,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @return
 	 * @throws RaplaException 
 	 */
-//	protected int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, Reservation[] reservation) throws RaplaException {
 	protected int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, ArrayList<Reservation> reservation) throws RaplaException {
 		//build array, first all times are allowed
 		int[][] vor_res = new int[reservation.size()][10];
@@ -240,10 +238,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 					vor_res[vorlesungNr][i] = belegteSlots[i];
 				}
 			}
-		    // Zwischenspeichern welche Reservierung mit welchem Index in den 
-			// Scheduler gegeben wird. Nötig um später das Ergebnis wieder der Reservierung zuordnen zu können
-//			reservations_scheduler[vorlesungNr] = vorlesung;
-			
 			vorlesungNr++;
 		}
 		return vor_res;
@@ -338,7 +332,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param allocatableVariable
 	 * @return
 	 */
-//	protected int[][] buildZuordnungDozentenVorlesung(Reservation[] reservation) {
 	protected int[][] buildZuordnungDozentenVorlesung(ArrayList<Reservation> reservation) {
 		Set<Allocatable> dozenten = new HashSet<Allocatable>();
 		for (Reservation veranstaltung : reservation){
@@ -351,12 +344,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				}
 			}
 		}
-//		Allocatable[] dozentenArray = (Allocatable[]) dozenten.toArray();
 		//build the array to assign the professors to their reservations 
-//		int[][] doz_vor = new int[dozentenArray.length][reservation.length];
 		int[][] doz_vor = new int[dozenten.size()][reservation.size()];
 		int i = 0;
-//		for (Allocatable a : dozentenArray){
 		for (Allocatable a : dozenten){
 			int j = 0;
 			for(Reservation veranstaltung : reservation){
@@ -379,7 +369,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param reservation
 	 * @return
 	 */
-//	protected int[][] buildZuordnungKursVorlesung(Reservation[] reservation){
 	protected int[][] buildZuordnungKursVorlesung(ArrayList<Reservation> reservation){
 		Set<Allocatable> kurse = new HashSet<Allocatable>();
 		for (Reservation veranstaltung : reservation){
@@ -392,12 +381,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				}
 			}
 		}
-//		Allocatable[] kursArray = (Allocatable[]) kurse.toArray();
 		//build the array to assign the kurse to their reservations 
-//		int[][] kurs_vor = new int[kursArray.length][reservation.length];
 		int[][] kurs_vor = new int[kurse.size()][reservation.size()];
 		int i = 0;
-//		for (Allocatable a : kursArray){
 		for (Allocatable a : kurse){
 			int j = 0;
 			for(Reservation veranstaltung : reservation){
