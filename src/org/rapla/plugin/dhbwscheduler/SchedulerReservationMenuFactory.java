@@ -485,17 +485,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		//		String strBegin = selectedReservation.getFirstDate().toString();
 		//		String strEnd = selectedReservation.getMaxEnd().toString();
 
-		//		try {
-		//			strId = URLEncoder.encode(strId,"UTF-8");
-		//			strName = URLEncoder.encode(strName, "UTF-8");
-		//			strKurs = URLEncoder.encode(strKurs, "UTF-8");
-		//			strDozent = URLEncoder.encode(strDozent, "UTF-8");
-		//			strBegin = URLEncoder.encode(strBegin, "UTF-8");
-		//			strEnd = URLEncoder.encode(strEnd, "UTF-8");
-		//		} catch (UnsupportedEncodingException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
 		String result;
 		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
 		//				+ "&name=" + strName + "&kurs=" + strKurs + "&dozent=" + strDozent
@@ -504,13 +493,13 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		//		+ "&dozent=" + String.valueOf(dozentId);
 
 		//Dynamische Generierung "Servername:Port"
-        StartupEnvironment env = getService( StartupEnvironment.class );
-        //Dynamische Generierung "webpage"
-        
-        URL codeBase;
+		StartupEnvironment env = getService( StartupEnvironment.class );
+		//Dynamische Generierung "webpage"
+
+		URL codeBase;
 		UrlEncryption webservice;
 		String key;
-        try {
+		try {
 			codeBase = env.getDownloadURL();
 			result = codeBase + "rapla?page=scheduler-constraints&id=" + strId + "&dozent=" + String.valueOf(dozentId);
 			webservice = getWebservice(UrlEncryption.class);
@@ -526,7 +515,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			e.printStackTrace();
 			return "Error";
 		}
-		}
+	}
 
 
 	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
