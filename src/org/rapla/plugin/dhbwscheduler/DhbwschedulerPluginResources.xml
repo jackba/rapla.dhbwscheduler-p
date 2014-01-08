@@ -9,4 +9,24 @@
     <text lang="en"><h1>Hello!</h1></text>
     <text lang="de"><h1>Guten Tag!</h1></text>
   </entry>
+  <entry key="email_anrede">
+    <text lang="en">Dear </text>
+    <text lang="de">Sehr geehrte(r) </text>
+  </entry>
+  <entry key="email_Betreff_Einladung">
+    <text lang="en">Invitation for </text>
+    <text lang="de">Einladung für </text>
+  </entry>
+  <entry key="email_Betreff_Erinnerung">
+    <text lang="en">Reminder for </text>
+    <text lang="de">Erinnerung für </text>
+  </entry>
+  <entry key="email_Inhalt">
+    <text lang="en">please do the planning for the following course: </text>
+    <text lang="de">bitte nehmen Sie die Planung für folgende Veranstaltung vor: </text>
+  </entry>
+  <entry key="email_Signatur">
+    <text lang="en">Best regards </text>
+    <text lang="de">Mit freundlichen Grüßen </text>
+  </entry>
 </resources>

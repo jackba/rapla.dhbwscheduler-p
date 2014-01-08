@@ -31,6 +31,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.rapla.entities.Entity;
+import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.RaplaObject;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
@@ -54,6 +55,7 @@ import org.rapla.gui.toolkit.RaplaButton;
 import org.rapla.gui.toolkit.RaplaMenuItem;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.servletpages.RaplaPageGenerator;
+import org.rapla.storage.StorageOperator;
 import org.rapla.plugin.urlencryption.*;
 import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
 
@@ -69,6 +71,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	{
 		super( context );
 		this.service = service;
+		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 
 	public RaplaMenuItem[] create( final MenuContext menuContext, final RaplaObject focusedObject )
@@ -372,17 +375,20 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-
+					boolean reminder = false;
 					//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
 					for (Reservation r : selectedReservations)
 					{
 						//Überprüfung ob es nötig ist eine E-Mail zu versenden.
-						if(EmailVersendeBerechtigung(r)){
+						if(EmailVersendeBerechtigung(r,reminder)){
 
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
 							{
-								Sende_mail(r,r.getPersons()[t]);
+								
+								Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
+								SimpleIdentifier pID = (SimpleIdentifier) pTest;
+								Sende_mail(r,pID,reminder);
 							}
 						}
 
@@ -393,13 +399,13 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				/*
 				 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
 				 */
-				private boolean EmailVersendeBerechtigung(Reservation r) {
+				private boolean EmailVersendeBerechtigung(Reservation r,boolean reminder) {
 
 					String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
 					boolean returnvalue = false;
 
-					if(r.getClassification().getValue("Planungsstatus").equals(planning_closed) ||
-							r.getClassification().getValue("Planungsstatus").equals(closed)){
+					if(r.getClassification().getValue("planungsstatus").equals(planning_closed) ||
+							r.getClassification().getValue("planungsstatus").equals(closed)){
 						returnvalue = false;
 					}else{
 						switch(erfassungsstatus){
@@ -408,6 +414,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							break;
 						case "eingeladen":
 							returnvalue = true;
+							reminder=true;
 							break;
 						case "erfasst":
 							returnvalue = false;
@@ -421,17 +428,70 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					return returnvalue;
 				}
 
-				private void Sende_mail(Reservation r, Allocatable Dozent) {
+				private void Sende_mail(Reservation r, SimpleIdentifier pID,boolean reminder) {
 					// TODO Auto-generated method stub
-					if (Dozent.isPerson()){
+					try {
+						//StorageOperator lookup = getContext().lookup( StorageOperator.class);
+						//Allocatable Dozent = (Allocatable) lookup.resolve(pID);
+						boolean isPerson = false;
+						String email = "";
+						String name = "";
+						String vorname = "";
+						String titel = "";
+						//String Anrede;
+						
+						for(int i = 0 ; i<r.getPersons().length; i++){
+							Comparable pTest = ((RefEntity<?>) r.getPersons()[i]).getId();
+							SimpleIdentifier dID = (SimpleIdentifier) pTest;
+		
+							if(dID.getKey() == pID.getKey()){
+								isPerson 	= r.getPersons()[i].isPerson();
+								email		= (String) r.getPersons()[i].getClassification().getValue("email");
+								name		= (String) r.getPersons()[i].getClassification().getValue("surname");
+								vorname		= (String) r.getPersons()[i].getClassification().getValue("firstname");
+								titel 		= (String) r.getPersons()[i].getClassification().getValue("title");
+								break;
+							}
+								
+						}
+						
+						//Dozent.getClassification().getValue("");
+						if(isPerson){	
+							
+							String studiengang 			= (String) r.getClassification().getValue("abteilung").toString();
+							String veranstaltungstitel 	= (String) r.getClassification().getValue("title");
+							String betreff;
+							String url = getUrl(r,pID.getKey());
+							
+							if(reminder){
+								betreff = getString("email_Betreff_Erinnerung");
+							}else{
+								betreff = getString("email_Betreff_Einladung");
+							}
+							betreff += veranstaltungstitel;
+							
+							 
+							String Inhalt = getString("email_anrede") + titel + vorname + name + ",\n\n" + 
+											getString("email_Inhalt") + "\n\n" + 
+											studiengang + ", " + veranstaltungstitel + "\n"  +
+											url + "\n\n" +
+											getString("email_Signatur") + "\n" + 
+											getUser().getName() + "\n"; 
+											//getUser().getEmail();
+											
+							
+												
+							createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
+							//Link generieren
+							// Text einfügen
+							//Senden!
 
-						;
-						//Link generieren
-						// Text einfügen
-						//Senden!
-
-					}else{
-						return;
+						}else{
+							;
+						}
+					} catch ( RaplaException | UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 
 				}
