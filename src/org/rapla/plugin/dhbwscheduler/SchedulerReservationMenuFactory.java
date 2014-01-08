@@ -385,7 +385,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
 							{
-								
+
 								Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
 								SimpleIdentifier pID = (SimpleIdentifier) pTest;
 								Sende_mail(r,pID,reminder);
@@ -439,11 +439,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						String vorname = "";
 						String titel = "";
 						//String Anrede;
-						
+
 						for(int i = 0 ; i<r.getPersons().length; i++){
 							Comparable pTest = ((RefEntity<?>) r.getPersons()[i]).getId();
 							SimpleIdentifier dID = (SimpleIdentifier) pTest;
-		
+
 							if(dID.getKey() == pID.getKey()){
 								isPerson 	= r.getPersons()[i].isPerson();
 								email		= (String) r.getPersons()[i].getClassification().getValue("email");
@@ -452,35 +452,42 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								titel 		= (String) r.getPersons()[i].getClassification().getValue("title");
 								break;
 							}
-								
+
 						}
-						
+
 						//Dozent.getClassification().getValue("");
 						if(isPerson){	
-							
-							String studiengang 			= (String) r.getClassification().getValue("abteilung").toString();
+							String studiengang = "";
+							for (int i=0;i<r.getResources().length;i++)
+							{
+								studiengang = (String) r.getResources()[i].getClassification().getValue("abteilung").toString();
+								if (studiengang.contains(" "))
+								{
+									int pos = studiengang.indexOf(" ");
+									studiengang = studiengang.substring(0, pos);
+								}
+							}
 							String veranstaltungstitel 	= (String) r.getClassification().getValue("title");
 							String betreff;
 							String url = getUrl(r,pID.getKey());
-							
+
 							if(reminder){
 								betreff = getString("email_Betreff_Erinnerung");
 							}else{
 								betreff = getString("email_Betreff_Einladung");
 							}
 							betreff += veranstaltungstitel;
-							
-							 
+
 							String Inhalt = getString("email_anrede") + titel + vorname + name + ",\n\n" + 
-											getString("email_Inhalt") + "\n\n" + 
-											studiengang + ", " + veranstaltungstitel + "\n"  +
-											url + "\n\n" +
-											getString("email_Signatur") + "\n" + 
-											getUser().getName() + "\n"; 
-											//getUser().getEmail();
-											
-							
-												
+									getString("email_Inhalt") + "\n\n" + 
+									veranstaltungstitel +  " (" + studiengang + ")" + "\n"  +
+									url + "\n\n" +
+									getString("email_Signatur") + "\n" + 
+									getUser().getName() + "\n"; 
+							//getUser().getEmail();
+
+
+
 							createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
 							//Link generieren
 							// Text einfügen
