@@ -94,19 +94,19 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		Date ende = new Date();    // #################### Auf jeden Fall noch zu füllen #############################
 
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
-		List<Reservation> reservations = new ArrayList<Reservation>();
+		ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 		for ( SimpleIdentifier id :reservationIds)
 		{
 			RefEntity<?> object = lookup.resolve( id);
 			reservations.add( (Reservation) object);
 		}
 		
-		Reservation[] r = (Reservation[]) reservations.toArray();
-		doz_vor = buildZuordnungDozentenVorlesung(r);
-		kurs_vor = buildZuordnungKursVorlesung(r);
-		vor_res = buildAllocatableVerfuegbarkeit(start, ende, r);
+//		Reservation[] r = (Reservation[]) reservations.toArray();
+		doz_vor = buildZuordnungDozentenVorlesung(reservations);
+		kurs_vor = buildZuordnungKursVorlesung(reservations);
+		vor_res = buildAllocatableVerfuegbarkeit(start, ende, reservations);
 		
-		aufbau_scheduler_mod(model);
+		aufbau_scheduler_mod(model, solution);
 		
 		aufbau_scheduler_data(data, doz_vor, kurs_vor, vor_res);
     	
@@ -130,7 +130,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         // listen to terminal output
         GlpkTerminal.addListener(this);
 
-        lp = GLPK.glp_create_prob();
+        lp = GLPK.glp_create_prob(); 
 //        System.out.println("Problem created");
 
         tran = GLPK.glp_mpl_alloc_wksp();
@@ -196,10 +196,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @return
 	 * @throws RaplaException 
 	 */
-	protected int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, Reservation[] reservation) throws RaplaException {
+//	protected int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, Reservation[] reservation) throws RaplaException {
+	protected int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende, ArrayList<Reservation> reservation) throws RaplaException {
 		//build array, first all times are allowed
-		int[][] vor_res = new int[reservation.length][10];
-		for (int i = 0; i < reservation.length; i++){
+		int[][] vor_res = new int[reservation.size()][10];
+		for (int i = 0; i < reservation.size(); i++){
 			for (int j = 0; j < 10; j++){
 				vor_res[i][j] = 1;
 			}
@@ -241,7 +242,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			}
 		    // Zwischenspeichern welche Reservierung mit welchem Index in den 
 			// Scheduler gegeben wird. Nötig um später das Ergebnis wieder der Reservierung zuordnen zu können
-			reservations_scheduler[vorlesungNr] = vorlesung;
+//			reservations_scheduler[vorlesungNr] = vorlesung;
 			
 			vorlesungNr++;
 		}
@@ -337,23 +338,26 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param allocatableVariable
 	 * @return
 	 */
-	protected int[][] buildZuordnungDozentenVorlesung(Reservation[] reservation) {
+//	protected int[][] buildZuordnungDozentenVorlesung(Reservation[] reservation) {
+	protected int[][] buildZuordnungDozentenVorlesung(ArrayList<Reservation> reservation) {
 		Set<Allocatable> dozenten = new HashSet<Allocatable>();
 		for (Reservation veranstaltung : reservation){
 			//get all resources for all reservations
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
 			for (Allocatable a : ressourcen){
 				//if the resource is a professor, add it to the set (no duplicate elements allowed)
-				if(a.getClassification().getType().getName().toString() == "professor"){
+				if(a.getClassification().getType().getName().toString().equals("ProfessorInnen")){
 					dozenten.add(a);
 				}
 			}
 		}
-		Allocatable[] dozentenArray = (Allocatable[]) dozenten.toArray();
+//		Allocatable[] dozentenArray = (Allocatable[]) dozenten.toArray();
 		//build the array to assign the professors to their reservations 
-		int[][] doz_vor = new int[dozentenArray.length][reservation.length];
+//		int[][] doz_vor = new int[dozentenArray.length][reservation.length];
+		int[][] doz_vor = new int[dozenten.size()][reservation.size()];
 		int i = 0;
-		for (Allocatable a : dozentenArray){
+//		for (Allocatable a : dozentenArray){
+		for (Allocatable a : dozenten){
 			int j = 0;
 			for(Reservation veranstaltung : reservation){
 				//check, if the reservation has allocated the professor
@@ -375,23 +379,26 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param reservation
 	 * @return
 	 */
-	protected int[][] buildZuordnungKursVorlesung(Reservation[] reservation){
+//	protected int[][] buildZuordnungKursVorlesung(Reservation[] reservation){
+	protected int[][] buildZuordnungKursVorlesung(ArrayList<Reservation> reservation){
 		Set<Allocatable> kurse = new HashSet<Allocatable>();
 		for (Reservation veranstaltung : reservation){
 			//get all resources for all reservations
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
 			for (Allocatable a : ressourcen){
-				if(a.getClassification().getType().getName().toString() == "kurs"){
+				if(a.getClassification().getType().getName().toString().equals("Kurs")){
 					//if the resource is a kurs, add it to the set (no duplicate elements allowed)
 					kurse.add(a);
 				}
 			}
 		}
-		Allocatable[] kursArray = (Allocatable[]) kurse.toArray();
+//		Allocatable[] kursArray = (Allocatable[]) kurse.toArray();
 		//build the array to assign the kurse to their reservations 
-		int[][] kurs_vor = new int[kursArray.length][reservation.length];
+//		int[][] kurs_vor = new int[kursArray.length][reservation.length];
+		int[][] kurs_vor = new int[kurse.size()][reservation.size()];
 		int i = 0;
-		for (Allocatable a : kursArray){
+//		for (Allocatable a : kursArray){
+		for (Allocatable a : kurse){
 			int j = 0;
 			for(Reservation veranstaltung : reservation){
 				//check, if the reservation has allocated the kurs
@@ -529,8 +536,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
     }
     
-    private void aufbau_scheduler_mod(String mod_file) {
-    	String file = "param f, symbolic := \"scheduler_solution.dat\"; \n\n";
+    private void aufbau_scheduler_mod(String mod_file, String sol_file) {
+    	String file = "param f, symbolic := \"" + sol_file + "\"; \n\n";
     	file += "#Anzahl Vorlesungen\n";
     	file += "set I;\n";
     	file += "#Anzahl Kurse\n";
