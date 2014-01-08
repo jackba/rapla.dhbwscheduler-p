@@ -426,7 +426,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			boolean hasKurs = false;
 			for (Allocatable a : ressourcen){
 				if(a.getClassification().getType().getName().toString().equals("Kurs")){
-					//if the resource is a kurs, add it to the set (no duplicate elements allowed)
+					//TODO: if the resource is a kurs, add it to the set (no duplicate elements allowed)
 					kurse.add(a);
 					hasKurs = true;
 				}
