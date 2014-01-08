@@ -1,7 +1,9 @@
 package org.rapla.plugin.dhbwscheduler;
 
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -23,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -280,7 +283,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						JLabel[] label = new JLabel[felder];
 						JPanel panel = new JPanel();
 						panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-						JTextField[] urlField = new JTextField[felder];
+						
+						//JTextField[] urlField = new JTextField[felder];
+						JTextArea[] urlField = new JTextArea[felder];
 						RaplaButton[] copyButton = new RaplaButton[felder];
 						RaplaButton[] bt = new RaplaButton[felder];
 
@@ -293,7 +298,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 									Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
 									SimpleIdentifier pID = (SimpleIdentifier) pTest;
-
+									
 									label[i] = new JLabel();
 									label[i].setText("Veranstaltung: " + r.getName(getLocale()) + " Dozent: " 
 											+ r.getPersons()[t].getClassification().getValue("surname").toString()
@@ -302,7 +307,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									bt[i] = new RaplaButton();
 									bt[i].setText(getString("Link_oeffnen2"));
 									bt[i].setToolTipText(getString("Link_oeffnen"));
-									urlField[i] = new JTextField();
+									//urlField[i] = new JTextField();
+									urlField[i] = new JTextArea();
+									urlField[i].setWrapStyleWord(true);
+									urlField[i].setLineWrap(true);
 									urlField[i].setText(getUrl(r,pID.getKey()));
 									urlField[i].setSize(100, 20);
 									urlField[i].setEditable(false);
@@ -337,10 +345,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 										}
 
 									});
+									urlField[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+									Component placeHolder = Box.createVerticalStrut(20);
+									Component placeHolderl = Box.createVerticalStrut(5);
 									panel.add(label[i]);
+									panel.add(placeHolderl);
 									panel.add(urlField[i]);
 									panel.add(copyButton[i]);
 									panel.add(bt[i]);
+									panel.add(placeHolder);
 									i++;
 								}
 							}
@@ -434,14 +447,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				private void Sende_mail(Reservation r, SimpleIdentifier pID,boolean reminder) {
 					// TODO Auto-generated method stub
 					try {
-						//StorageOperator lookup = getContext().lookup( StorageOperator.class);
-						//Allocatable Dozent = (Allocatable) lookup.resolve(pID);
 						boolean isPerson = false;
 						String email = "";
 						String name = "";
 						String vorname = "";
 						String titel = "";
-						//String Anrede;
 
 						for(int i = 0 ; i<r.getPersons().length; i++){
 							Comparable pTest = ((RefEntity<?>) r.getPersons()[i]).getId();
@@ -455,7 +465,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								titel 		= (String) r.getPersons()[i].getClassification().getValue("title");
 								break;
 							}
-
+							
 						}
 
 						//Dozent.getClassification().getValue("");
