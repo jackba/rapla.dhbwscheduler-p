@@ -247,10 +247,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				}
 			}
 			//get the planungsconstraints 
-			String planungsconstraint = vorlesung.getClassification().getValue("planungsconstraints").toString();
-			if(planungsconstraint.isEmpty()){
+			Object constraintObj = vorlesung.getClassification().getValue("planungsconstraints");
+			if(constraintObj == null){
 				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
 			} else {
+				String planungsconstraint = constraintObj.toString();
 				//get the slots blocked by the planungsconstraints
 				int[] belegteSlots = splitDozentenConstraint(planungsconstraint);
 				for(int i = 0; i < 10; i++){
@@ -265,9 +266,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if(!(veranstaltungenOhnePlanungsconstraints.isEmpty())){
 			String veranstaltungenOhnePlanungsconstraintsListe = "";
 			for(Reservation r : veranstaltungenOhnePlanungsconstraints){
-				veranstaltungenOhnePlanungsconstraintsListe = veranstaltungenOhnePlanungsconstraints + r.getName(getLocale()) + "/n";
+				veranstaltungenOhnePlanungsconstraintsListe += r.getName(getLocale()) + "\n";
 			}
-			throw(new RaplaException("Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten: /n" + veranstaltungenOhnePlanungsconstraintsListe));
+			throw(new RaplaException("Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten: \n" + veranstaltungenOhnePlanungsconstraintsListe));
 		}
 		return vor_res;
 	}
@@ -353,9 +354,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if(!(veranstaltungenOhneDozent.isEmpty())){
 			String veranstaltungenOhneDozentenListe = "";
 			for(Reservation r : veranstaltungenOhneDozent){
-				veranstaltungenOhneDozentenListe = veranstaltungenOhneDozentenListe + r.getName(getLocale()) + "/n";
+				veranstaltungenOhneDozentenListe += r.getName(getLocale()) + "\n";
 			}
-			throw(new RaplaException("Bei folgenden Verantstaltungen fehlt ein Dozent: /n" + veranstaltungenOhneDozentenListe));
+			throw(new RaplaException("Bei folgenden Verantstaltungen fehlt ein Dozent: \n" + veranstaltungenOhneDozentenListe));
 		}
 		//build the array to assign the professors to their reservations 
 		int[][] doz_vor = new int[dozenten.size()][reservation.size()];
@@ -404,9 +405,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if(!(veranstaltungenOhneKurse.isEmpty())){
 			String veranstaltungenOhneKurseListe = "";
 			for(Reservation r : veranstaltungenOhneKurse){
-				veranstaltungenOhneKurseListe = veranstaltungenOhneKurseListe + r.getName(getLocale()) + "/n";
+				veranstaltungenOhneKurseListe += r.getName(getLocale()) + "\n";
 			}
-			throw(new RaplaException("Bei folgenden Verantstaltungen fehlt ein Kurs: /n" + veranstaltungenOhneKurseListe));
+			throw(new RaplaException("Bei folgenden Verantstaltungen fehlt ein Kurs: \n" + veranstaltungenOhneKurseListe));
 		}
 		//build the array to assign the kurse to their reservations 
 		int[][] kurs_vor = new int[kurse.size()][reservation.size()];
