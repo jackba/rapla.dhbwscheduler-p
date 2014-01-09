@@ -425,20 +425,18 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					boolean reminder = false;
 					//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
 					for (Reservation r : selectedReservations)
 					{
 						//Überprüfung ob es nötig ist eine E-Mail zu versenden.
-						if(EmailVersendeBerechtigung(r,reminder)){
+						if(EmailVersendeBerechtigung(r)){
 
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
 							{
-
 								Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
 								SimpleIdentifier pID = (SimpleIdentifier) pTest;
-								Sende_mail(r,pID,reminder);
+								Sende_mail(r,pID);
 							}
 						}
 
@@ -449,7 +447,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				/*
 				 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
 				 */
-				private boolean EmailVersendeBerechtigung(Reservation r,boolean reminder) {
+				private boolean EmailVersendeBerechtigung(Reservation r) {
 
 					String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
 					boolean returnvalue = false;
@@ -464,7 +462,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							break;
 						case "eingeladen":
 							returnvalue = true;
-							reminder=true;
 							break;
 						case "erfasst":
 							returnvalue = false;
@@ -478,10 +475,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					return returnvalue;
 				}
 
-				private void Sende_mail(Reservation r, SimpleIdentifier pID,boolean reminder) {
+				private void Sende_mail(Reservation r, SimpleIdentifier pID) {
 					// TODO Auto-generated method stub
 					try {
 						boolean isPerson = false;
+						boolean reminder = false;
 						String email = "";
 						String name = "";
 						String vorname = "";
@@ -517,7 +515,22 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							String veranstaltungstitel 	= (String) r.getClassification().getValue("title");
 							String betreff;
 							String url = getUrl(r,pID.getKey());
-
+							
+							String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
+							switch(erfassungsstatus){
+							case "uneingeladen":
+								reminder=false;
+								break;
+							case "eingeladen":
+								reminder=true;
+								break;
+							case "erfasst":
+								reminder=false;
+								break;
+							default:
+								break;
+							}
+							
 							if(reminder){
 								betreff = getString("email_Betreff_Erinnerung");
 							}else{

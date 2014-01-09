@@ -42,7 +42,7 @@
 		<text lang="de">Link öffnen</text>
 	</entry>
 	<entry key="Link_Text">
-		<text lang="en">Please make the planning via the following link:</text>
-		<text lang="de">Die Planung bitte über folgenden Link vornehmen:</text>
+		<text lang="en">via the following link:</text>
+		<text lang="de">über folgenden Link vornehmen:</text>
 	</entry>
 </resources>
