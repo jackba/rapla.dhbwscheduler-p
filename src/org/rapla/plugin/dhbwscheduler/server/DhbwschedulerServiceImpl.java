@@ -93,6 +93,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			}
 		}
 		
+		String postProcessingResults = "";
+		
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 		tmp.set(Calendar.DAY_OF_MONTH, 6);
 		tmp.set(Calendar.MONTH, 0);
@@ -102,43 +104,45 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		tmp.set(Calendar.SECOND, 0);
 		tmp.set(Calendar.MILLISECOND, 0);
         
-		Date startDatum = new Date(tmp.getTimeInMillis());   // TODO: Auf jeden Fall noch zu füllen 
+		Date startDatum = new Date(tmp.getTimeInMillis());   // TODO: Auf jeden Fall noch zu fuellen 
 
 		tmp.set(Calendar.DAY_OF_MONTH, 10);
 
-		Date endeDatum = new Date(tmp.getTimeInMillis());    // TODO: Auf jeden Fall noch zu füllen 
-		
-		long fiveDays = 5*24*60*60*1000;
-		
-		long sevenDays = 7*24*60*60*1000;
+		Date endeDatum = new Date(tmp.getTimeInMillis());    // TODO: Auf jeden Fall noch zu fuellen 
 		
 		Date anfangWoche = startDatum;
 		
-		Date endeWoche = new Date(anfangWoche.getTime() + fiveDays);
+		tmp.setTime(anfangWoche);
+	    tmp.add(Calendar.DAY_OF_YEAR, 5);
 		
+		Date endeWoche = new Date(tmp.getTimeInMillis());
+		
+	    //plane solange, wie der Anfang der neuen Woche vor dem Ende des Planungszyklus liegt		
 		while(anfangWoche.before(endeDatum)) {
 		
-		//PRE-Processing
-		preProcessing(anfangWoche, endeWoche);
-		
-		//Schedule
-		aufbau_scheduler_mod(model, solution);
-		
-		aufbau_scheduler_data(data, doz_vor, kurs_vor, vor_res);
-    	
-        solve();
+			//PRE-Processing
+			preProcessing(anfangWoche, endeWoche);
+			
+			//Schedule
+			aufbau_scheduler_mod(model, solution);
+			
+			aufbau_scheduler_data(data, doz_vor, kurs_vor, vor_res);
+	    	
+	        solve();
+	        
+	        //POST-Processing
+	        postProcessingResults += ("\n" + postProcessing(anfangWoche, endeWoche));
+	        
+	        //neue Woche planen
+	        tmp.setTime(anfangWoche);
+	        tmp.add(Calendar.DAY_OF_YEAR, 7);
+	        anfangWoche = new Date(tmp.getTimeInMillis());
+	        tmp.add(Calendar.DAY_OF_YEAR, 5);
+	        endeWoche = new Date(tmp.getTimeInMillis());
         
-        //POST-Processing
-        /*return */postProcessing(anfangWoche, endeWoche);
-        
-        //neue Woche planen
-        anfangWoche = new Date(anfangWoche.getTime() + sevenDays);
-        endeWoche = new Date(anfangWoche.getTime() + fiveDays);
-        
-      //plane solange, wie der Anfang der neuen Woche vor dem Ende des Planungszyklus liegt
 		}  
         
-        return "Scheduler durchgefuehrt";         	
+        return postProcessingResults;         	
 	}
 	
 	private void solve() throws RaplaException {
@@ -299,7 +303,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if (slot > 1) {
 			cal.add(Calendar.HOUR, (slot-1)*12);
 		}
-//TODO: getNextFreeTime + Constraints prüfen
+		//TODO: getNextFreeTime + Constraints prüfen
 		return new Date(cal.getTimeInMillis());
 	}
 	
