@@ -1,12 +1,14 @@
 package org.rapla.plugin.dhbwscheduler.server;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,14 +26,26 @@ import org.rapla.plugin.dhbwscheduler.*;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
 
-
+//@WebServlet(urlPatterns = {"/Test"})
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 
 	public SchedulerConstraintsPageGenerator(RaplaContext context,Configuration config) {
 		super(context);
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
+	
+	/*protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {         
 
+        PrintWriter out = response.getWriter();            
+        String descr = request.getParameter("comment");            
+        String[] myJsonData = request.getParameterValues("json[]");
+
+        String test = "test";
+
+       // response.sendRedirect("pasoServlet.jsp");
+    }*/
+	
 	public String getInformation(String[] feld, String suche)
 	{
 		String ergebnis = "";
@@ -44,7 +58,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		return ergebnis;
 	}
-
+	
 	public void generatePage(ServletContext context,
 			HttpServletRequest request, HttpServletResponse response)
 					throws IOException, ServletException 
@@ -282,6 +296,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
+	
 	public void storeIntoReservation(int reservationID, int[][] calendar, Date[] ausnahmeDatum, int DozentID) throws RaplaContextException, EntityNotFoundException
 	{
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);

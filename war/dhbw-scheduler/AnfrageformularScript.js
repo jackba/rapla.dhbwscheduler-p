@@ -1,15 +1,16 @@
 $('document').ready(function(){		
 	$('#btnSubmit').on('click',function(){
-		var objData={timeTableArray:formatArray(),datelist:getDatelist()};
+		var json={timeTableArray:formatArray(),datelist:getDatelist()};
 		var url=$('#hiddenUrl').val();
 		$.ajax({
-			 url: url,
+			 url: 'Test',
 		     type: 'POST',
-		     data: objData,
+		     data:	{json:json},
+		     datatype: json,
 		     success: function (data){
 		    	 alert("Gesendet");
 		     },
-		     error: function(){
+		     error: function(data){
 		    	 alert("Error");
 		     }		
 		});
