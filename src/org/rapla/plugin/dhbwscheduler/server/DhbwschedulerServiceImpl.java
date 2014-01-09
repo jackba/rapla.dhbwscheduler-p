@@ -596,6 +596,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
      */
     private void aufbau_scheduler_data(String data_file, int[][] doz_vor, int[][] kurs_vor, int[][] vor_res){
     	String file = "data; \n";
+    	if( doz_vor.length == 0 || kurs_vor.length == 0 || vor_res.length == 0 ) {
+    		return;
+    	}
     	
     	//Anzahl Vorlesungen
     	file += "set I :=";
