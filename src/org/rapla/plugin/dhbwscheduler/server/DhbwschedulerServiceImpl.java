@@ -28,14 +28,17 @@ import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
+import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
+import org.rapla.facade.ModificationModule;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
+import org.rapla.gui.ReservationController;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
 import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
@@ -88,9 +91,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			reservations.add( (Reservation) object);
 		}
 		
-		Calendar tmp = Calendar.getInstance(Locale.GERMAN);
+		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 		tmp.set(Calendar.DAY_OF_MONTH, 6);
-		tmp.set(Calendar.MONTH, 1);
+		tmp.set(Calendar.MONTH, 0);
 		tmp.set(Calendar.YEAR, 2014);
 		tmp.set(Calendar.HOUR_OF_DAY, 0);
 		tmp.set(Calendar.MINUTE, 0);
@@ -217,17 +220,70 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param startDatum
 	 * @param endeDatum
 	 */
-	private String postProcessing(Date startDatum, Date endeDatum) {
-        String result = auslese_Solution(solution);
+	private String postProcessing(Date startDatum, Date endeDatum) throws RaplaContextException, RaplaException {
+        String solutionString = auslese_Solution(solution);
+        String result = "";
+		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
+		
+        Date newStart = new Date(tmp.getTimeInMillis());
+        
+        int[][] solRes = splitSolution(solutionString);
+        
+        for(int i = solRes.length-1; i >= 0 ;i--) {
+        	Reservation reservation = reservations.get(solRes[i][0]);
+        	result += reservation.getClassification().getName(getLocale()) + ": " + solRes[i][1] + "\n";
+        	reservation = getClientFacade().edit(reservation);
+        	Appointment appointment = reservation.getAppointments()[0];
+        	newStart = setStartDate(solRes[i][1], startDatum);
+    		appointment.move(newStart);
+    		getClientFacade().store(reservation);
+    		reservations.remove(solRes[i][0]);
+        }
         
         //Dateien aufräumen
         new File(model).delete();
         new File(data).delete();
         new File(solution).delete();
-        
+
         return result;
+        //return solutionString;
 	}
 	
+	/**
+	 * 
+	 * @param solution
+	 * @return
+	 */
+	private int[][] splitSolution(String solutionString){
+		String[] solReservations = solutionString.split("\n");
+		
+		int[][] solutionArray = new int[solReservations.length][2];
+		int i = 0;
+		
+		for(String solRes : solReservations){
+				solutionArray[i][0] = Integer.valueOf(solRes.substring(0, solRes.indexOf(",")).trim());
+				solutionArray[i][1] = Integer.valueOf(solRes.substring(solRes.indexOf(",")+1 ).trim());
+				i++;
+		}
+		
+		return solutionArray;
+	}
+	
+	/**
+	 * 
+	 * @param slot
+	 * @return
+	 */
+	private Date setStartDate(int slot, Date startDate) {
+		
+		Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
+		cal.setTimeInMillis(startDate.getTime());
+		if (slot > 1) {
+			cal.add(Calendar.HOUR, (slot-1)*12);
+		}
+//TODO: getNextFreeTime + Constraints prüfen
+		return new Date(cal.getTimeInMillis());
+	}
 	
 	/**
 	 * @param start
@@ -268,17 +324,20 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				Appointment[] termine = vorlesungMitGleicherResource.getAppointments();
 				for (Appointment termin : termine){
 					Date beginn = termin.getStart();
-					Calendar cal = Calendar.getInstance();
+					Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
 					cal.setTime(beginn);
-					if(cal.HOUR_OF_DAY < 12){
-						//set the field for the vorlesungNr and the slot to zero
-						//if the appointment starts before 12 a.m., the appointment will block
-						//the slot at the morning
-						vor_res[vorlesungNr][timeSlots[cal.DAY_OF_WEEK][0]] = 0;
-					} else {
-						//else the appointment is after 12 a.m. and it will block
-						//the slot at the afternoon
-						vor_res[vorlesungNr][timeSlots[cal.DAY_OF_WEEK][1]] = 0;
+					//TODO: Prüfung ob innerhalb von Start und Ende notwendig ??
+					if(cal.after(start) && cal.before(ende)){
+						if(cal.HOUR_OF_DAY < 12){
+							//set the field for the vorlesungNr and the slot to zero
+							//if the appointment starts before 12 a.m., the appointment will block
+							//the slot at the morning
+							vor_res[vorlesungNr][timeSlots[cal.DAY_OF_WEEK][0]] = 0;
+						} else {
+							//else the appointment is after 12 a.m. and it will block
+							//the slot at the afternoon
+							vor_res[vorlesungNr][timeSlots[cal.DAY_OF_WEEK][1]] = 0;
+						}
 					}
 				}
 			}
@@ -618,7 +677,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
     	file += "set D;\n";
     	file += "#Zuordnung Dozent, Vorlesung\n";
     	file += "param doz_vor{d in D, i in I};\n";
-    	file += "#Verf�gbarkeit Ressourcen\n";
+    	file += "#Verfuegbarkeit Ressourcen\n";
 		file += "param vor_res{i in I, t in T};\n";
 		file += "#Zuordnung Kurs, Vorlesung\n";
 		file += "param kurs_vor{k in K, i in I};\n";
@@ -637,7 +696,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		
 		file += "solve;\n";
 		
-		file += "printf \"solution:\\n\" > f;\n";
+//		file += "printf \"solution:\\n\" > f;\n";
 		file += "printf {i in I, t in T: x[i,t] == 1} \"%i, %i \\n\", i, t >> f;\n";
 		file += "printf \"\\n\">> f;\n";
 		
