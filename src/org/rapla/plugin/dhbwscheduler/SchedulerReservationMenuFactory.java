@@ -525,19 +525,20 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							}
 							betreff += veranstaltungstitel;
 
-							String Inhalt = getString("email_anrede") + titel + vorname + name + ",\n\n" + 
-									getString("email_Inhalt") + "\n\n" + 
-									veranstaltungstitel +  " (" + studiengang + ")" + "\n"  +
+							String Inhalt = getString("email_anrede") + titel+ " " + vorname + " " + name + ",\n\n" + 
+									getString("email_Inhalt") + "\n" + 
+									veranstaltungstitel +  " (" + studiengang + ")" + "\n\n"  +
+									getString("Link_Text") + "\n" +
 									url + "\n\n" +
 									getString("email_Signatur") + "\n" + 
-									getUser().getName() + "\n"; 
+									getUser().getName() + "\n";
 							//getUser().getEmail();
 								
 							//Muss das so gemacht werden ?????????
-							//MailToUserInterface MailClient = getService(MailToUserInterface.class);
-							//MailClient.sendMail(getUser().getUsername(), betreff, Inhalt);
+							MailToUserInterface MailClient = getService(MailToUserInterface.class);
+							MailClient.sendMail(getUser().getUsername(), betreff, Inhalt);
 
-							createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
+							//createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
 							//Link generieren
 							// Text einfügen
 							//Senden!
