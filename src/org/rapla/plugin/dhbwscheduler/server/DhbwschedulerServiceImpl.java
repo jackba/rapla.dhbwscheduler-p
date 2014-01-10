@@ -34,11 +34,13 @@ import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
+import org.rapla.facade.Conflict;
 import org.rapla.facade.ModificationModule;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
+import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.ReservationController;
 import org.rapla.gui.internal.edit.reservation.AppointmentController;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
@@ -141,9 +143,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	        anfangWoche = new Date(tmp.getTimeInMillis());
 	        tmp.add(Calendar.DAY_OF_YEAR, 5);
 	        endeWoche = new Date(tmp.getTimeInMillis());
-        
 		}  
         
+		getClientFacade().refresh();
         return postProcessingResults;         	
 	}
 	
@@ -255,7 +257,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         int[][] solRes = splitSolution(solutionString);
         
         for(int i = solRes.length-1; i >= 0 ;i--) {
-        	Reservation reservation = reservations.get(solRes[i][0]);
+        	Reservation reservation = reservations.get((solRes[i][0]) - 1);
         	result += reservation.getClassification().getName(getLocale()) + ": " + solRes[i][1] + "\n";
         	reservation = getClientFacade().edit(reservation);
         	Appointment appointment = reservation.getAppointments()[0];
@@ -266,7 +268,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
     		appointment.move(newStart);
 			
     		getClientFacade().store(reservation);
-    		reservations.remove(solRes[i][0]);
+    		reservations.remove((solRes[i][0])-1);
         }
         
         //Dateien aufräumen
