@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +40,7 @@ import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.ReservationController;
+import org.rapla.gui.internal.edit.reservation.AppointmentController;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
 import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
@@ -249,7 +251,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 		
         Date newStart = new Date(tmp.getTimeInMillis());
-        
+
         int[][] solRes = splitSolution(solutionString);
         
         for(int i = solRes.length-1; i >= 0 ;i--) {
@@ -257,8 +259,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         	result += reservation.getClassification().getName(getLocale()) + ": " + solRes[i][1] + "\n";
         	reservation = getClientFacade().edit(reservation);
         	Appointment appointment = reservation.getAppointments()[0];
-        	newStart = setStartDate(solRes[i][1], startDatum);
+    		Allocatable[] allocatables = reservation.getAllocatablesFor( appointment);
+
+    		//Slot-Datum einstellen
+        	newStart = setStartDate(solRes[i][1], startDatum, appointment, allocatables);
     		appointment.move(newStart);
+			
     		getClientFacade().store(reservation);
     		reservations.remove(solRes[i][0]);
         }
@@ -283,9 +289,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		int i = 0;
 		
 		for(String solRes : solReservations){
+			if (solRes.indexOf(",") > -1) {
 				solutionArray[i][0] = Integer.valueOf(solRes.substring(0, solRes.indexOf(",")).trim());
 				solutionArray[i][1] = Integer.valueOf(solRes.substring(solRes.indexOf(",")+1 ).trim());
 				i++;
+			}
 		}
 		
 		return solutionArray;
@@ -296,13 +304,23 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param slot
 	 * @return
 	 */
-	private Date setStartDate(int slot, Date startDate) {
+	private Date setStartDate(int slot, Date startDate, Appointment appointment, Allocatable[]  allocatables) throws RaplaException {
+		Date newStart;
 		
 		Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
 		cal.setTimeInMillis(startDate.getTime());
 		if (slot > 1) {
 			cal.add(Calendar.HOUR, (slot-1)*12);
 		}
+		if( cal.get(Calendar.HOUR_OF_DAY) < (getCalendarOptions().getWorktimeStartMinutes() / 60)) {
+			cal.add(Calendar.MINUTE, getCalendarOptions().getWorktimeStartMinutes());
+		}
+		newStart = new Date(cal.getTimeInMillis());
+		
+		appointment.move(newStart);
+		
+		newStart = getQuery().getNextAllocatableDate(Arrays.asList(allocatables), appointment,getCalendarOptions() );
+
 		//TODO: getNextFreeTime + Constraints prüfen
 		return new Date(cal.getTimeInMillis());
 	}
