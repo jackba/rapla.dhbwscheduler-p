@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -44,6 +45,7 @@ import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.ReservationController;
 import org.rapla.gui.internal.edit.reservation.AppointmentController;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
+import org.rapla.plugin.freetime.server.FreetimeService;
 import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
 import org.rapla.storage.StorageOperator;
@@ -65,6 +67,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	private int vor_res[][] = {{}};
 	private int kurs_vor[][] = {{}};
 	private ArrayList<Reservation> reservations;
+	
+	private FreetimeService freetimeService = null;
 	
 	/**
 	 * @param context
@@ -92,13 +96,18 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		{
 			RefEntity<?> object = lookup.resolve( id);
 			Reservation reservation = (Reservation) object;
-			//TODO: language
-			if(reservation.getClassification().getValue("planungsstatus").equals("in Planung geschlossen")){
+			if(reservation.getClassification().getValue(getString("design_status")).equals(getString("planning_closed"))){
 				reservations.add(reservation);	
 			}
 		}
 		
 		String postProcessingResults = "";
+		
+		try {
+			freetimeService = getService(FreetimeService.class);
+		} catch (UnsupportedOperationException e) {
+			postProcessingResults += "<br>" + getString("no_holoyday_plugin") + "<br/";
+		}
 		
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 		tmp.set(Calendar.DAY_OF_MONTH, 6);
@@ -346,13 +355,34 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @throws RaplaException 
 	 */
 	
-	@SuppressWarnings("static-access")
+	//@SuppressWarnings("static-access")
 	private int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende) throws RaplaException {
 		//build array, first all times are allowed
 		int[][] vor_res = new int[reservations.size()][10];
 		for (int i = 0; i < reservations.size(); i++){
 			for (int j = 0; j < 10; j++){
 				vor_res[i][j] = 1;
+			}
+		}
+		//beachten von Feiertagen, nur wenn das holiday-plugin aktiviert ist 
+		if(!(freetimeService.equals(null))){
+			//alle Freiertage im Plaungszeitraum
+			String[][] holidays = freetimeService.getHolidays(start, ende);
+			for(int i = 0; i < holidays.length; i++){
+				String holiday = holidays[i][0];
+				SerializableDateTimeFormat dateFormat = new SerializableDateTimeFormat();
+				try {
+					Date holidayDate = dateFormat.parseDate(holiday, false);
+					Calendar c = Calendar.getInstance();
+					c.setTime(holidayDate);
+					int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
+					for(int j = 0; i < reservations.size(); i++){
+						vor_res[j][timeSlots[dayOfWeekOfHoliday][0]] = 0;
+						vor_res[j][timeSlots[dayOfWeekOfHoliday][1]] = 0;
+					}
+				} catch (ParseDateException e) {
+					getLogger().warn(e.getLocalizedMessage());
+				}
 			}
 		}
 		ArrayList<Reservation> veranstaltungenOhnePlanungsconstraints = new ArrayList<Reservation>();
@@ -363,16 +393,15 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			//get all other reservations for these resources
 			Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, start, ende, null);
 			for (Reservation vorlesungMitGleicherResource : vorlesungenMitGleichenResourcen){
-				//for each of these reservations, look if there are "geplant"
-				//TODO: language
-				if(vorlesungMitGleicherResource.getClassification().getValue("planungsstatus").equals("geplant")){
+				//for each of these reservations, look if there are in planning_closed
+				if(vorlesungMitGleicherResource.getClassification().getValue(getString("design_status")).equals(getString("planning_closed"))){
 					//nur geplante Veranstaltungen muessen beachtet werden
 					Appointment[] termine = vorlesungMitGleicherResource.getAppointments();
 					for (Appointment termin : termine){
 						Date beginn = termin.getStart();
 						Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
 						cal.setTime(beginn);
-						//TODO: Prüfung ob innerhalb von Start und Ende notwendig ??
+						//Prüfung, ob innerhalb von Start und Ende
 						if(cal.after(start) && cal.before(ende)){
 							if(cal.HOUR_OF_DAY < 12){
 								//set the field for the vorlesungNr and the slot to zero
@@ -389,8 +418,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				}
 			}
 			//get the planungsconstraints 
-			//TODO: language
-			Object constraintObj = vorlesung.getClassification().getValue("planungsconstraints");
+			Object constraintObj = vorlesung.getClassification().getValue(getString("design_status"));
 			if(constraintObj == null){
 				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
 			} else {
@@ -409,10 +437,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if(!(veranstaltungenOhnePlanungsconstraints.isEmpty())){
 			String veranstaltungenOhnePlanungsconstraintsListe = "";
 			for(Reservation r : veranstaltungenOhnePlanungsconstraints){
-				veranstaltungenOhnePlanungsconstraintsListe += r.getName(getLocale()) + "\n";
+				veranstaltungenOhnePlanungsconstraintsListe = veranstaltungenOhnePlanungsconstraintsListe + "<br>" + r.getName(getLocale()) + "<br/>";
 			}
-			//TODO: language
-			throw(new RaplaException("Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten: \n" + veranstaltungenOhnePlanungsconstraintsListe));
+			throw(new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
 		}
 		return vor_res;
 	}
@@ -497,12 +524,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
 		if(!(veranstaltungenOhneDozent.isEmpty())){
 			String veranstaltungenOhneDozentenListe = "";
+			String type = veranstaltungenOhneDozent.get(0).getClassification().getType().getName(getLocale());
 			for(Reservation r : veranstaltungenOhneDozent){
-				veranstaltungenOhneDozentenListe += r.getName(getLocale()) + "\n";
+				veranstaltungenOhneDozentenListe = veranstaltungenOhneDozentenListe + "<br>" + r.getName(getLocale()) + "<br/>";
 			}
-			//TODO: language missing_ressouce
-			//neu zusammen bauen ---------\/
-			throw(new RaplaException("Bei folgenden Verantstaltungen fehlt ein Dozent: \n" + veranstaltungenOhneDozentenListe));
+			throw(new RaplaException("<br>" + getString("missing_allocatables") + " (" + type + "):" + "<br/>" + veranstaltungenOhneDozentenListe));
 		}
 		//build the array to assign the professors to their reservations 
 		int[][] doz_vor = new int[dozenten.size()][reservations.size()];
@@ -550,11 +576,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
 		if(!(veranstaltungenOhneKurse.isEmpty())){
 			String veranstaltungenOhneKurseListe = "";
+			String type = veranstaltungenOhneKurse.get(0).getClassification().getType().getName(getLocale());
 			for(Reservation r : veranstaltungenOhneKurse){
-				veranstaltungenOhneKurseListe += r.getName(getLocale()) + "\n";
+				veranstaltungenOhneKurseListe = veranstaltungenOhneKurseListe + "<br>" + r.getName(getLocale()) + "<br/>";
 			}
-			//TODO: language
-			throw(new RaplaException("Bei folgenden Verantstaltungen fehlt ein Kurs: \n" + veranstaltungenOhneKurseListe));
+			throw(new RaplaException("<br>" + getString("missing_allocatables") + " (" + type + "):" + "<br/>" + veranstaltungenOhneKurseListe));
 		}
 		//build the array to assign the kurse to their reservations 
 		int[][] kurs_vor = new int[kurse.size()][reservations.size()];
