@@ -32,6 +32,7 @@ import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
+import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
@@ -376,7 +377,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 					Calendar c = Calendar.getInstance();
 					c.setTime(holidayDate);
 					int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
-					for(int j = 0; i < reservations.size(); i++){
+					for(int j = 0; j < reservations.size(); j++){
 						vor_res[j][timeSlots[dayOfWeekOfHoliday][0]] = 0;
 						vor_res[j][timeSlots[dayOfWeekOfHoliday][1]] = 0;
 					}
@@ -418,7 +419,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				}
 			}
 			//get the planungsconstraints 
-			Object constraintObj = vorlesung.getClassification().getValue(getString("design_status"));
+			Object constraintObj = vorlesung.getClassification().getValue(getString("planning_constraints"));
 			if(constraintObj == null){
 				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
 			} else {
@@ -507,13 +508,20 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	private int[][] buildZuordnungDozentenVorlesung() throws RaplaException {
 		Set<Allocatable> dozenten = new HashSet<Allocatable>();
 		ArrayList<Reservation> veranstaltungenOhneDozent = new ArrayList<Reservation>();
+		String type = "";
+		for(DynamicType alltype : getClientFacade().getDynamicTypes("resource")){
+			if(alltype.getElementKey().equals("professor")){
+				type = alltype.getName(getLocale());
+			}
+		}
 		for (Reservation veranstaltung : reservations){
 			boolean hasProfessor = false;
 			//get all resources for all reservations
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
 			for (Allocatable a : ressourcen){
 				//if the resource is a professor, add it to the set (no duplicate elements allowed)
-				if(a.getClassification().getType().getElementKey().equals("professor")){
+				DynamicType allocatableType = a.getClassification().getType();
+				if(allocatableType.getElementKey().equals("professor")){
 					dozenten.add(a);
 					hasProfessor = true;
 				}
@@ -524,7 +532,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
 		if(!(veranstaltungenOhneDozent.isEmpty())){
 			String veranstaltungenOhneDozentenListe = "";
-			String type = veranstaltungenOhneDozent.get(0).getClassification().getType().getName(getLocale());
 			for(Reservation r : veranstaltungenOhneDozent){
 				veranstaltungenOhneDozentenListe = veranstaltungenOhneDozentenListe + "<br>" + r.getName(getLocale()) + "<br/>";
 			}
@@ -559,6 +566,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	private int[][] buildZuordnungKursVorlesung() throws RaplaException{
 		Set<Allocatable> kurse = new HashSet<Allocatable>();
 		ArrayList<Reservation> veranstaltungenOhneKurse = new ArrayList<Reservation>();
+		String type = "";
+		for(DynamicType alltype : getClientFacade().getDynamicTypes("resource")){
+			if(alltype.getElementKey().equals("kurs")){
+				type = alltype.getName(getLocale());
+			}
+		}
 		for (Reservation veranstaltung : reservations){
 			//get all resources for all reservations
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
@@ -576,7 +589,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
 		if(!(veranstaltungenOhneKurse.isEmpty())){
 			String veranstaltungenOhneKurseListe = "";
-			String type = veranstaltungenOhneKurse.get(0).getClassification().getType().getName(getLocale());
 			for(Reservation r : veranstaltungenOhneKurse){
 				veranstaltungenOhneKurseListe = veranstaltungenOhneKurseListe + "<br>" + r.getName(getLocale()) + "<br/>";
 			}
