@@ -216,23 +216,74 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	
     	int[] doz_IDs = {111, 222};
     	
-    	int[][][] dozConsts = new int[2][7][24];
-    	for (int i = 0; i < 2; i++) {
-    		for (int j = 0; j < 7; j++) {
-    			for (int k = 0; k < 24; k++) {
-    				dozConsts[i][j][k] = i;
-    			}
-    		}
-    	}
-    	
-    	dozConsts[0][0][0] = 1;
-    	dozConsts[0][0][2] = 1;
-    	dozConsts[1][0][1] = 0;
-    	dozConsts[1][0][2] = 0;
+    	String[] dozConsts = { "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 
+    			"100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" };
     	
     	int[] status = {1, 2};
     	
     	String testergebnis= ConstraintService.buildDozConstraint(doz_IDs, dozConsts, exceptDates, status);    	
+    	
+    	assertEquals(ergebnisConstraint,testergebnis);
+    }
+
+    public void testbuildDozConstraintNULL(){
+    	String ergebnisConstraint = ""
+        		+ "111_"
+        		+ "_"
+        		+ "_"
+        		+ "1\n"
+    			+ "222_"
+        		+ "_"
+        		+ "_"
+        		+ "2";
+    	
+    	int[] doz_IDs = {111, 222};
+    	
+    	int[] status = {1, 2};
+    	
+    	String[] dozConsts = new String[2];
+    	Date[][] exceptDates = {{}, {}};
+    	
+    	String testergebnis= ConstraintService.buildDozConstraint(doz_IDs, dozConsts, exceptDates, status);    	
+    	
+    	assertEquals(ergebnisConstraint,testergebnis);
+    }
+
+    public void testbuildDozConstraintEINERNULL(){
+    	String ergebnisConstraint = ""
+        		+ "111_"
+        		+ "_"
+        		+ "_"
+        		+ "1";
+    	
+    	int doz_ID = 111;
+    	
+    	int status = 1;
+    	
+    	String testergebnis= ConstraintService.buildDozConstraint(doz_ID, null, null, status);    	
+    	
+    	assertEquals(ergebnisConstraint,testergebnis);
+    }
+
+    public void testbuildDozConstraintEINER(){
+    	String ergebnisConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "1161775163140,2161775163140,2161775173140_"
+        		+ "1";
+    	
+    	int doz_ID = 111;
+    	
+    	int status = 1;
+
+    	String dozConst = "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    	
+    	Date[] exceptDates = new Date[3];
+    	exceptDates[0] = new Date(1161775163140L);
+    	exceptDates[1] = new Date(2161775163140L);
+    	exceptDates[2] = new Date(2161775173140L);
+    	
+    	String testergebnis= ConstraintService.buildDozConstraint(doz_ID, dozConst, exceptDates, status);    	
     	
     	assertEquals(ergebnisConstraint,testergebnis);
     }

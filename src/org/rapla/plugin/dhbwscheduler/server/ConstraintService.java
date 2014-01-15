@@ -23,38 +23,58 @@ public class ConstraintService extends RaplaComponent{
 	 */
 	
 
-	public static String buildDozConstraint(int[] doz_IDs, int[][][] dozConsts, Date[][] exceptDates, int[] status){
-		/*Zeit als Long in den String packen
-		 * String = exceptionDates[i][j].getTime();
-		 * Dates werden mit Komma getrennt
-		 */
+	public static String buildDozConstraint(int dozID, String dozConst, Date[] exceptDate, int status){
+		int[] dozIDs = new int[1];
+		dozIDs[0] = dozID;
+		
+		String[] dozConsts= new String[1];
+		dozConsts[0] = dozConst;
+		
+		Date[][] exceptDates;
+		if ( exceptDate == null) {
+			exceptDates = new Date[1][0];
+		}
+		else {
+			exceptDates = new Date[1][exceptDate.length];
+			for(int i = 0; i < exceptDate.length; i++) {
+				exceptDates[0][i] = exceptDate[i];
+			}
+		}
+		
+		int[] stati = new int[1];
+		stati[0]  =status;
+		
+		return buildDozConstraint(dozIDs, dozConsts, exceptDates, stati);
+	}
+	
+	public static String buildDozConstraint(int[] dozIDs, String[] dozConsts, Date[][] exceptDates, int[] status){
 		String result = "";
 		
-		for(int i = 0; i<doz_IDs.length; i++) {
-			result += doz_IDs[i] + "_";
+		for(int i = 0; i<dozIDs.length; i++) {
+			result += dozIDs[i] + "_";
 			
-			for(int j = 0; j<dozConsts[i].length; j++) {
-				for(int k = 0; k<dozConsts[i][j].length;k++) {
-					result += dozConsts[i][j][k];
-				}
+			if (dozConsts[i] != null) {
+				result += dozConsts[i];
 			}
 			
 			result += "_";
-			for (int j = 0; j<exceptDates[i].length; j++) {
-				if (exceptDates[i][j] == null) {
-					result = result.substring(0, result.length()-1);
-					break;
-				}
-				result += exceptDates[i][j].getTime();
-				if(j < exceptDates[i].length-1) {
-					result += ",";
+			if( exceptDates[i] != null) {
+				for (int j = 0; j<exceptDates[i].length; j++) {
+					if (exceptDates[i][j] == null) {
+						result = result.substring(0, result.length()-1);
+						break;
+					}
+					result += exceptDates[i][j].getTime();
+					if(j < exceptDates[i].length-1) {
+						result += ",";
+					}
 				}
 			}
 			result += "_";
 			
 			result += status[i];
 			
-			if(i < doz_IDs.length-1) {
+			if(i < dozIDs.length-1) {
 				result += "\n";
 			}
 		}
@@ -63,10 +83,10 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static int[] getDozIDs(String constraint){
-		int[] result; // = {};
-//		if (constraint == null || constraint.equals("")) {
-//			return result;
-//		}
+		int[] result = {};
+		if (constraint == null || constraint.equals("")) {
+			return result;
+		}
 		
 		String dozCount[] = constraint.split("\n");
 		result = new int[dozCount.length];
