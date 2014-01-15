@@ -33,29 +33,45 @@ public class ConstraintService extends RaplaComponent{
 		return null;
 	}
 	
-	public static String getDozConstraint (String Constraint){
-		// in arbeit!
-		/*String DozCount[] = Constraint.split("/n");
+	public static int[] getDozConstraints (String Constraint){
+		
+		String DozCount[] = Constraint.split("/n");
+		int[][] DozConst = new int[DozCount.length][168];
+		int [] ergebnis = new int[168];
 		
 		for (int i = 0; i< DozCount.length;i++){
-			DozCount[i] = 
+			int index = DozCount[i].indexOf('_');
+			DozCount[i] = DozCount[i].substring(index+1,DozCount[i].indexOf('_',index+1));
+			
+			for (int j = 0; j<168; j++){
+				DozConst[i][j] = Integer.valueOf(DozCount[i].substring(j, j+1));
+			}
 		}
-		String ergebnis="";
-		for (int i = 0; i<168;i++)
-			ergebnis = "" + (int) Math.random();
-			*/
+		
+		//mergen der Doz-Constraints
+		for (int i = 0; i <168; i++){
+			for (int j = 0; j<DozCount.length;j++){
+				if (DozConst[j][i] == 0){
+					ergebnis[i] = 0;
+					break;
+				}
+				else{
+					ergebnis[i] = 1;
+				}
+			}
+		}
+		
+		return ergebnis;
+	}
+	
+	public static int[] getDozConstraint (String Constraint, int doz_ID){
 		
 		return null;
 	}
 	
-	public static String getDozConstraints (String Constraint, int doz_ID){
-		
-		return null;
-	}
-	
-	public static String[] getExceptionDates (Reservation reservation){
+	public static Date[] getExceptionDates (Reservation reservation){
 		//in arbeit!
-		
+		/*
 		int i = 2;
 		int j = 0;
 		
@@ -69,10 +85,11 @@ public class ConstraintService extends RaplaComponent{
 			i=i+4;
 			j++;
 		}
-		return exceptionDates;
+		*/
+		return null;
 	}	
 	
-	public static String[] getExceptionDate (Reservation reservation,int doz_ID ){
+	public static Date[] getExceptionDatesDoz (Reservation reservation,int doz_ID ){
 		
 		return null;
 	}
