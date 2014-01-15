@@ -39,5 +39,5 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
     public void testgetClassification(){
     	assertEquals(true, false);
-    }	
+    }
 }

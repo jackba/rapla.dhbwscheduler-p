@@ -7,7 +7,9 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.rapla.RaplaTestCase;
+import org.rapla.entities.Entity;
 import org.rapla.entities.domain.Allocatable;
+import org.rapla.entities.domain.Reservation;
 import org.rapla.facade.ClientFacade;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
@@ -39,7 +41,11 @@ public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
 	    }
 
 	    public void testgetClassification(){
+	    	
+	    	//Reservation editableEvent = getFacade().getReservations(user, start, end, filters);
+			// do something with the reservation
+			//setDesignStatus(editableEvent, getString("planning_closed"));	    	
 	    	assertEquals(true, false);
-	    }	
+	    }
 	}
 

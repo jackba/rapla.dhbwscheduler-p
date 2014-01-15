@@ -1,7 +1,10 @@
 package org.rapla.plugin.dhbwscheduler;
 
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -23,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -57,6 +61,7 @@ import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
 import org.rapla.plugin.mail.MailException;
+import org.rapla.plugin.mail.MailToUserInterface;
 import org.rapla.plugin.mail.server.MailapiClient;
 import org.rapla.plugin.urlencryption.*;
 import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
@@ -273,9 +278,14 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						}
 
 						JLabel[] label = new JLabel[felder];
+						JLabel labelHead = new JLabel();
 						JPanel panel = new JPanel();
+						JPanel[] p1 = new JPanel[felder];
+						JPanel[] p2 = new JPanel[felder];
 						panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-						JTextField[] urlField = new JTextField[felder];
+
+						//JTextField[] urlField = new JTextField[felder];
+						JTextArea[] urlField = new JTextArea[felder];
 						RaplaButton[] copyButton = new RaplaButton[felder];
 						RaplaButton[] bt = new RaplaButton[felder];
 
@@ -288,16 +298,38 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 									Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
 									SimpleIdentifier pID = (SimpleIdentifier) pTest;
+									String studiengang = "";
+									if (r.getClassification().getValue("studiengang")!=null)
+									{
+										studiengang = r.getClassification().getValue("studiengang").toString();
+										if (studiengang.contains(" "))
+										{
+											int pos = studiengang.indexOf(" ");
+											studiengang = studiengang.substring(0, pos);
+										}
+									}
+
+									p1[i] = new JPanel();
+									p2[i] = new JPanel();
+									p1[i].setLayout(new BoxLayout(p1[i], BoxLayout.Y_AXIS));
+									p2[i].setLayout(new BoxLayout(p2[i], BoxLayout.X_AXIS));
 
 									label[i] = new JLabel();
-									label[i].setText("Veranstaltung: " + r.getName(getLocale()) + " Dozent: " 
-											+ r.getPersons()[t].getClassification().getValue("surname").toString()
-											+ " " + r.getPersons()[t].getClassification().getValue("firstname").toString());
+									labelHead.setFont(new Font("Arial",Font.BOLD,16));
+									label[i].setFont(new Font("Arial",Font.CENTER_BASELINE,14));
+									labelHead.setText("Studiengang " + studiengang
+											+ ", Veranstaltung: " + r.getName(getLocale()));
+									label[i].setText("Dozent: " 
+											+ r.getPersons()[t].getClassification().getValue("firstname").toString()
+											+ " " + r.getPersons()[t].getClassification().getValue("surname").toString());
 
 									bt[i] = new RaplaButton();
 									bt[i].setText(getString("Link_oeffnen2"));
 									bt[i].setToolTipText(getString("Link_oeffnen"));
-									urlField[i] = new JTextField();
+									//urlField[i] = new JTextField();
+									urlField[i] = new JTextArea();
+									urlField[i].setWrapStyleWord(true);
+									urlField[i].setLineWrap(true);
 									urlField[i].setText(getUrl(r,pID.getKey()));
 									urlField[i].setSize(100, 20);
 									urlField[i].setEditable(false);
@@ -332,10 +364,30 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 										}
 
 									});
-									panel.add(label[i]);
-									panel.add(urlField[i]);
-									panel.add(copyButton[i]);
-									panel.add(bt[i]);
+									urlField[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+									p1[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+									p2[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+									Component placeHolderVb = Box.createVerticalStrut(20);
+									Component placeHolderVl = Box.createVerticalStrut(5);
+									Component placeHolderHl = Box.createHorizontalStrut(5);
+									if (i>0)
+									{
+										p1[i].add(placeHolderVb);
+									}
+									if (i==0)
+									{
+										p1[i].add(labelHead);
+										p1[i].add(placeHolderVb);
+									}
+									p1[i].add(label[i]);
+									p1[i].add(placeHolderVl);
+									p1[i].add(urlField[i]);
+									p1[i].add(placeHolderVl);
+									p2[i].add(bt[i]);
+									p2[i].add(placeHolderHl);
+									p2[i].add(copyButton[i]);
+									panel.add(p1[i]);
+									panel.add(p2[i]);
 									i++;
 								}
 							}
@@ -373,20 +425,18 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					boolean reminder = false;
 					//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
 					for (Reservation r : selectedReservations)
 					{
 						//Überprüfung ob es nötig ist eine E-Mail zu versenden.
-						if(EmailVersendeBerechtigung(r,reminder)){
+						if(EmailVersendeBerechtigung(r)){
 
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
 							{
-
 								Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
 								SimpleIdentifier pID = (SimpleIdentifier) pTest;
-								Sende_mail(r,pID,reminder);
+								Sende_mail(r,pID);
 							}
 						}
 
@@ -397,7 +447,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				/*
 				 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
 				 */
-				private boolean EmailVersendeBerechtigung(Reservation r,boolean reminder) {
+				private boolean EmailVersendeBerechtigung(Reservation r) {
 
 					String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
 					boolean returnvalue = false;
@@ -412,7 +462,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							break;
 						case "eingeladen":
 							returnvalue = true;
-							reminder=true;
 							break;
 						case "erfasst":
 							returnvalue = false;
@@ -426,17 +475,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					return returnvalue;
 				}
 
-				private void Sende_mail(Reservation r, SimpleIdentifier pID,boolean reminder) {
+				private void Sende_mail(Reservation r, SimpleIdentifier pID) {
 					// TODO Auto-generated method stub
 					try {
-						//StorageOperator lookup = getContext().lookup( StorageOperator.class);
-						//Allocatable Dozent = (Allocatable) lookup.resolve(pID);
 						boolean isPerson = false;
+						boolean reminder = false;
 						String email = "";
 						String name = "";
 						String vorname = "";
 						String titel = "";
-						//String Anrede;
 
 						for(int i = 0 ; i<r.getPersons().length; i++){
 							Comparable pTest = ((RefEntity<?>) r.getPersons()[i]).getId();
@@ -468,7 +515,22 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							String veranstaltungstitel 	= (String) r.getClassification().getValue("title");
 							String betreff;
 							String url = getUrl(r,pID.getKey());
-
+							
+							String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
+							switch(erfassungsstatus){
+							case "uneingeladen":
+								reminder=false;
+								break;
+							case "eingeladen":
+								reminder=true;
+								break;
+							case "erfasst":
+								reminder=false;
+								break;
+							default:
+								break;
+							}
+							
 							if(reminder){
 								betreff = getString("email_Betreff_Erinnerung");
 							}else{
@@ -476,23 +538,20 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							}
 							betreff += veranstaltungstitel;
 
-							String Inhalt = getString("email_anrede") + titel + vorname + name + ",\n\n" + 
-									getString("email_Inhalt") + "\n\n" + 
-									veranstaltungstitel +  " (" + studiengang + ")" + "\n"  +
+							String Inhalt = getString("email_anrede") + titel+ " " + vorname + " " + name + ",\n\n" + 
+									getString("email_Inhalt") + "\n" + 
+									veranstaltungstitel +  " (" + studiengang + ")" + "\n\n"  +
+									getString("Link_Text") + "\n" +
 									url + "\n\n" +
 									getString("email_Signatur") + "\n" + 
-									getUser().getName() + "\n"; 
+									getUser().getName() + "\n";
 							//getUser().getEmail();
+								
+							//Muss das so gemacht werden ?????????
+							MailToUserInterface MailClient = getService(MailToUserInterface.class);
+							MailClient.sendMail(getUser().getUsername(), betreff, Inhalt);
 
-							MailapiClient mailClient = new MailapiClient();
-							try {
-								mailClient.sendMail("flickinger@gmx.de", email, betreff, Inhalt);
-							} catch (MailException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-							createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
+							//createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
 							//Link generieren
 							// Text einfügen
 							//Senden!
