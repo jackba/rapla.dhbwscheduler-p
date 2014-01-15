@@ -44,7 +44,7 @@ public class ConstraintService extends RaplaComponent{
 			DozCount[i] = DozCount[i].substring(index+1,DozCount[i].indexOf('_',index+1));
 			
 			for (int j = 0; j<168; j++){
-				DozConst[i][j] = Integer.valueOf(DozCount[i].substring(j, j+1));
+				DozConst[i][j] = DozCount[i].charAt(j)-48;
 			}
 		}
 		
@@ -56,7 +56,7 @@ public class ConstraintService extends RaplaComponent{
 					break;
 				}
 				else{
-					ergebnis[i] = 1;
+					ergebnis[i]+=DozConst[j][i];
 				}
 			}
 		}
@@ -66,7 +66,22 @@ public class ConstraintService extends RaplaComponent{
 	
 	public static int[] getDozConstraint (String Constraint, int doz_ID){
 		
-		return null;
+		String DozCount[] = Constraint.split("/n");
+		int [] ergebnis = new int[168];
+		
+		for(String DozConst:DozCount){
+			
+			String ID = DozConst.substring(0,DozConst.indexOf("_"));
+			if (Integer.valueOf(ID) == doz_ID){
+				int index = DozConst.indexOf('_')+1;
+				
+				for (int j = 0; j<168; j++){		
+					ergebnis[j] = DozConst.charAt(index+j)-48;
+				}
+			}
+		}
+		return ergebnis;
+	
 	}
 	
 	public static Date[] getExceptionDates (Reservation reservation){

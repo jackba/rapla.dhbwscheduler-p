@@ -17,7 +17,6 @@ import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 public class ConstraintServiceTest extends RaplaTestCase {
 	ClientFacade facade;
     Locale locale;
-    String TestConstraint;
 
     public ConstraintServiceTest(String name) {
         super(name);
@@ -32,15 +31,6 @@ public class ConstraintServiceTest extends RaplaTestCase {
         facade = getContext().lookup(ClientFacade.class );
         facade.login("homer","duffs".toCharArray());
         locale = Locale.getDefault();
-        TestConstraint = ""
-        		+ "DOZID_"
-        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
-        		+ "Date,Date,Date_"
-        		+ "Status/n"
-        		+ "DOZID_"
-        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
-        		+ "Date,Date_"
-        		+ "Status";
     }
 
     protected void tearDown() throws Exception {
@@ -49,7 +39,16 @@ public class ConstraintServiceTest extends RaplaTestCase {
     }
 
     public void testGetDozConstraints(){
-    	int[] sollergebnis = {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        String TestConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "Date,Date,Date_"
+        		+ "Status/n"
+        		+ "222_"
+        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
+        		+ "Date,Date_"
+        		+ "Status";
+    	int[] sollergebnis = {2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -57,6 +56,32 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     	int[] testergebnis= ConstraintService.getDozConstraints(TestConstraint);
+    	
+    	for (int i = 0; i< sollergebnis.length; i++){
+    		assertEquals(sollergebnis[i],testergebnis[i]);
+    	}
+    	
+    }
+    
+    public void testGetDozConstraint(){
+    	String TestConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "Date,Date,Date_"
+        		+ "Status/n"
+        		+ "222_"
+        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
+        		+ "Date,Date_"
+        		+ "Status";
+    	
+    	int[] sollergebnis = {1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    	int[] testergebnis= ConstraintService.getDozConstraint(TestConstraint,111);
     	
     	for (int i = 0; i< sollergebnis.length; i++){
     		assertEquals(sollergebnis[i],testergebnis[i]);
