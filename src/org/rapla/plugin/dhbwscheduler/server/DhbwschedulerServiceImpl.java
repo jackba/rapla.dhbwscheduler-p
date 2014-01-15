@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +32,7 @@ import org.rapla.components.util.DateTools;
 import org.rapla.components.util.ParseDateException;
 import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.EntityNotFoundException;
+import org.rapla.entities.configuration.Preferences;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
@@ -44,11 +48,17 @@ import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
+import org.rapla.framework.StartupEnvironment;
 import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.ReservationController;
 import org.rapla.gui.internal.edit.reservation.AppointmentController;
+import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
 import org.rapla.plugin.freetime.server.FreetimeService;
+import org.rapla.plugin.mail.MailException;
+import org.rapla.plugin.mail.MailPlugin;
+import org.rapla.plugin.mail.server.MailInterface;
+import org.rapla.plugin.urlencryption.UrlEncryption;
 import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
 import org.rapla.storage.StorageOperator;
@@ -79,6 +89,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 */
 	public DhbwschedulerServiceImpl(RaplaContext context) {
 		super(context);
+		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 
 	/* (non-Javadoc)
@@ -847,4 +858,106 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         
         return auslese;
     }
+
+ 	@Override
+	public String sendMail(SimpleIdentifier reservationID,
+			SimpleIdentifier dozentId, String login,String url) throws RaplaException {
+		// TODO Auto-generated method stub
+		
+		
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		final MailInterface MailClient = getContext().lookup(MailInterface.class);
+		
+		
+		Reservation veranstaltung = (Reservation) lookup.resolve(reservationID);
+		Allocatable dozent		  = (Allocatable) lookup.resolve(dozentId);
+		
+		boolean reminder = false;
+		boolean isPerson = false;
+		String email = "";
+		String name = "";
+		String vorname = "";
+		String titel = "";
+
+		
+		isPerson 	= dozent.isPerson();
+		email		= (String) dozent.getClassification().getValue("email");
+		name		= (String) dozent.getClassification().getValue("surname");
+		vorname		= (String) dozent.getClassification().getValue("firstname");
+		titel 		= (String) dozent.getClassification().getValue("title");
+		
+		//Dozent.getClassification().getValue("");
+		if(isPerson){	
+			String studiengang = "";
+			if (veranstaltung.getClassification().getValue("studiengang")!=null)
+			{
+				studiengang = veranstaltung.getClassification().getValue("studiengang").toString();
+				if (studiengang.contains(" "))
+				{
+					int pos = studiengang.indexOf(" ");
+					studiengang = studiengang.substring(0, pos);
+				}
+			}
+			String veranstaltungstitel 	= (String) veranstaltung.getClassification().getValue("title");
+			String betreff;
+			
+			
+			ClientFacade facade =  getContext().lookup(ClientFacade.class);
+			Preferences prefs = facade.getPreferences( null);
+			final String defaultSender = prefs.getEntryAsString( MailPlugin.DEFAULT_SENDER_ENTRY, "");
+			
+			
+			
+			String erfassungsstatus = (String) veranstaltung.getClassification().getValue("erfassungsstatus");
+			switch(erfassungsstatus){
+			case "uneingeladen":
+				reminder=false;
+				break;
+			case "eingeladen":
+				reminder=true;
+				break;
+			case "erfasst":
+				reminder=false;
+				break;
+			default:
+				break;
+			}
+			
+			if(reminder){
+				betreff = getString("email_Betreff_Erinnerung");
+			}else{
+				betreff = getString("email_Betreff_Einladung");
+			}
+			betreff += veranstaltungstitel;
+
+			String Inhalt = getString("email_anrede") + titel+ " " + vorname + " " + name + ",\n\n" + 
+					getString("email_Inhalt") + "\n" + 
+					veranstaltungstitel +  " (" + studiengang + ")" + "\n\n"  +
+					getString("Link_Text") + "\n " + //<a href=" + url+ ">" + url + "</a> \n\n" +
+					url + "\n\n" +
+					getString("email_Signatur") + "\n" + 
+					login + "\n";
+			//getUser().getEmail();
+			
+
+			
+			
+			try {
+				MailClient.sendMail(defaultSender,email, betreff, Inhalt);
+			} catch (MailException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
+			//Link generieren
+			// Text einf�gen
+			//Senden!
+
+		}else{
+			;
+		}
+
+		
+		return null;
+	}
 }
