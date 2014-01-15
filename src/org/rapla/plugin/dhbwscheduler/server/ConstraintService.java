@@ -37,7 +37,6 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static int[] getDozConstraints (String Constraint){
-		
 		String DozCount[] = Constraint.split("/n");
 		int[][] DozConst = new int[DozCount.length][168];
 		int [] ergebnis = new int[168];
@@ -48,7 +47,7 @@ public class ConstraintService extends RaplaComponent{
 				DozConst[i][j] = split[1].charAt(j)-48;
 			}
 		}
-		//mergen der Doz-Constraints
+
 		for (int i = 0; i <168; i++){
 			for (int j = 0; j<DozCount.length;j++){
 				if (DozConst[j][i] == 0){
@@ -64,14 +63,13 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static int[] getDozConstraint (String Constraint, int doz_ID){
-		
 		String DozCount[] = Constraint.split("/n");
 		int [] ergebnis = new int[168];
 		
 		for(String DozConst:DozCount){
 			
-			String ID = DozConst.substring(0,DozConst.indexOf("_"));
-			if (Integer.valueOf(ID) == doz_ID){
+			String[] split = DozConst.split("_");
+			if (Integer.valueOf(split[0]) == doz_ID){
 				int index = DozConst.indexOf('_')+1;
 
 				for (int j = 0; j<168; j++){		
@@ -84,9 +82,9 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static Date[] getExceptionDates (String Constraint){
-		
 		String DozCount[] = Constraint.split("/n");
 		String ExceptionDates[][] = new String[DozCount.length][];
+		Date[] ergebnis = {};
 		
 		for (int i = 0; i< DozCount.length;i++){
 			String[] split = DozCount[i].split("_");
@@ -98,7 +96,8 @@ public class ConstraintService extends RaplaComponent{
 		for (int i = 0; i< DozCount.length;i++){
 			anzahlExceptionDates+=ExceptionDates[i].length;			
 		}
-		Date[] ergebnis = new Date[anzahlExceptionDates];
+		
+		ergebnis = new Date[anzahlExceptionDates];
 		
 		int counter = 0;
 		for (int i = 0; i<ExceptionDates.length;i++){
@@ -112,20 +111,46 @@ public class ConstraintService extends RaplaComponent{
 	
 	public static Date[] getExceptionDatesDoz (String Constraint,int doz_ID ){
 		String DozCount[] = Constraint.split("/n");
-		String ExceptionDates[][] = new String[DozCount.length][];
-		int counter = 0;
+		String ExceptionDates[] = {};
+		Date[] ergebnis = {};
+		
 		for(int i = 0; i< DozCount.length;i++){
 			String[] split = DozCount[i].split("_");
 		
 			if (Integer.valueOf(split[0]) == doz_ID){
-				ExceptionDates[counter++] = split[2].split(",");
-				}
+				ExceptionDates = split[2].split(",");
+				break;
 			}
-		return null;
+		}
+
+		if (ExceptionDates.length==0){
+			return ergebnis;
+		}
+		else{
+		ergebnis = new Date[ExceptionDates.length];
+				
+		int counter = 0;
+		for (int i = 0; i<ExceptionDates.length;i++){
+				if (!ExceptionDates[i].isEmpty())
+					ergebnis[counter++] = new Date(Long.parseLong(ExceptionDates[i]));
+				}
+		return ergebnis;
+		}
 	}
+		
 	
-	public static int getStatus(String dozConst, int doz_id){
-		return 0;
+	public static int getStatus(String Constraint, int doz_ID){
+		String DozCount[] = Constraint.split("/n");
+		
+		for(String DozConst:DozCount){
+			
+			String[] split = DozConst.split("_");
+			if (Integer.valueOf(split[0]) == doz_ID){
+				return Integer.valueOf(split[3]);
+			}
+		}
+		return -1;
+
 	}
 	
 }
