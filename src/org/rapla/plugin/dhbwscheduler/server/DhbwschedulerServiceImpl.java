@@ -136,7 +136,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		Date endeWoche = new Date(tmp.getTimeInMillis());
 		
 	    //plane solange, wie der Anfang der neuen Woche vor dem Ende des Planungszyklus liegt		
-		while((anfangWoche.before(endeDatum)) && (reservations.isEmpty())) {
+		while((anfangWoche.before(endeDatum)) && (!(reservations.isEmpty()))) {
 		
 			//PRE-Processing
 			preProcessing(anfangWoche, endeWoche);
