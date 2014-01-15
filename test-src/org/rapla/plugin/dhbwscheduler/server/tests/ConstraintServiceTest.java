@@ -37,6 +37,31 @@ public class ConstraintServiceTest extends RaplaTestCase {
         facade.logout();
         super.tearDown();
     }
+    
+    public void testNullWerte(){
+    	//666 = Boese Doz_ID
+    	String TestConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "Date,Date,Date_"
+        		+ "Status";
+    	
+    	assertEquals(-1,ConstraintService.getStatus(null, 111));
+    	assertEquals(-1,ConstraintService.getStatus(TestConstraint,666));
+    	
+    	assertEquals(0,ConstraintService.getDozConstraints(null).length);
+    	
+    	assertEquals(0,ConstraintService.getDozConstraintsDoz(null, 111).length);
+    	assertEquals(0,ConstraintService.getDozConstraintsDoz(TestConstraint, 666).length);
+    	
+    	assertEquals(0,ConstraintService.getDozIDs(null).length);
+    	
+    	assertEquals(0,ConstraintService.getExceptionDates(null).length);
+    	
+    	assertEquals(0,ConstraintService.getExceptionDatesDoz(null, 666).length);
+    	assertEquals(0,ConstraintService.getExceptionDatesDoz(TestConstraint, 666).length);
+    	
+    }
 
     public void testGetDozConstraints_1Dozent(){
         String TestConstraint = ""

@@ -78,11 +78,13 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static int[] getDozConstraints (String constraint){
-		int [] ergebnis = new int[168];
+		int [] ergebnis = {};
 		
 		if (constraint == null){
 			return ergebnis;
 		}
+		
+		ergebnis = new int[168];
 		
 		String dozCount[] = constraint.split("\n");
 		int[][] dozConst = new int[dozCount.length][168];
@@ -109,24 +111,25 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static int[] getDozConstraintsDoz (String constraint, int doz_ID){
-		int [] ergebnis = new int[168];
+		int [] ergebnis = {};
 		
 		if (constraint == null){
 			return ergebnis;
 		}
-		
+				
 		String dozCount[] = constraint.split("\n");
-
 		
 		for(String dozConst:dozCount){
 			
 			String[] split = dozConst.split("_");
 			if (Integer.valueOf(split[0]) == doz_ID){
+				ergebnis = new int[168];
 				int index = dozConst.indexOf('_')+1;
 
 				for (int j = 0; j<168; j++){		
 					ergebnis[j] = dozConst.charAt(index+j)-48;
 				}
+				break;
 			}
 		}
 		return ergebnis;
