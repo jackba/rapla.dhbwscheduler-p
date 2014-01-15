@@ -136,7 +136,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		Date endeWoche = new Date(tmp.getTimeInMillis());
 		
 	    //plane solange, wie der Anfang der neuen Woche vor dem Ende des Planungszyklus liegt		
-		while(anfangWoche.before(endeDatum)) {
+		while((anfangWoche.before(endeDatum)) && (reservations.isEmpty())) {
 		
 			//PRE-Processing
 			preProcessing(anfangWoche, endeWoche);
@@ -389,7 +389,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			}
 		}
 		//beachten von Feiertagen, nur wenn das holiday-plugin aktiviert ist 
-		if(!(freetimeService.equals(null))){
+		if(freetimeService != null){
 			//alle Freiertage im Plaungszeitraum
 			String[][] holidays = freetimeService.getHolidays(start, ende);
 			for(int i = 0; i < holidays.length; i++){
