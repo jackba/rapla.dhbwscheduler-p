@@ -438,6 +438,18 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								SimpleIdentifier pID = (SimpleIdentifier) pTest;
 								Sende_mail(r,pID);
 							}
+							//Status auf eingeladen setzen
+							Entity event = selectedReservations.get( 0);
+							try {
+								Reservation editableEvent = getClientFacade().edit( event);
+								editableEvent = getClientFacade().edit( r);
+								editableEvent.getClassification().setValue("erfassungsstatus", "eingeladen");
+								getClientFacade().store( editableEvent );
+							} catch (RaplaException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							
 						}
 
 
@@ -546,15 +558,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									getString("email_Signatur") + "\n" + 
 									getUser().getName() + "\n";
 							//getUser().getEmail();
-								
+							
 							//Muss das so gemacht werden ?????????
 							MailToUserInterface MailClient = getService(MailToUserInterface.class);
 							MailClient.sendMail(getUser().getUsername(), betreff, Inhalt);
 
 							//createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
-							//Link generieren
-							// Text einfügen
-							//Senden!
 
 						}else{
 							;
@@ -590,37 +599,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		Comparable test = ((RefEntity<?>) selectedReservation).getId();
 		SimpleIdentifier id = (SimpleIdentifier) test;
 		String strId = String.valueOf(id.getKey());
-		//		String strName = selectedReservation.getName(getLocale());
-		//		String strKurs = "";
-		//		String studiengang = "";
-		//		for (int i = 0; i < selectedReservation.getResources().length; i++)
-		//		{
-		//			if (selectedReservation.getResources()[i].getClassification().getType().getElementKey().equals("kurs"))
-		//			{
-		//				if (strKurs=="")
-		//				{
-		//					strKurs = selectedReservation.getResources()[i].getClassification().getValue("name").toString(); 
-		//
-		//				}
-		//				else
-		//				{
-		//					strKurs = strKurs + "," + selectedReservation.getResources()[i].getClassification().getValue("name").toString();
-		//				}
-		//				//studiengang = selectedReservation.getResources()[i].getClassification().getValue("abteilung").toString();
-		//			}
-		//		}
-
-		//		String strDozent = selectedReservation.getPersons()[0].getClassification().getValue("surname").toString();
-		//		strDozent = strDozent + "," + selectedReservation.getPersons()[0].getClassification().getValue("firstname").toString();
-		//		String strBegin = selectedReservation.getFirstDate().toString();
-		//		String strEnd = selectedReservation.getMaxEnd().toString();
 
 		String result;
-		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
-		//				+ "&name=" + strName + "&kurs=" + strKurs + "&dozent=" + strDozent
-		//				+ "&begin=" + strBegin + "&end=" + strEnd;
-		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
-		//		+ "&dozent=" + String.valueOf(dozentId);
 
 		//Dynamische Generierung "Servername:Port"
 		StartupEnvironment env = getService( StartupEnvironment.class );
