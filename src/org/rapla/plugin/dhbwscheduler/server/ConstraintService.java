@@ -28,12 +28,54 @@ public class ConstraintService extends RaplaComponent{
 		 * String = exceptionDates[i][j].getTime();
 		 * Dates werden mit Komma getrennt
 		 */
-		return null;
+		String result = "";
+		
+		for(int i = 0; i<doz_IDs.length; i++) {
+			result += doz_IDs[i] + "_";
+			
+			for(int j = 0; j<dozConsts[i].length; j++) {
+				for(int k = 0; k<dozConsts[i][j].length;k++) {
+					result += dozConsts[i][j][k];
+				}
+			}
+			
+			result += "_";
+			for (int j = 0; j<exceptDates[i].length; j++) {
+				if (exceptDates[i][j] == null) {
+					result = result.substring(0, result.length()-1);
+					break;
+				}
+				result += exceptDates[i][j].getTime();
+				if(j < exceptDates[i].length-1) {
+					result += ",";
+				}
+			}
+			result += "_";
+			
+			result += status[i];
+			
+			if(i < doz_IDs.length-1) {
+				result += "\n";
+			}
+		}
+		
+		return result;
 	}
 	
-	public static String[] getDozIDs(String Constraint){
+	public static String[] getDozIDs(String constraint){
+		String[] result = {};
+		if (constraint == null) {
+			return result;
+		}
+		String dozCount[] = constraint.split("/n");
+		result = new String[dozCount.length];
 		
-		return null;
+		
+		for(int i = 0; i < dozCount.length; i++){
+			result[i] = dozCount[i].split("_")[0];
+		}
+		
+		return result;
 	}
 	
 	public static int[] getDozConstraints (String Constraint){
