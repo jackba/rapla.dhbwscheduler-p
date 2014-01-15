@@ -525,7 +525,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		dialogUI.startNoPack();
 	}
 
-	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
+	public void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
 		String istStatus = (String) editableEvent.getClassification().getValue("planungsstatus");
 		if (istStatus != zielStatus) {
 			editableEvent.getClassification().setValue("planungsstatus", zielStatus);
