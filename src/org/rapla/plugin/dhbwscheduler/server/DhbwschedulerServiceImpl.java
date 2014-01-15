@@ -355,20 +355,28 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		cal.add(Calendar.MINUTE, -15);
 		
 		//Dozenten Constraint beachten
-		//TODO: Nachdem die Constraints implementiert sind muss hier noch weitergearbeitet / getestet werden.
+		//TODO: muss noch getestet werden.
 
 		int[] dozConstr = ConstraintService.getDozConstraints(getDozentenConstraint(reservation));
-
-		for (int i = (slot-1)*12; i < ((slot-1)*12+12); i++) {
-			if(dozConstr[i] == 2) {
+		
+		int start = 24 + (slot * 12);
+		for (int i = start; i < start + 12; i++) {
+			int index = i;
+			if ((slot % 2) == 0) {
+				//Morgens 000000001111
+				index += cal.get(Calendar.HOUR_OF_DAY)-1;
+			}else {
+				//Abends 111111100000
+				index += cal.get(Calendar.HOUR_OF_DAY)-13;
+			}
+			
+			if (dozConstr[index] > 0) {
 				break;
 			}
-			else if(dozConstr[i] == 0) {
-				cal.add(Calendar.HOUR_OF_DAY,  1);
+			else {
+				cal.add(Calendar.HOUR, 1);
 			}
 		}
-		
-		//TODO: ExeptionDates vom Dozenten beachten
 
 		newStart = new Date(cal.getTimeInMillis());
 		
@@ -489,7 +497,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
 			} else {
 				//get the slots blocked by the planungsconstraints
-				int[] belegteSlots = splitDozentenConstraint(planungsconstraint);
+				int[] belegteSlots = splitDozentenConstraintSlots(planungsconstraint);
 				for(int i = 0; i < 10; i++){
 					//copy the blocking only if the slot turns from (not) allowed to not allowed
 					if(belegteSlots[i] == 0){
@@ -506,6 +514,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			}
 			throw(new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
 		}
+		//TODO: ExeptionDates vom Dozenten beachten
+
 		return vor_res;
 	}
 
@@ -528,53 +538,22 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param Dozentenconstraint
 	 * @return int[]
 	 */
-	private int[] splitDozentenConstraint(String dozentenConstraint) {
-		//TODO: UMBAU wegen neuer Doz-Consts
-		//first, all slots aren't allowed
+	private int[] splitDozentenConstraintSlots(String dozentenConstraint) {
 		int[] belegteSlots = {0,0,0,0,0,0,0,0,0,0};
-		int idIndex = dozentenConstraint.indexOf('_');
-		dozentenConstraint = dozentenConstraint.substring(idIndex + 1);
-		String[] constraintsTage = dozentenConstraint.split(";");
-		for(String constraint : constraintsTage){
-			//get the day of week
-			int dayOfWeek = Calendar.MONDAY;
-			char day = constraint.charAt(0);
-			switch(day){
-			case '1':
-				break;
-			case '2':
-				dayOfWeek = Calendar.TUESDAY;
-				break;
-			case '3':
-				dayOfWeek = Calendar.WEDNESDAY;
-				break;
-			case '4':
-				dayOfWeek = Calendar.THURSDAY;
-				break;
-			case '5':
-				dayOfWeek = Calendar.FRIDAY;
-				break;
+		
+		int[] dozConst = ConstraintService.getDozConstraints(dozentenConstraint);
+		
+		int slotCounter = 0;
+		
+		for( int i = 24; i < dozConst.length - 24; i++) {
+			int stundenCounter = (i % 24);
+			if (dozConst[i] > 0) {
+				//sobald eine Stunde verfügbar ist, ist der Slot verfügbar 
+				belegteSlots[slotCounter] = 1;
 			}
-			//get time at that day
-			String timepoint = constraint.substring(constraint.indexOf(':') + 1, constraint.indexOf('-'));
-			int hourOfDay = Integer.valueOf(timepoint);
-			if(hourOfDay < 12){
-				//if the time is before 12 a.m., the slot at the morning will 
-				//be allowed
-				belegteSlots[timeSlots[dayOfWeek][0]] = 1;
-			} else {
-				//else the slot in the afternoon will be allowed
-				belegteSlots[timeSlots[dayOfWeek][1]] = 1;
-			}
-			//look for more constraints separated by commas
-			if(constraint.contains(",")){
-				timepoint = constraint.substring(constraint.indexOf(',') + 1, constraint.indexOf('-'));
-				hourOfDay = Integer.valueOf(timepoint);
-				//normally, the next available slot should be the the afternoon slot
-				if(hourOfDay > 12){
-					//check, if it's really the afternoon slot
-					belegteSlots[timeSlots[dayOfWeek][1]] = 1;
-				}
+			
+			if (stundenCounter == 11) {
+				slotCounter++;
 			}
 		}
 		return belegteSlots;
