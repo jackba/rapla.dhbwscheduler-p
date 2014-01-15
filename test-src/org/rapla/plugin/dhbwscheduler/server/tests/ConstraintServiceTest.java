@@ -88,4 +88,72 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	}
     	
     }
+    
+    public void testGetExceptionDates_1(){
+    	String TestConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "1161775163140_"
+        		+ "Status/n"
+        		+ "222_"
+        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
+        		+ "_"
+        		+ "Status";
+    	
+    	Date[] sollergebnis = new Date[1];
+    	sollergebnis[0] = new Date(1161775163140L);
+    	
+    	Date[] testergebnis= ConstraintService.getExceptionDates(TestConstraint);    	
+    	
+    	assertEquals(sollergebnis[0],testergebnis[0]);
+    }
+    
+    public void testGetExceptionDates_2(){
+    	String TestConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "1161775163140,2161775163140_"
+        		+ "Status/n"
+        		+ "222_"
+        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
+        		+ "_"
+        		+ "Status";
+    	
+    	Date[] sollergebnis = new Date[2];
+    	sollergebnis[0] = new Date(1161775163140L);
+    	sollergebnis[1] = new Date(2161775163140L);
+    	
+    	Date[] testergebnis= ConstraintService.getExceptionDates(TestConstraint);    	
+    	
+    	assertEquals(sollergebnis[0],testergebnis[0]);
+    	assertEquals(sollergebnis[1],testergebnis[1]);
+    }
+    
+    public void testGetExceptionDates_3(){
+    	String TestConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "1161775163140,2161775163140,2161775173140_"
+        		+ "Status/n"
+        		+ "222_"
+        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
+        		+ "2161775183140,2161775193140_"
+        		+ "Status";
+    	
+    	Date[] sollergebnis = new Date[5];
+    	sollergebnis[0] = new Date(1161775163140L);
+    	sollergebnis[1] = new Date(2161775163140L);
+    	sollergebnis[2] = new Date(2161775173140L);
+    	sollergebnis[3] = new Date(2161775183140L);
+    	sollergebnis[4] = new Date(2161775193140L);
+    	
+    	Date[] testergebnis= ConstraintService.getExceptionDates(TestConstraint);    	
+    	
+    	assertEquals(sollergebnis[0],testergebnis[0]);
+    	assertEquals(sollergebnis[1],testergebnis[1]);
+    	assertEquals(sollergebnis[2],testergebnis[2]);
+    	assertEquals(sollergebnis[3],testergebnis[3]);
+    	assertEquals(sollergebnis[4],testergebnis[4]);
+    	
+    }
 }
