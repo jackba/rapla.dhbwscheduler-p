@@ -30,6 +30,7 @@ import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
+import org.rapla.entities.domain.Period;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
@@ -263,9 +264,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         	Appointment appointment = reservation.getAppointments()[0];
     		Allocatable[] allocatables = reservation.getAllocatablesFor( appointment);
 
+    		String dozConstraint = getDozentenConstraint(reservation); 
+    		int[] dozConstr = splitDozentenConstraint(dozConstraint);
     		//Slot-Datum einstellen
-        	newStart = setStartDate(solRes[i][1], startDatum, appointment, allocatables);
-    		appointment.move(newStart);
+        	newStart = setStartDate(solRes[i][1], startDatum, appointment, allocatables, dozConstr);
+        	appointment.move(newStart);
 			
     		getClientFacade().store(reservation);
     		reservations.remove((solRes[i][0])-1);
@@ -306,7 +309,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param slot
 	 * @return
 	 */
-	private Date setStartDate(int slot, Date startDate, Appointment appointment, Allocatable[]  allocatables) throws RaplaException {
+	private Date setStartDate(int slot, Date startDate, Appointment appointment, Allocatable[]  allocatables, int[] dozConstr) throws RaplaException {
 		Date newStart;
 		
 		Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
@@ -314,17 +317,26 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if (slot > 1) {
 			cal.add(Calendar.HOUR, (slot-1)*12);
 		}
+		//Worktime beachten
 		if( cal.get(Calendar.HOUR_OF_DAY) < (getCalendarOptions().getWorktimeStartMinutes() / 60)) {
 			cal.add(Calendar.MINUTE, getCalendarOptions().getWorktimeStartMinutes());
 		}
+		cal.add(Calendar.MINUTE, -15);
+		
+		//TODO: auf neue splitDozConstraint warten. Danach kann ich dies erst einbauen (sonst müsste ich den String nochmals zerlegen)
+		//Dozenten Constraint beachten
+
 		newStart = new Date(cal.getTimeInMillis());
 		
-		appointment.move(newStart);
+		Date oldDate = appointment.getStart();
 		
+		appointment.move(newStart);
 		newStart = getQuery().getNextAllocatableDate(Arrays.asList(allocatables), appointment,getCalendarOptions() );
+		
+		appointment.move(oldDate);
 
 		//TODO: getNextFreeTime + Constraints prüfen
-		return new Date(cal.getTimeInMillis());
+		return newStart;
 	}
 	
 	/**
@@ -387,11 +399,17 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				}
 			}
 			//get the planungsconstraints 
-			Object constraintObj = vorlesung.getClassification().getValue("planungsconstraints");
+/*Einbau der Methode getDozentenConstraint wg. Mehrfachnutzung
+ * 			Object constraintObj = vorlesung.getClassification().getValue("planungsconstraints");
 			if(constraintObj == null){
 				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
 			} else {
 				String planungsconstraint = constraintObj.toString();
+*/			
+			String planungsconstraint = getDozentenConstraint(vorlesung);
+			if(planungsconstraint.isEmpty()){
+				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
+			} else {
 				//get the slots blocked by the planungsconstraints
 				int[] belegteSlots = splitDozentenConstraint(planungsconstraint);
 				for(int i = 0; i < 10; i++){
@@ -412,12 +430,30 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		}
 		return vor_res;
 	}
+
+	/**
+	 * 
+	 * @param reservation
+	 * @return
+	 */
+	private String getDozentenConstraint(Reservation reservation) {
+		
+		Object constraintObj = reservation.getClassification().getValue("planungsconstraints");
+		String result = "";
+		if(constraintObj != null){
+			result = constraintObj.toString();
+		}
+		
+		//TODO: Evtl gleich die zerlegten Constraints zurückliefern ?? Sinnvoll?
+		return result;
+	}
 	
 	/**
 	 * @param Dozentenconstraint
 	 * @return int[]
 	 */
 	private int[] splitDozentenConstraint(String dozentenConstraint) {
+		//TODO: Fehlervermeidung durch Abfangen von leeren dozentenConstratint ??
 		//first, all slots aren't allowed
 		int[] belegteSlots = {0,0,0,0,0,0,0,0,0,0};
 		int idIndex = dozentenConstraint.indexOf('_');
