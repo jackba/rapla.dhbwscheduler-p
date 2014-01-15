@@ -17,11 +17,69 @@ public class ConstraintService extends RaplaComponent{
 	}
 
 	/*Constraint:
+	 * 0: DozentID
+	 * 1: Constraints
+	 * 2: Dates
+	 * 3: Status
 	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
 	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
 	 */
-	
 
+	public static String changeDozConstraint(String constraint, int doz_ID, String changevalue,Object value){
+		
+		if (constraint == null){
+			return "";
+		}
+		
+		int[] dozentIds = getDozIDs(constraint);
+		String[] dozentConstraints = getDozStringConstraints(constraint);
+		
+		Date[][] execptions = new Date[dozentIds.length][];
+		int[] status = new int[dozentIds.length];
+		
+		for(int i = 0; i < dozentIds.length ; i++){
+			
+			Date[] dozentExecption = getExceptionDatesDoz(constraint, dozentIds[i]);			
+			int dozstatus = getStatus(constraint,dozentIds[i]);
+			
+			if (dozentIds[i] == doz_ID){
+				try{
+					switch(changevalue){
+					case "dates":
+						dozentExecption = (Date[]) value;
+						break;
+					case "status":
+						Integer intvalue = (Integer) value;
+						dozstatus = intvalue.intValue();
+						break;
+					case "singleconstraint":
+						dozentConstraints[i] = (String) value;
+						break;
+					case "constraints":
+						dozentConstraints = (String[]) value; 
+					}
+
+				}catch(ClassCastException ce){
+					ce.printStackTrace();
+					return constraint;
+				}
+				
+			}
+			
+			//ES kommt hier zum Fehler, da das Array gefüllt wird und bei buildDozConstraint als "befüllt angesehen wird.
+			// Benjamin kannst du dir das bitte anschauen??
+			//TODO Benjamin kannst du hier mal schauen?
+			//execptions[i] 	= dozentExecption;
+		
+			
+			status[i] 		= dozstatus;
+			
+		}
+			
+		return buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
+		
+	}
+	
 	public static String buildDozConstraint(int dozID, String dozConst, Date[] exceptDate, int status){
 		int[] dozIDs = new int[1];
 		dozIDs[0] = dozID;
@@ -95,6 +153,24 @@ public class ConstraintService extends RaplaComponent{
 			result[i] = Integer.valueOf(split[0]);
 		}
 		return result;
+	}
+	
+	public static String[] getDozStringConstraints (String constraint){
+		String[] DozCount = {};
+		
+		if (constraint == null){
+			return DozCount;
+		}
+		
+		DozCount = constraint.split("\n");
+		
+		String[] DozConstraints = new String[DozCount.length];
+		for(int i = 0 ; i < DozCount.length; i++){
+			String[] split = DozCount[i].split("_");
+			DozConstraints[i] = split[1];
+		}
+	
+		return DozConstraints;
 	}
 	
 	public static int[] getDozConstraints (String constraint){
@@ -204,7 +280,9 @@ public class ConstraintService extends RaplaComponent{
 			String[] split = dozCount[i].split("_");
 		
 			if (Integer.valueOf(split[0]) == doz_ID){
-				exceptionDates = split[2].split(",");
+				if(!split[2].split(",").equals("")){
+					exceptionDates = split[2].split(",");
+				}
 				break;
 			}
 		}

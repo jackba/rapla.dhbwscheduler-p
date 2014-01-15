@@ -862,7 +862,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
  	@Override
 	public String sendMail(SimpleIdentifier reservationID,
 			SimpleIdentifier dozentId, String login,String url) throws RaplaException {
-		// TODO Auto-generated method stub
+		
 		
 		
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
@@ -872,7 +872,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		Reservation veranstaltung = (Reservation) lookup.resolve(reservationID);
 		Allocatable dozent		  = (Allocatable) lookup.resolve(dozentId);
 		
-		boolean reminder = false;
+		
 		boolean isPerson = false;
 		String email = "";
 		String name = "";
@@ -908,22 +908,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			
 			
 			
-			String erfassungsstatus = (String) veranstaltung.getClassification().getValue("erfassungsstatus");
-			switch(erfassungsstatus){
-			case "uneingeladen":
-				reminder=false;
-				break;
-			case "eingeladen":
-				reminder=true;
-				break;
-			case "erfasst":
-				reminder=false;
-				break;
-			default:
-				break;
-			}
+			String constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints");
+			int status = ConstraintService.getStatus(constraint, dozentId.getKey());
 			
-			if(reminder){
+			//1 = eingeladen das bedeutet er hat shcon eine Mail bekommen und muss erinnert werden.
+			if(status == 1){		
 				betreff = getString("email_Betreff_Erinnerung");
 			}else{
 				betreff = getString("email_Betreff_Einladung");
