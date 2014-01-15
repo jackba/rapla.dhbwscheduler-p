@@ -34,5 +34,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="rapla.dhbwscheduler-p/lib"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/rapla.holiday-p"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>
