@@ -5,10 +5,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
@@ -28,6 +32,7 @@ import org.rapla.components.util.DateTools;
 import org.rapla.components.util.ParseDateException;
 import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.EntityNotFoundException;
+import org.rapla.entities.configuration.Preferences;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
@@ -43,11 +48,17 @@ import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
+import org.rapla.framework.StartupEnvironment;
 import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.ReservationController;
 import org.rapla.gui.internal.edit.reservation.AppointmentController;
+import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
 import org.rapla.plugin.freetime.server.FreetimeService;
+import org.rapla.plugin.mail.MailException;
+import org.rapla.plugin.mail.MailPlugin;
+import org.rapla.plugin.mail.server.MailInterface;
+import org.rapla.plugin.urlencryption.UrlEncryption;
 import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
 import org.rapla.storage.StorageOperator;
@@ -57,6 +68,7 @@ import org.rapla.storage.StorageOperator;
  * @author DHBW
  *
  */
+@SuppressWarnings({ "unused", "restriction" })
 public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCallbackListener, GlpkTerminalListener, RemoteMethodFactory<DhbwschedulerService>, DhbwschedulerService {
 
 	int[][] timeSlots = {{},{},{0,1},{2,3},{4,5},{6,7},{8,9}};
@@ -77,6 +89,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 */
 	public DhbwschedulerServiceImpl(RaplaContext context) {
 		super(context);
+		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 
 	/* (non-Javadoc)
@@ -108,7 +121,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		try {
 			freetimeService = getService(FreetimeService.class);
 		} catch (UnsupportedOperationException e) {
-			postProcessingResults += "<br>" + getString("no_holoyday_plugin") + "<br/";
+			postProcessingResults += "<br>" + getString("no_holiday_plugin") + "<br/";
 		}
 		
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
@@ -273,12 +286,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         	result += reservation.getClassification().getName(getLocale()) + ": " + solRes[i][1] + "\n";
         	reservation = getClientFacade().edit(reservation);
         	Appointment appointment = reservation.getAppointments()[0];
-    		Allocatable[] allocatables = reservation.getAllocatablesFor( appointment);
+    		Allocatable[] allocatables = reservation.getAllocatablesFor(appointment);
 
-    		String dozConstraint = getDozentenConstraint(reservation); 
-    		int[] dozConstr = splitDozentenConstraint(dozConstraint);
+//    		String dozConstraint = getDozentenConstraint(reservation); 
+//    		int[] dozConstr = splitDozentenConstraint(dozConstraint);
     		//Slot-Datum einstellen
-        	newStart = setStartDate(solRes[i][1], startDatum, appointment, allocatables, dozConstr);
+        	newStart = setStartDate(solRes[i][1], startDatum, endeDatum, appointment, allocatables, reservation);
         	appointment.move(newStart);
 			
     		getClientFacade().store(reservation);
@@ -318,9 +331,15 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	/**
 	 * 
 	 * @param slot
+	 * @param startDate
+	 * @param endDate
+	 * @param appointment
+	 * @param allocatables
+	 * @param reservation
 	 * @return
+	 * @throws RaplaException
 	 */
-	private Date setStartDate(int slot, Date startDate, Appointment appointment, Allocatable[]  allocatables, int[] dozConstr) throws RaplaException {
+	private Date setStartDate(int slot, Date startDate, Date endDate, Appointment appointment, Allocatable[]  allocatables, Reservation reservation) throws RaplaException {
 		Date newStart;
 		
 		Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
@@ -328,39 +347,73 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if (slot > 1) {
 			cal.add(Calendar.HOUR, (slot-1)*12);
 		}
+		
 		//Worktime beachten
 		if( cal.get(Calendar.HOUR_OF_DAY) < (getCalendarOptions().getWorktimeStartMinutes() / 60)) {
 			cal.add(Calendar.MINUTE, getCalendarOptions().getWorktimeStartMinutes());
 		}
 		cal.add(Calendar.MINUTE, -15);
 		
-		//TODO: auf neue splitDozConstraint warten. Danach kann ich dies erst einbauen (sonst müsste ich den String nochmals zerlegen)
 		//Dozenten Constraint beachten
+		//TODO: Nachdem die Constraints implementiert sind muss hier noch weitergearbeitet / getestet werden.
+
+		int[] dozConstr = ConstraintService.getDozConstraints(getDozentenConstraint(reservation));
+
+		for (int i = (slot-1)*12; i < ((slot-1)*12+12); i++) {
+			if(dozConstr[i] == 2) {
+				break;
+			}
+			else if(dozConstr[i] == 0) {
+				cal.add(Calendar.HOUR_OF_DAY,  1);
+			}
+		}
+		
+		//TODO: ExeptionDates vom Dozenten beachten
 
 		newStart = new Date(cal.getTimeInMillis());
 		
 		Date oldDate = appointment.getStart();
 		
 		appointment.move(newStart);
-		newStart = getQuery().getNextAllocatableDate(Arrays.asList(allocatables), appointment,getCalendarOptions() );
+
+		//Alle gerade geplanten Reservierungen bei der Betrachtung ausschließen 
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		
+		Integer worktimeStartMinutes = getCalendarOptions().getWorktimeStartMinutes();
+		Integer worktimeEndMinutes = getCalendarOptions().getWorktimeEndMinutes();
+		
+		Integer[] excludedDays = getCalendarOptions().getExcludeDays().toArray(new Integer[]{});
+		Integer rowsPerHour = getCalendarOptions().getRowsPerHour();
+		
+		HashSet<Reservation> ignoreList = getIgnoreList(allocatables, startDate, endDate);
+
+		newStart = lookup.getNextAllocatableDate(Arrays.asList(allocatables), appointment, ignoreList, worktimeStartMinutes, worktimeEndMinutes, excludedDays, rowsPerHour);
 		
 		appointment.move(oldDate);
 
-		//TODO: getNextFreeTime + Constraints prüfen
 		return newStart;
 	}
 	
 	/**
-	 * @param start
-	 * @param ende
-	 * @param dozentenConstraint
-	 * @return int[][]
+	 * 
+	 * @param allocatables
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws RaplaException
 	 */
-	private int[][] buildDozentenConstraint(Date start, Date ende, String dozentenConstraint){
-		//TODO: Kostenmatrix für Dozentenwünsche
-		return null;
+	private HashSet<Reservation> getIgnoreList( Allocatable[] allocatables, Date startDate, Date endDate) throws RaplaException {
+		HashSet<Reservation> ignoreList = new HashSet<Reservation>();
+
+		Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, startDate, endDate, null);
+		for (Reservation vorlesungMitGleicherResource : vorlesungenMitGleichenResourcen){
+			//for each of these reservations, look if there are in planning_closed
+			if(vorlesungMitGleicherResource.getClassification().getValue(getString("design_status")).equals(getString("planning_closed"))){
+				ignoreList.add(vorlesungMitGleicherResource);
+			}
+		}
+		return ignoreList;
 	}
-	
 	/**
 	 * @param start - Anfang der Woche
 	 * @param ende - Ende der Woche
@@ -416,29 +469,21 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 						cal.setTime(beginn);
 						//Prüfung, ob innerhalb von Start und Ende
 						if(cal.after(start) && cal.before(ende)){
-							if(cal.HOUR_OF_DAY < 12){
+							if(cal.get(Calendar.HOUR_OF_DAY) < 12){
 								//set the field for the vorlesungNr and the slot to zero
 								//if the appointment starts before 12 a.m., the appointment will block
 								//the slot at the morning
-								vor_res[vorlesungNr][timeSlots[cal.DAY_OF_WEEK][0]] = 0;
+								vor_res[vorlesungNr][timeSlots[cal.get(Calendar.DAY_OF_WEEK)][0]] = 0;
 							} else {
 								//else the appointment is after 12 a.m. and it will block
 								//the slot at the afternoon
-							vor_res[vorlesungNr][timeSlots[cal.DAY_OF_WEEK][1]] = 0;
+							vor_res[vorlesungNr][timeSlots[cal.get(Calendar.DAY_OF_WEEK)][1]] = 0;
 							}
 						}
 					}
 				}
 			}
 			//get the planungsconstraints 
-/*Einbau der Methode getDozentenConstraint wg. Mehrfachnutzung
- * 			Object constraintObj = vorlesung.getClassification().getValue(getString("planning_constraints"));
-			Object constraintObj = vorlesung.getClassification().getValue(getString("planning_constraints"));
-			if(constraintObj == null){
-				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
-			} else {
-				String planungsconstraint = constraintObj.toString();
-*/			
 			String planungsconstraint = getDozentenConstraint(vorlesung);
 			if(planungsconstraint.isEmpty()){
 				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
@@ -476,8 +521,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if(constraintObj != null){
 			result = constraintObj.toString();
 		}
-		
-		//TODO: Evtl gleich die zerlegten Constraints zurückliefern ?? Sinnvoll?
 		return result;
 	}
 	
@@ -650,24 +693,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			i++;
 		}
 		return kurs_vor;
-	}
-
-	/**
-	 * @param reservationId
-	 * @param startNeu
-	 * @return boolean
-	 */
-	private boolean editReservation(SimpleIdentifier reservationId, Date startNeu) {
-		return false;
-	}
-	
-	/**
-	 * @param appointmentId
-	 * @param startNeu
-	 * @return boolean
-	 */
-	private boolean editAppointment(SimpleIdentifier appointmentId, Date startNeu) {
-		return false;
 	}
 
     /* (non-Javadoc)
@@ -864,4 +889,108 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         
         return auslese;
     }
+
+ 
+    
+	@Override
+	public String sendMail(SimpleIdentifier reservationID,
+			SimpleIdentifier dozentId, String login,String url) throws RaplaException {
+		// TODO Auto-generated method stub
+		
+		
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		final MailInterface MailClient = getContext().lookup(MailInterface.class);
+		
+		
+		Reservation veranstaltung = (Reservation) lookup.resolve(reservationID);
+		Allocatable dozent		  = (Allocatable) lookup.resolve(dozentId);
+		
+		boolean reminder = false;
+		boolean isPerson = false;
+		String email = "";
+		String name = "";
+		String vorname = "";
+		String titel = "";
+
+		
+		isPerson 	= dozent.isPerson();
+		email		= (String) dozent.getClassification().getValue("email");
+		name		= (String) dozent.getClassification().getValue("surname");
+		vorname		= (String) dozent.getClassification().getValue("firstname");
+		titel 		= (String) dozent.getClassification().getValue("title");
+		
+		//Dozent.getClassification().getValue("");
+		if(isPerson){	
+			String studiengang = "";
+			if (veranstaltung.getClassification().getValue("studiengang")!=null)
+			{
+				studiengang = veranstaltung.getClassification().getValue("studiengang").toString();
+				if (studiengang.contains(" "))
+				{
+					int pos = studiengang.indexOf(" ");
+					studiengang = studiengang.substring(0, pos);
+				}
+			}
+			String veranstaltungstitel 	= (String) veranstaltung.getClassification().getValue("title");
+			String betreff;
+			
+			
+			ClientFacade facade =  getContext().lookup(ClientFacade.class);
+			Preferences prefs = facade.getPreferences( null);
+			final String defaultSender = prefs.getEntryAsString( MailPlugin.DEFAULT_SENDER_ENTRY, "");
+			
+			
+			
+			String erfassungsstatus = (String) veranstaltung.getClassification().getValue("erfassungsstatus");
+			switch(erfassungsstatus){
+			case "uneingeladen":
+				reminder=false;
+				break;
+			case "eingeladen":
+				reminder=true;
+				break;
+			case "erfasst":
+				reminder=false;
+				break;
+			default:
+				break;
+			}
+			
+			if(reminder){
+				betreff = getString("email_Betreff_Erinnerung");
+			}else{
+				betreff = getString("email_Betreff_Einladung");
+			}
+			betreff += veranstaltungstitel;
+
+			String Inhalt = getString("email_anrede") + titel+ " " + vorname + " " + name + ",\n\n" + 
+					getString("email_Inhalt") + "\n" + 
+					veranstaltungstitel +  " (" + studiengang + ")" + "\n\n"  +
+					getString("Link_Text") + "\n " + //<a href=" + url+ ">" + url + "</a> \n\n" +
+					url + "\n\n" +
+					getString("email_Signatur") + "\n" + 
+					login + "\n";
+			//getUser().getEmail();
+			
+
+			
+			
+			try {
+				MailClient.sendMail(defaultSender,email, betreff, Inhalt);
+			} catch (MailException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
+			//Link generieren
+			// Text einf�gen
+			//Senden!
+
+		}else{
+			;
+		}
+
+		
+		return null;
+	}
 }
