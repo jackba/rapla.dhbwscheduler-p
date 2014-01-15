@@ -964,7 +964,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			String Inhalt = getString("email_anrede") + titel+ " " + vorname + " " + name + ",\n\n" + 
 					getString("email_Inhalt") + "\n" + 
 					veranstaltungstitel +  " (" + studiengang + ")" + "\n\n"  +
-					getString("Link_Text") + "\n " + //<a href=" + url+ ">" + url + "</a> \n\n" +
+					getString("Link_Text") + "\n" + //<a href=" + url+ ">" + url + "</a> \n\n" +
 					url + "\n\n" +
 					getString("email_Signatur") + "\n" + 
 					login + "\n";

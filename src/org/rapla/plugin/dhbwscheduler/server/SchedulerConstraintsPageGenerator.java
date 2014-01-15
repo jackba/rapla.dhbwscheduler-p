@@ -278,7 +278,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
-	
+
 	public void storeIntoReservation(int reservationID, int[][] calendar, Date[] ausnahmeDatum, int DozentID) throws RaplaContextException, EntityNotFoundException
 	{
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
