@@ -81,7 +81,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    	int[] testergebnis= ConstraintService.getDozConstraint(TestConstraint,111);
+    	int[] testergebnis= ConstraintService.getDozConstraintsDoz(TestConstraint,111);
     	
     	for (int i = 0; i< sollergebnis.length; i++){
     		assertEquals(sollergebnis[i],testergebnis[i]);
