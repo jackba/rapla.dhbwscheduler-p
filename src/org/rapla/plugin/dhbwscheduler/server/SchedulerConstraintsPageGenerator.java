@@ -26,7 +26,7 @@ import org.rapla.plugin.dhbwscheduler.*;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
 
-//@WebServlet(urlPatterns = {"/Test"})
+@WebServlet(urlPatterns = {"/Test"})
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 
 	public SchedulerConstraintsPageGenerator(RaplaContext context,Configuration config) {
@@ -34,7 +34,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 	
-	/*protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {         
 
         PrintWriter out = response.getWriter();            
@@ -44,7 +44,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
         String test = "test";
 
        // response.sendRedirect("pasoServlet.jsp");
-    }*/
+    }
 	
 	public String getInformation(String[] feld, String suche)
 	{
