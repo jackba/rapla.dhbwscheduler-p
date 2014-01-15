@@ -456,6 +456,18 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								
 								
 							}
+							//Status auf eingeladen setzen
+							Entity event = selectedReservations.get( 0);
+							try {
+								Reservation editableEvent = getClientFacade().edit( event);
+								editableEvent = getClientFacade().edit( r);
+								editableEvent.getClassification().setValue("erfassungsstatus", "eingeladen");
+								getClientFacade().store( editableEvent );
+							} catch (RaplaException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							
 						}
 
 
@@ -492,7 +504,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 					return returnvalue;
 				}
-
+				
 			});
 			menus.add( menu );
 		}
