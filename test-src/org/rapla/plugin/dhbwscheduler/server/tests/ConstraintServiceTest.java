@@ -64,7 +64,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     }
 
     public void testGetDozConstraints_1Dozent(){
-        String TestConstraint = ""
+        String testConstraint = ""
         		+ "111_"
         		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "Date,Date,Date_"
@@ -77,7 +77,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     	
-    	int[] testergebnis= ConstraintService.getDozConstraints(TestConstraint);
+    	int[] testergebnis= ConstraintService.getDozConstraints(testConstraint);
     	
     	for (int i = 0; i< sollergebnis.length; i++){
     		assertEquals(sollergebnis[i],testergebnis[i]);
@@ -86,7 +86,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     }
     
     public void testGetDozConstraints_2Dozenten(){
-        String TestConstraint = ""
+        String testConstraint = ""
         		+ "111_"
         		+ "101020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "Date,Date,Date_"
@@ -102,7 +102,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    	int[] testergebnis= ConstraintService.getDozConstraints(TestConstraint);
+    	int[] testergebnis= ConstraintService.getDozConstraints(testConstraint);
     	
     	for (int i = 0; i< sollergebnis.length; i++){
     		assertEquals(sollergebnis[i],testergebnis[i]);
@@ -111,7 +111,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     }
     
     public void testGetDozConstraints_3Dozenten(){
-        String TestConstraint = ""
+        String testConstraint = ""
         		+ "111_"
         		+ "101021100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "Date,Date,Date_"
@@ -132,7 +132,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     	
-    	int[] testergebnis= ConstraintService.getDozConstraints(TestConstraint);
+    	int[] testergebnis= ConstraintService.getDozConstraints(testConstraint);
     	
     	for (int i = 0; i< sollergebnis.length; i++){
     		assertEquals(sollergebnis[i],testergebnis[i]);
@@ -141,7 +141,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     }
     
     public void testGetDozConstraint(){
-    	String TestConstraint = ""
+    	String testConstraint = ""
         		+ "111_"
         		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "Date,Date,Date_"
@@ -158,7 +158,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    	int[] testergebnis= ConstraintService.getDozConstraintsDoz(TestConstraint,111);
+    	int[] testergebnis= ConstraintService.getDozConstraintsDoz(testConstraint,111);
     	
     	for (int i = 0; i< sollergebnis.length; i++){
     		assertEquals(sollergebnis[i],testergebnis[i]);
@@ -167,7 +167,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     }
     
     public void testGetExceptionDates_1(){
-    	String TestConstraint = ""
+    	String testConstraint = ""
         		+ "111_"
         		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "1161775163140_"
@@ -180,13 +180,13 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	Date[] sollergebnis = new Date[1];
     	sollergebnis[0] = new Date(1161775163140L);
     	
-    	Date[] testergebnis= ConstraintService.getExceptionDates(TestConstraint);    	
+    	Date[] testergebnis= ConstraintService.getExceptionDates(testConstraint);    	
     	
     	assertEquals(sollergebnis[0],testergebnis[0]);
     }
     
     public void testGetExceptionDates_2(){
-    	String TestConstraint = ""
+    	String testConstraint = ""
         		+ "111_"
         		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "1161775163140,2161775163140_"
@@ -200,14 +200,14 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	sollergebnis[0] = new Date(1161775163140L);
     	sollergebnis[1] = new Date(2161775163140L);
     	
-    	Date[] testergebnis= ConstraintService.getExceptionDates(TestConstraint);    	
+    	Date[] testergebnis= ConstraintService.getExceptionDates(testConstraint);    	
     	
     	assertEquals(sollergebnis[0],testergebnis[0]);
     	assertEquals(sollergebnis[1],testergebnis[1]);
     }
     
     public void testGetExceptionDates_3(){
-    	String TestConstraint = ""
+    	String testConstraint = ""
         		+ "111_"
         		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "1161775163140,2161775163140,2161775173140_"
@@ -224,7 +224,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	sollergebnis[3] = new Date(2161775183140L);
     	sollergebnis[4] = new Date(2161775193140L);
     	
-    	Date[] testergebnis= ConstraintService.getExceptionDates(TestConstraint);    	
+    	Date[] testergebnis= ConstraintService.getExceptionDates(testConstraint);    	
     	
     	assertEquals(sollergebnis[0],testergebnis[0]);
     	assertEquals(sollergebnis[1],testergebnis[1]);
@@ -235,7 +235,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     }
     
     public void testGetExceptionDatesDoz(){
-    	String TestConstraint = ""
+    	String testConstraint = ""
         		+ "111_"
         		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "1161775163140,2161775163140_"
@@ -249,14 +249,14 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	sollergebnis[0] = new Date(1161775163140L);
     	sollergebnis[1] = new Date(2161775163140L);
     	
-    	Date[] testergebnis= ConstraintService.getExceptionDatesDoz(TestConstraint,111);    	
+    	Date[] testergebnis= ConstraintService.getExceptionDatesDoz(testConstraint,111);    	
     	
     	assertEquals(sollergebnis[0],testergebnis[0]);
     	assertEquals(sollergebnis[1],testergebnis[1]);
     }
     
     public void testGetStatus(){
-    	String TestConstraint = ""
+    	String testConstraint = ""
         		+ "111_"
         		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "1161775163140,2161775163140_"
@@ -266,8 +266,8 @@ public class ConstraintServiceTest extends RaplaTestCase {
         		+ "1161775163140_"
         		+ "1";
     	    	
-    	int testergebnis1= ConstraintService.getStatus(TestConstraint,111);    	
-    	int testergebnis2= ConstraintService.getStatus(TestConstraint,222);   
+    	int testergebnis1= ConstraintService.getStatus(testConstraint,111);    	
+    	int testergebnis2= ConstraintService.getStatus(testConstraint,222);   
     	
     	assertEquals(testergebnis1,0);
     	assertEquals(testergebnis2,1);
@@ -278,9 +278,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
         		+ "111_"
         		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
         		+ "1161775163140,2161775163140,2161775173140_"
-        		+ "1";
-    		ergebnisConstraint += "\n";
-    		ergebnisConstraint += ""
+        		+ "1\n"
     			+ "222_"
         		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
         		+ "2161775183140,2161775193140_"
@@ -293,27 +291,95 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	exceptDates[1][0] = new Date(2161775183140L);
     	exceptDates[1][1] = new Date(2161775193140L);
     	
-    	int[] doz_IDs = {111, 222};
+    	int[] dozIDs = {111, 222};
     	
-    	int[][][] dozConsts = new int[2][7][24];
-    	for (int i = 0; i < 2; i++) {
-    		for (int j = 0; j < 7; j++) {
-    			for (int k = 0; k < 24; k++) {
-    				dozConsts[i][j][k] = i;
-    			}
-    		}
-    	}
-    	
-    	dozConsts[0][0][0] = 1;
-    	dozConsts[0][0][2] = 1;
-    	dozConsts[1][0][1] = 0;
-    	dozConsts[1][0][2] = 0;
+    	String[] dozConsts = { "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 
+    			"100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" };
     	
     	int[] status = {1, 2};
     	
-    	String testergebnis= ConstraintService.buildDozConstraint(doz_IDs, dozConsts, exceptDates, status);    	
+    	String testergebnis= ConstraintService.buildDozConstraint(dozIDs, dozConsts, exceptDates, status);    	
     	
     	assertEquals(ergebnisConstraint,testergebnis);
+    }
+
+    public void testbuildDozConstraintNULL(){
+    	String ergebnisConstraint = ""
+        		+ "111_"
+        		+ "_"
+        		+ "_"
+        		+ "1\n"
+    			+ "222_"
+        		+ "_"
+        		+ "_"
+        		+ "2";
+    	
+    	int[] dozIDs = {111, 222};
+    	
+    	int[] status = {1, 2};
+    	
+    	String[] dozConsts = new String[2];
+    	Date[][] exceptDates = {{}, {}};
+    	
+    	String testergebnis= ConstraintService.buildDozConstraint(dozIDs, dozConsts, exceptDates, status);    	
+    	
+    	assertEquals(ergebnisConstraint,testergebnis);
+    }
+
+    public void testbuildDozConstraintEINERNULL(){
+    	String ergebnisConstraint = ""
+        		+ "111_"
+        		+ "_"
+        		+ "_"
+        		+ "1";
+    	
+    	int dozID = 111;
+    	
+    	int status = 1;
+    	
+    	String testergebnis= ConstraintService.buildDozConstraint(dozID, null, null, status);    	
+    	
+    	assertEquals(ergebnisConstraint,testergebnis);
+    }
+
+    public void testbuildDozConstraintEINER(){
+    	String ergebnisConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "1161775163140,2161775163140,2161775173140_"
+        		+ "1";
+    	
+    	int dozID = 111;
+    	
+    	int status = 1;
+
+    	String dozConst = "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    	
+    	Date[] exceptDates = new Date[3];
+    	exceptDates[0] = new Date(1161775163140L);
+    	exceptDates[1] = new Date(2161775163140L);
+    	exceptDates[2] = new Date(2161775173140L);
+    	
+    	String testergebnis= ConstraintService.buildDozConstraint(dozID, dozConst, exceptDates, status);    	
+    	
+    	assertEquals(ergebnisConstraint,testergebnis);
+    }
+    
+    public void testgetDozIDs(){
+    	String testConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "1161775163140,2161775163140,2161775173140_"
+        		+ "1\n"
+    			+ "222_"
+        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
+        		+ "2161775183140,2161775193140_"
+        		+ "2";
+    		
+		int[] dozIDergebnis = ConstraintService.getDozIDs(testConstraint);
+    		
+		assertEquals(111,dozIDergebnis[0]);
+		assertEquals(222,dozIDergebnis[1]);
     }
 
 }
