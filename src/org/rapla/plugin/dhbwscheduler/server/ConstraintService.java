@@ -18,7 +18,7 @@ public class ConstraintService extends RaplaComponent{
 	}
 
 	/*Constraint:
-	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status/n
+	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
 	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
 	 */
 	
@@ -62,24 +62,25 @@ public class ConstraintService extends RaplaComponent{
 		return result;
 	}
 	
-	public static String[] getDozIDs(String constraint){
-		String[] result = {};
-		if (constraint == null) {
-			return result;
-		}
-		String dozCount[] = constraint.split("/n");
-		result = new String[dozCount.length];
+	public static int[] getDozIDs(String constraint){
+		int[] result; // = {};
+//		if (constraint == null || constraint.equals("")) {
+//			return result;
+//		}
+		
+		String dozCount[] = constraint.split("\n");
+		result = new int[dozCount.length];
 		
 		
 		for(int i = 0; i < dozCount.length; i++){
-			result[i] = dozCount[i].split("_")[0];
+			String[] split = dozCount[i].split("_");
+			result[i] = Integer.valueOf(split[0]);
 		}
-		
 		return result;
 	}
 	
 	public static int[] getDozConstraints (String Constraint){
-		String DozCount[] = Constraint.split("/n");
+		String DozCount[] = Constraint.split("\n");
 		int[][] DozConst = new int[DozCount.length][168];
 		int [] ergebnis = new int[168];
 		
@@ -105,7 +106,7 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static int[] getDozConstraint (String Constraint, int doz_ID){
-		String DozCount[] = Constraint.split("/n");
+		String DozCount[] = Constraint.split("\n");
 		int [] ergebnis = new int[168];
 		
 		for(String DozConst:DozCount){
@@ -124,7 +125,7 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static Date[] getExceptionDates (String Constraint){
-		String DozCount[] = Constraint.split("/n");
+		String DozCount[] = Constraint.split("\n");
 		String ExceptionDates[][] = new String[DozCount.length][];
 		Date[] ergebnis = {};
 		
@@ -152,7 +153,7 @@ public class ConstraintService extends RaplaComponent{
 	}	
 	
 	public static Date[] getExceptionDatesDoz (String Constraint,int doz_ID ){
-		String DozCount[] = Constraint.split("/n");
+		String DozCount[] = Constraint.split("\n");
 		String ExceptionDates[] = {};
 		Date[] ergebnis = {};
 		
@@ -182,7 +183,7 @@ public class ConstraintService extends RaplaComponent{
 		
 	
 	public static int getStatus(String Constraint, int doz_ID){
-		String DozCount[] = Constraint.split("/n");
+		String DozCount[] = Constraint.split("\n");
 		
 		for(String DozConst:DozCount){
 			
