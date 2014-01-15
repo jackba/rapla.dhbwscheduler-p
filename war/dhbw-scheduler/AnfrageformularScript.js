@@ -10,13 +10,32 @@ $('document').ready(function(){
 		     success: function (data){
 		    	 alert("Gesendet");
 		     },
-		     error: function(data){
+		     error: function(){
 		    	 alert("Error");
 		     }		
 		});
-	})
+	});	
+	$(function (){
+		var isMouseDown = false;
+		var isHighlighted;
+		$('#timeTableBody td').mousedown(function(){
+			isMouseDown = true;
+			$(this).toggleClass("tdSelect");
+			isHighlighted = $(this).hasClass("tdSelect");
+			return false;
+		}).mouseover(function(){
+			if(isMouseDown){
+				$(this).toggleClass("tdSelect",isHighlighted);
+			}
+		}).bind("selectstart",function(){
+			return false;
+		})
+		$(document).mouseup(function(){
+			isMouseDown= false;			
+		});
+	});
 	//Selection Funktion
-	$('#timeTableBody td').on('click',function(){
+	/*$('#timeTableBody td').on('click',function(){
 		if($(this).attr('class') != 'tdSelect'){
 			$(this).removeClass();
 			$(this).addClass('tdSelect');
@@ -35,7 +54,7 @@ $('document').ready(function(){
 				$(this).addClass('tdNeutral');
 			}
 		}
-	});
+	});*/
 	//Datum der Liste hinzufügen, falls noch nicht vorhanden
 	$('#btnSetDate').on('click',function(){
 		var write= true;
