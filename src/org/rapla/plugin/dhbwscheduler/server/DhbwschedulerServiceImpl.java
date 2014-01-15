@@ -288,10 +288,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
         	Appointment appointment = reservation.getAppointments()[0];
     		Allocatable[] allocatables = reservation.getAllocatablesFor(appointment);
 
-    		String dozConstraint = getDozentenConstraint(reservation); 
-    		int[] dozConstr = splitDozentenConstraint(dozConstraint);
+//    		String dozConstraint = getDozentenConstraint(reservation); 
+//    		int[] dozConstr = splitDozentenConstraint(dozConstraint);
     		//Slot-Datum einstellen
-        	newStart = setStartDate(solRes[i][1], startDatum, endeDatum, appointment, allocatables, dozConstr);
+        	newStart = setStartDate(solRes[i][1], startDatum, endeDatum, appointment, allocatables, reservation);
         	appointment.move(newStart);
 			
     		getClientFacade().store(reservation);
@@ -331,9 +331,15 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	/**
 	 * 
 	 * @param slot
+	 * @param startDate
+	 * @param endDate
+	 * @param appointment
+	 * @param allocatables
+	 * @param reservation
 	 * @return
+	 * @throws RaplaException
 	 */
-	private Date setStartDate(int slot, Date startDate, Date endDate, Appointment appointment, Allocatable[]  allocatables, int[] dozConstr) throws RaplaException {
+	private Date setStartDate(int slot, Date startDate, Date endDate, Appointment appointment, Allocatable[]  allocatables, Reservation reservation) throws RaplaException {
 		Date newStart;
 		
 		Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
@@ -341,15 +347,36 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		if (slot > 1) {
 			cal.add(Calendar.HOUR, (slot-1)*12);
 		}
+		
 		//Worktime beachten
 		if( cal.get(Calendar.HOUR_OF_DAY) < (getCalendarOptions().getWorktimeStartMinutes() / 60)) {
 			cal.add(Calendar.MINUTE, getCalendarOptions().getWorktimeStartMinutes());
 		}
 		cal.add(Calendar.MINUTE, -15);
 		
-		//TODO: auf neue splitDozConstraint warten. Danach kann ich dies erst einbauen (sonst müsste ich den String nochmals zerlegen)
-		//TODO: ExcludedDates vom Dozenten beachten
 		//Dozenten Constraint beachten
+		//TODO: muss noch getestet werden.
+
+		int[] dozConstr = ConstraintService.getDozConstraints(getDozentenConstraint(reservation));
+		
+		int start = 24 + (slot * 12);
+		for (int i = start; i < start + 12; i++) {
+			int index = i;
+			if ((slot % 2) == 0) {
+				//Morgens 000000001111
+				index += cal.get(Calendar.HOUR_OF_DAY)-1;
+			}else {
+				//Abends 111111100000
+				index += cal.get(Calendar.HOUR_OF_DAY)-13;
+			}
+			
+			if (dozConstr[index] > 0) {
+				break;
+			}
+			else {
+				cal.add(Calendar.HOUR, 1);
+			}
+		}
 
 		newStart = new Date(cal.getTimeInMillis());
 		
@@ -366,6 +393,24 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		Integer[] excludedDays = getCalendarOptions().getExcludeDays().toArray(new Integer[]{});
 		Integer rowsPerHour = getCalendarOptions().getRowsPerHour();
 		
+		HashSet<Reservation> ignoreList = getIgnoreList(allocatables, startDate, endDate);
+
+		newStart = lookup.getNextAllocatableDate(Arrays.asList(allocatables), appointment, ignoreList, worktimeStartMinutes, worktimeEndMinutes, excludedDays, rowsPerHour);
+		
+		appointment.move(oldDate);
+
+		return newStart;
+	}
+	
+	/**
+	 * 
+	 * @param allocatables
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws RaplaException
+	 */
+	private HashSet<Reservation> getIgnoreList( Allocatable[] allocatables, Date startDate, Date endDate) throws RaplaException {
 		HashSet<Reservation> ignoreList = new HashSet<Reservation>();
 
 		Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, startDate, endDate, null);
@@ -375,14 +420,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				ignoreList.add(vorlesungMitGleicherResource);
 			}
 		}
-		
-		newStart = lookup.getNextAllocatableDate(Arrays.asList(allocatables), appointment, ignoreList, worktimeStartMinutes, worktimeEndMinutes, excludedDays, rowsPerHour);
-		
-		appointment.move(oldDate);
-
-		return newStart;
+		return ignoreList;
 	}
-	
 	/**
 	 * @param start - Anfang der Woche
 	 * @param ende - Ende der Woche
@@ -458,7 +497,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
 			} else {
 				//get the slots blocked by the planungsconstraints
-				int[] belegteSlots = splitDozentenConstraint(planungsconstraint);
+				int[] belegteSlots = splitDozentenConstraintSlots(planungsconstraint);
 				for(int i = 0; i < 10; i++){
 					//copy the blocking only if the slot turns from (not) allowed to not allowed
 					if(belegteSlots[i] == 0){
@@ -475,6 +514,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			}
 			throw(new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
 		}
+		//TODO: ExeptionDates vom Dozenten beachten
+
 		return vor_res;
 	}
 
@@ -497,53 +538,22 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	 * @param Dozentenconstraint
 	 * @return int[]
 	 */
-	private int[] splitDozentenConstraint(String dozentenConstraint) {
-		//TODO: Fehlervermeidung durch Abfangen von leeren dozentenConstratint ??
-		//first, all slots aren't allowed
+	private int[] splitDozentenConstraintSlots(String dozentenConstraint) {
 		int[] belegteSlots = {0,0,0,0,0,0,0,0,0,0};
-		int idIndex = dozentenConstraint.indexOf('_');
-		dozentenConstraint = dozentenConstraint.substring(idIndex + 1);
-		String[] constraintsTage = dozentenConstraint.split(";");
-		for(String constraint : constraintsTage){
-			//get the day of week
-			int dayOfWeek = Calendar.MONDAY;
-			char day = constraint.charAt(0);
-			switch(day){
-			case '1':
-				break;
-			case '2':
-				dayOfWeek = Calendar.TUESDAY;
-				break;
-			case '3':
-				dayOfWeek = Calendar.WEDNESDAY;
-				break;
-			case '4':
-				dayOfWeek = Calendar.THURSDAY;
-				break;
-			case '5':
-				dayOfWeek = Calendar.FRIDAY;
-				break;
+		
+		int[] dozConst = ConstraintService.getDozConstraints(dozentenConstraint);
+		
+		int slotCounter = 0;
+		
+		for( int i = 24; i < dozConst.length - 24; i++) {
+			int stundenCounter = (i % 24);
+			if (dozConst[i] > 0) {
+				//sobald eine Stunde verfügbar ist, ist der Slot verfügbar 
+				belegteSlots[slotCounter] = 1;
 			}
-			//get time at that day
-			String timepoint = constraint.substring(constraint.indexOf(':') + 1, constraint.indexOf('-'));
-			int hourOfDay = Integer.valueOf(timepoint);
-			if(hourOfDay < 12){
-				//if the time is before 12 a.m., the slot at the morning will 
-				//be allowed
-				belegteSlots[timeSlots[dayOfWeek][0]] = 1;
-			} else {
-				//else the slot in the afternoon will be allowed
-				belegteSlots[timeSlots[dayOfWeek][1]] = 1;
-			}
-			//look for more constraints separated by commas
-			if(constraint.contains(",")){
-				timepoint = constraint.substring(constraint.indexOf(',') + 1, constraint.indexOf('-'));
-				hourOfDay = Integer.valueOf(timepoint);
-				//normally, the next available slot should be the the afternoon slot
-				if(hourOfDay > 12){
-					//check, if it's really the afternoon slot
-					belegteSlots[timeSlots[dayOfWeek][1]] = 1;
-				}
+			
+			if (stundenCounter == 11) {
+				slotCounter++;
 			}
 		}
 		return belegteSlots;
@@ -922,7 +932,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			String Inhalt = getString("email_anrede") + titel+ " " + vorname + " " + name + ",\n\n" + 
 					getString("email_Inhalt") + "\n" + 
 					veranstaltungstitel +  " (" + studiengang + ")" + "\n\n"  +
-					getString("Link_Text") + "\n " + //<a href=" + url+ ">" + url + "</a> \n\n" +
+					getString("Link_Text") + "\n" + //<a href=" + url+ ">" + url + "</a> \n\n" +
 					url + "\n\n" +
 					getString("email_Signatur") + "\n" + 
 					login + "\n";

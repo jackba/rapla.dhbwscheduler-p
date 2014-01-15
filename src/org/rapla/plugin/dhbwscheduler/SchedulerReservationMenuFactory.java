@@ -568,8 +568,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		//Dynamische Generierung "Servername:Port"
 		StartupEnvironment env = getService( StartupEnvironment.class );
 		URL codeBase = env.getDownloadURL();
-		//Dynamische Generierung "webpage"
-
 
 		UrlEncryption webservice;
 		String key;
