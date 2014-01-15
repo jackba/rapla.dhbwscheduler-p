@@ -17,7 +17,7 @@ public class ConstraintService extends RaplaComponent{
 	}
 
 	/*Constraint:
-	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status/n
+	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
 	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
 	 */
 	
@@ -66,7 +66,7 @@ public class ConstraintService extends RaplaComponent{
 		if (constraint == null) {
 			return result;
 		}
-		String dozCount[] = constraint.split("/n");
+		String dozCount[] = constraint.split("\n");
 		result = new String[dozCount.length];
 		
 		
@@ -78,7 +78,7 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static int[] getDozConstraints (String constraint){
-		String dozCount[] = constraint.split("/n");
+		String dozCount[] = constraint.split("\n");
 		int[][] dozConst = new int[dozCount.length][168];
 		int [] ergebnis = new int[168];
 		
@@ -104,7 +104,7 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static int[] getDozConstraintsDoz (String constraint, int doz_ID){
-		String dozCount[] = constraint.split("/n");
+		String dozCount[] = constraint.split("\n");
 		int [] ergebnis = new int[168];
 		
 		for(String dozConst:dozCount){
@@ -123,7 +123,7 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static Date[] getExceptionDates (String constraint){
-		String dozCount[] = constraint.split("/n");
+		String dozCount[] = constraint.split("\n");
 		String exceptionDates[][] = new String[dozCount.length][];
 		Date[] ergebnis = {};
 		
@@ -151,7 +151,7 @@ public class ConstraintService extends RaplaComponent{
 	}	
 	
 	public static Date[] getExceptionDatesDoz (String constraint,int doz_ID ){
-		String dozCount[] = constraint.split("/n");
+		String dozCount[] = constraint.split("\n");
 		String exceptionDates[] = {};
 		Date[] ergebnis = {};
 		
@@ -181,7 +181,7 @@ public class ConstraintService extends RaplaComponent{
 		
 	
 	public static int getStatus(String Constraint, int doz_ID){
-		String DozCount[] = Constraint.split("/n");
+		String DozCount[] = Constraint.split("\n");
 		
 		for(String DozConst:DozCount){
 			
