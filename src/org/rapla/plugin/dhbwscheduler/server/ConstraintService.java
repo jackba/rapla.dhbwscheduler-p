@@ -9,12 +9,7 @@ import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.storage.StorageOperator;
 
-public class ConstraintService extends RaplaComponent{
-
-	public ConstraintService(RaplaContext context) {
-		super(context);
-		// TODO Auto-generated constructor stub
-	}
+public class ConstraintService{
 
 	/*Constraint:
 	 * 0: DozentID
@@ -25,14 +20,20 @@ public class ConstraintService extends RaplaComponent{
 	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
 	 */
 
-	public static String changeDozConstraint(String constraint, int doz_ID, String changevalue,Object value){
+	//TODO: Marco: Ich habe die Schnittstelle der Methode geändert. Kannst du bitte statt Strings die Konstanten verwenden. Danke
+	
+	public static final int CHANGE_SINGLECONSTRAINT = 1;
+	public static final int CHANGE_SINGLEDATES = 2;
+	public static final int CHANGE_SINGLESTATUS = 3;
+
+	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object value){
 		
 		if (constraint == null){
 			return "";
 		}
 		
 		int[] dozentIds = getDozIDs(constraint);
-		String[] dozentConstraints = getDozStringConstraints(constraint);
+		String[] dozentConstraints = new String[dozentIds.length];
 		
 		Date[][] execptions = new Date[dozentIds.length][];
 		int[] status = new int[dozentIds.length];
@@ -41,27 +42,24 @@ public class ConstraintService extends RaplaComponent{
 			
 			Date[] dozentExecption = getExceptionDatesDoz(constraint, dozentIds[i]);			
 			int dozstatus = getStatus(constraint,dozentIds[i]);
+			dozentConstraints[i] = getDozStringConstraintDoz(constraint, dozentIds[i]);
 			
 			if (dozentIds[i] == doz_ID){
 				try{
 					switch(changevalue){
-					case "dates":
+					case CHANGE_SINGLEDATES:
 						dozentExecption = (Date[]) value;
 						break;
-					case "status":
-						Integer intvalue = (Integer) value;
-						dozstatus = intvalue.intValue();
+					case CHANGE_SINGLESTATUS:
+						dozstatus = (Integer) value;
 						break;
-					case "singleconstraint":
+					case CHANGE_SINGLECONSTRAINT:
 						dozentConstraints[i] = (String) value;
 						break;
-					case "constraints":
-						dozentConstraints = (String[]) value; 
 					}
-
 				}catch(ClassCastException ce){
 					ce.printStackTrace();
-					return constraint;
+					return null;
 				}
 				
 			}
@@ -69,15 +67,13 @@ public class ConstraintService extends RaplaComponent{
 			//ES kommt hier zum Fehler, da das Array gefüllt wird und bei buildDozConstraint als "befüllt angesehen wird.
 			// Benjamin kannst du dir das bitte anschauen??
 			//TODO Benjamin kannst du hier mal schauen?
-			//execptions[i] 	= dozentExecption;
+			execptions[i] 	= dozentExecption;
 		
-			
 			status[i] 		= dozstatus;
 			
 		}
 			
 		return buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
-		
 	}
 	
 	public static String buildDozConstraint(int dozID, String dozConst, Date[] exceptDate, int status){
@@ -156,15 +152,15 @@ public class ConstraintService extends RaplaComponent{
 	}
 	
 	public static String[] getDozStringConstraints (String constraint){
-		String[] DozCount = {};
+		String[] DozConstraints = {};
 		
 		if (constraint == null){
-			return DozCount;
+			return DozConstraints;
 		}
 		
-		DozCount = constraint.split("\n");
+		String[] DozCount = constraint.split("\n");
 		
-		String[] DozConstraints = new String[DozCount.length];
+		DozConstraints = new String[DozCount.length];
 		for(int i = 0 ; i < DozCount.length; i++){
 			String[] split = DozCount[i].split("_");
 			DozConstraints[i] = split[1];
@@ -172,7 +168,28 @@ public class ConstraintService extends RaplaComponent{
 	
 		return DozConstraints;
 	}
+
+	public static String getDozStringConstraintDoz (String constraint, int dozID){
+		String dozConstraints = "";
+		
+		if (constraint == null){
+			return dozConstraints;
+		}
+		
+		String[] dozCount = constraint.split("\n");
+		
+		for(String dozConst:dozCount){
+			
+			String[] split = dozConst.split("_");
+			if (Integer.valueOf(split[0]) == dozID){
+				dozConstraints = split[1];
+				break;
+			}
+		}
 	
+		return dozConstraints;
+	}
+
 	public static int[] getDozConstraints (String constraint){
 		int [] ergebnis = {};
 		
@@ -287,21 +304,23 @@ public class ConstraintService extends RaplaComponent{
 			}
 		}
 
-		if (exceptionDates.length==0){
-			return ergebnis;
-		}
-		else{
-		ergebnis = new Date[exceptionDates.length];
+		if (exceptionDates.length!=0){
+			ergebnis = new Date[exceptionDates.length];
 				
-		int counter = 0;
-		for (int i = 0; i<exceptionDates.length;i++){
-				if (!exceptionDates[i].isEmpty())
+			int counter = 0;
+			for (int i = 0; i<exceptionDates.length;i++){
+				if (!exceptionDates[i].isEmpty()) {
 					ergebnis[counter++] = new Date(Long.parseLong(exceptionDates[i]));
 				}
-		return ergebnis;
+				else {
+					ergebnis = new Date[0];
+					break;
+				}
+			}
 		}
+		return ergebnis;
 	}
-		
+
 	
 	public static int getStatus(String constraint, int doz_ID){
 		
