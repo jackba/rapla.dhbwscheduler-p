@@ -322,6 +322,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									label[i] = new JLabel();
 									labelHead.setFont(new Font("Arial",Font.BOLD,16));
 									label[i].setFont(new Font("Arial",Font.CENTER_BASELINE,14));
+									//TODO Übersetzung?
 									labelHead.setText("Studiengang " + studiengang
 											+ ", Veranstaltung: " + r.getName(getLocale()));
 									label[i].setText("Dozent: " 
@@ -442,8 +443,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					for (Reservation r : selectedReservations)
 					{
 						
-						String veranstaltungsTitel = (String) r.getClassification().getValue("title");
-						message += veranstaltungsTitel + ": \n"; 
+						String veranstaltungsTitel = (String) r.getClassification().getValue("title");						
 						//Constraints initialisieren oder ändern. (Neuer Dozent = neuer Constraint.)
 						r = initConstraint(r);
 						int dozCount = 0;
@@ -464,9 +464,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 							Comparable pTest = ((RefEntity<?>) r).getId();
 							SimpleIdentifier reservationID = (SimpleIdentifier) pTest;
-
-							message += "   " + titel + " " + vorname + " " + name + ": ";
-														
+							
 							//Überprüfung ob es nötig ist eine E-Mail zu versenden.
 							if(EmailVersendeBerechtigung(r,dozentID.getKey())){
 							
@@ -498,22 +496,30 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 											}
 										}
 										
-										
-									}else{
-										message += "\t email: error ";
 									}
-									
-									message += "\t status: " + getErfassungsstatus(r,dozentID.getKey());
-									
-									message += "\n";
 									
 								} catch (RaplaException | UnsupportedEncodingException e1) {
 									e1.printStackTrace();
 									getLogger().error(veranstaltungsTitel + ": Unable to sent e-mail to " + email);
-									message += "error";
+									
 									
 								}
-							}	
+							}
+							
+							//Message zusammenbauen
+							message += veranstaltungsTitel + ": \n"; 
+							message += "   " + titel + " " + vorname + " " + name + ": ";
+							
+							//email
+							if(isSend){
+								message += "\t email: sent ";
+							}else{
+								message += "\t email: not sent ";
+							}
+							
+							//status
+							message += "\t status: " + getErfassungsstatus(r,dozentID.getKey()) + "\n";
+							
 						}
 						
 						message += "\n";
@@ -521,11 +527,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					}		
 						// Veranstaltung, Dozent, Senden, speichern /n
 						createMessage(getString("planning_open"), message, 400,200 , menuContext, true);
-					
 				}
-
-				
-				
 			});
 			menus.add( menu );
 		}
