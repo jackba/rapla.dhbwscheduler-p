@@ -423,6 +423,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			menus.add( menu );
 		}
 		{
+			
+			//TODO ÜBersetzungen und Messagen einbauen. Logger infos setzten.
 			final RaplaMenuItem menu = new RaplaMenuItem("EMAIL_SENDEN");
 			menu.setText( "E-Mail senden" );
 			// Last the action for the marked menu 
@@ -430,17 +432,26 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
+					
+					String message = "";
 					//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
 					for (Reservation r : selectedReservations)
 					{
-						
+						String veranstaltungsTitel = (String) r.getClassification().getValue("title");
+						message += veranstaltungsTitel + ": \n"; 
 						r = initConstraint(r);
-						
+						int dozCount = 0;
 						
 						//Jeder Dozent bekommt eine E-Mail
 						for (int t = 0; t < r.getPersons().length; t++)
 						{
+							String name		= (String) r.getPersons()[t].getClassification().getValue("surname");
+							String vorname	= (String) r.getPersons()[t].getClassification().getValue("firstname");
+							String titel 	= (String) r.getPersons()[t].getClassification().getValue("title");
+							String email 	= (String) r.getPersons()[t].getClassification().getValue("email");
+							boolean isSend = false;
 							
+							message += "   " + titel + " " + vorname + " " + name + ": ";
 							Comparable compDoz = ((RefEntity<?>) r.getPersons()[t]).getId();
 							SimpleIdentifier dozentID = (SimpleIdentifier) compDoz;
 
@@ -452,25 +463,57 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							
 								try {
 									String url = getUrl(reservationID,dozentID);
-									service.sendMail(reservationID, dozentID,getUser().getName(),url);
+									isSend = service.sendMail(reservationID, dozentID,getUser().getName(),url);
 									
+									if (isSend){
+										dozCount++;
+										getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
+										message += "\t email \t check ";
+										//createMessage(getString("planning_open"), 200, 100, message, menuContext);
 
-									String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
-									String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID.getKey(), "status", 1);
-									//Status auf eingeladen setzen;
-									r = changeReservationAttribute(r,"planungsconstraints",newConstraint );
+										//ändere nun den Constraint!
+										String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
+										
+										//nur Ändern wenn der Status nich schon 1 ist 1 = eingeladen
+										if(ConstraintService.getStatus(strConstraint, dozentID.getKey()) != 1){
+											
+											String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID.getKey(), ConstraintService.CHANGE_SINGLESTATUS, 1);
+											//Status auf eingeladen setzen;
+											if (newConstraint == null){
+												//Fehler beim ändern des Constraints
+											//	createMessage(getString("planning_open"), 200, 100, message, menuContext);
+											}else{
+												r = changeReservationAttribute(r,"planungsconstraints",newConstraint );
+												getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
+												message += "\t save \t check";
+											}
+										}
+										
+										message += "\n\n";
+										
+									}
 									
 								} catch (RaplaException | UnsupportedEncodingException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
+									getLogger().error(veranstaltungsTitel + ": Unable to sent e-mail to " + email);
+									message += "error";
+									
 								}
-
-							}
+							}	
 						}
 						
 						
 				
 					}
+					
+					//if (dozCount > 0){
+						//erfolgreich an xy gesendet
+						// Veranstaltung, Dozent, Senden, speichern /n
+						createMessage(message, 400, 400,getString("planning_open") , menuContext);
+						//createMessage(getString("planning_open"), 200, 100, "drölf", menuContext);
+						
+					//}
 				}
 
 				
@@ -490,6 +533,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							r.getClassification().getValue("planungsstatus").equals(closed)){
 						returnvalue = false;
 					}else{
+						//TODO Konstanten definieren
 						switch(erfassungsstatus){
 						//uneingeladen
 						case 0:
@@ -499,7 +543,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						case 1:
 							returnvalue = true;
 							break;
-						
+						//erfasst
 						case 2:
 							returnvalue = false;
 							break;
@@ -519,17 +563,24 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		return menus.toArray(new RaplaMenuItem[] {});
 	}
 
-	private void createMessage(String message, int x, int y, String title, final MenuContext menuContext) throws RaplaException {
+	private void createMessage(String message, int x, int y, String title, final MenuContext menuContext){
 		JTextArea content = new JTextArea();
 		content.setText(message);
-		DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
-		dialogUI.setSize(x,y);
-		dialogUI.setTitle(title);
-		if (menuContext.getPoint() != null)
-		{    
-			dialogUI.setLocation( menuContext.getPoint() );
+		DialogUI dialogUI;
+		try {
+			dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
+
+			dialogUI.setSize(x,y);
+			dialogUI.setTitle(title);
+			if (menuContext.getPoint() != null)
+			{    
+				dialogUI.setLocation( menuContext.getPoint() );
+			}
+			dialogUI.startNoPack();
+		}catch (RaplaException e) {
+			// TODO Sinvolle Loggerinfo einbauen
+			e.printStackTrace();
 		}
-		dialogUI.startNoPack();
 	}
 
 	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
@@ -607,8 +658,46 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			strConstraint = ConstraintService.buildDozConstraint(dozentid, new String[r.getPersons().length], new Date[r.getPersons().length][], newStatus);
 			return changeReservationAttribute(r,"planungsconstraints",strConstraint);
 
+		}else{
+			
+			String newConstraint ="";
+			
+			for (int x = 0; x < r.getPersons().length; x++){
+				
+				Comparable pDozi = ((RefEntity<?>) r.getPersons()[x]).getId();
+				SimpleIdentifier pID = (SimpleIdentifier) pDozi;
+				boolean hit = false;
+				
+				// alte rausschmeisen
+				
+				//ist der Dozent schon vorhanden, wird der Constraint beibehalten, bei einem neuen Dozenten wird dieser hinzugefügt. 
+				for(int i = 0; i< ConstraintService.getDozIDs(strConstraint).length ; i++){
+					
+					int key = ConstraintService.getDozIDs(strConstraint)[i];
+					
+					if (key == pID.getKey()){
+						
+						newConstraint += ConstraintService.buildDozConstraint(key, 
+								ConstraintService.getDozStringConstraints(strConstraint)[i], 
+								ConstraintService.getExceptionDatesDoz(strConstraint, key),								
+								ConstraintService.getStatus(strConstraint, key)); 
+						//update
+						//einzeln + /n
+						hit = true;		
+					}
+				}
+				//neuer Dozent
+				if(!hit){
+					newConstraint += ConstraintService.buildDozConstraint(pID.getKey(),	null, null ,0);
+				}
+				
+				if(x < r.getPersons().length-1) {
+					newConstraint += "\n";
+				}
+				
+			}
+			return changeReservationAttribute(r,"planungsconstraints",newConstraint);
 		}
-		return r;
 	}
 
 

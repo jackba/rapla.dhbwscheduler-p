@@ -14,5 +14,5 @@ import org.rapla.framework.RaplaException;
 @WebService
 public interface DhbwschedulerService {
 	String schedule(SimpleIdentifier[] reservationIds) throws RaplaException;
-	String sendMail(SimpleIdentifier reservationID,SimpleIdentifier dozentId, String login, String url) throws RaplaException;
+	boolean sendMail(SimpleIdentifier reservationID,SimpleIdentifier dozentId, String login, String url) throws RaplaException;
 }

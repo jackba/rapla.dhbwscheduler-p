@@ -870,7 +870,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
     }
 
  	@Override
-	public String sendMail(SimpleIdentifier reservationID,
+	public boolean sendMail(SimpleIdentifier reservationID,
 			SimpleIdentifier dozentId, String login,String url) throws RaplaException {
 		
 		
@@ -882,7 +882,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 		Reservation veranstaltung = (Reservation) lookup.resolve(reservationID);
 		Allocatable dozent		  = (Allocatable) lookup.resolve(dozentId);
 		
-		
+		boolean returnval = false;
 		boolean isPerson = false;
 		String email = "";
 		String name = "";
@@ -937,26 +937,21 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 					getString("email_Signatur") + "\n" + 
 					login + "\n";
 			//getUser().getEmail();
-			
-
-			
-			
+									
 			try {
 				MailClient.sendMail(defaultSender,email, betreff, Inhalt);
+				returnval = true;
 			} catch (MailException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				returnval = false;
 			}
-			//createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
-			//Link generieren
-			// Text einf�gen
-			//Senden!
-
+			
 		}else{
 			;
 		}
 
 		
-		return null;
+		return returnval;
 	}
 }
