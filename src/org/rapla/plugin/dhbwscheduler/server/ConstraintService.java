@@ -20,16 +20,15 @@ public class ConstraintService{
 	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
 	 */
 
-	//TODO: Marco: Ich habe die Schnittstelle der Methode geändert. Kannst du bitte statt Strings die Konstanten verwenden. Danke
-	
 	public static final int CHANGE_SINGLECONSTRAINT = 1;
 	public static final int CHANGE_SINGLEDATES = 2;
 	public static final int CHANGE_SINGLESTATUS = 3;
 
 	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object value){
+		String result = "";
 		
 		if (constraint == null){
-			return "";
+			return result;
 		}
 		
 		int[] dozentIds = getDozIDs(constraint);
@@ -42,7 +41,7 @@ public class ConstraintService{
 			
 			Date[] dozentExecption = getExceptionDatesDoz(constraint, dozentIds[i]);			
 			int dozstatus = getStatus(constraint,dozentIds[i]);
-			dozentConstraints[i] = getDozStringConstraintDoz(constraint, dozentIds[i]);
+			dozentConstraints[i] = getDozStringConstraint(constraint, dozentIds[i]);
 			
 			if (dozentIds[i] == doz_ID){
 				try{
@@ -59,21 +58,16 @@ public class ConstraintService{
 					}
 				}catch(ClassCastException ce){
 					ce.printStackTrace();
-					return null;
+					return result;
 				}
 				
 			}
 			
-			//ES kommt hier zum Fehler, da das Array gefüllt wird und bei buildDozConstraint als "befüllt angesehen wird.
-			// Benjamin kannst du dir das bitte anschauen??
-			//TODO Benjamin kannst du hier mal schauen?
 			execptions[i] 	= dozentExecption;
-		
 			status[i] 		= dozstatus;
-			
 		}
-			
-		return buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
+		result = buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
+		return result;
 	}
 	
 	public static String buildDozConstraint(int dozID, String dozConst, Date[] exceptDate, int status){
@@ -151,7 +145,8 @@ public class ConstraintService{
 		return result;
 	}
 	
-	public static String[] getDozStringConstraints (String constraint){
+//TODO: Brauchen wir die Methode überhaupt noch?
+/*	public static String[] getDozStringConstraints (String constraint){
 		String[] DozConstraints = {};
 		
 		if (constraint == null){
@@ -168,8 +163,9 @@ public class ConstraintService{
 	
 		return DozConstraints;
 	}
-
-	public static String getDozStringConstraintDoz (String constraint, int dozID){
+*/
+	
+	public static String getDozStringConstraint (String constraint, int dozID){
 		String dozConstraints = "";
 		
 		if (constraint == null){
@@ -223,7 +219,7 @@ public class ConstraintService{
 		return ergebnis;
 	}
 	
-	public static int[] getDozConstraintsDoz (String constraint, int doz_ID){
+	public static int[] getDozIntConstraints (String constraint, int doz_ID){
 		int [] ergebnis = {};
 		
 		if (constraint == null){

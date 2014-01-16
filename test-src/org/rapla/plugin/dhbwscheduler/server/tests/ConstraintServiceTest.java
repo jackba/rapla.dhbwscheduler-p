@@ -7,12 +7,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.rapla.RaplaTestCase;
-import org.rapla.entities.domain.Allocatable;
 import org.rapla.facade.ClientFacade;
-import org.rapla.framework.RaplaContext;
-import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
-import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 
 public class ConstraintServiceTest extends RaplaTestCase {
 	ClientFacade facade;
@@ -51,8 +47,8 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	
     	assertEquals(0,ConstraintService.getDozConstraints(null).length);
     	
-    	assertEquals(0,ConstraintService.getDozConstraintsDoz(null, 111).length);
-    	assertEquals(0,ConstraintService.getDozConstraintsDoz(TestConstraint, 666).length);
+    	assertEquals(0,ConstraintService.getDozIntConstraints(null, 111).length);
+    	assertEquals(0,ConstraintService.getDozIntConstraints(TestConstraint, 666).length);
     	
     	assertEquals(0,ConstraintService.getDozIDs(null).length);
     	
@@ -61,6 +57,9 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	assertEquals(0,ConstraintService.getExceptionDatesDoz(null, 666).length);
     	assertEquals(0,ConstraintService.getExceptionDatesDoz(TestConstraint, 666).length);
     	
+    	assertEquals(true,ConstraintService.getDozStringConstraint(null, 666).isEmpty());
+    	
+    	assertEquals("", ConstraintService.changeDozConstraint(null, 111, ConstraintService.CHANGE_SINGLECONSTRAINT, ""));
     }
 
     public void testGetDozConstraints_1Dozent(){
@@ -158,7 +157,7 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     	                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    	int[] testergebnis= ConstraintService.getDozConstraintsDoz(testConstraint,111);
+    	int[] testergebnis= ConstraintService.getDozIntConstraints(testConstraint,111);
     	
     	for (int i = 0; i< sollergebnis.length; i++){
     		assertEquals(sollergebnis[i],testergebnis[i]);
@@ -255,6 +254,20 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	assertEquals(sollergebnis[1],testergebnis[1]);
     }
     
+    public void testGetExceptionDatesDoz_4() {
+    	String testConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "1161775163140,2161775163140_"
+        		+ "Status\n"
+        		+ "222_"
+        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
+        		+ "_"
+        		+ "Status";
+    	
+    	assertEquals(0,ConstraintService.getExceptionDatesDoz(testConstraint,222).length);
+    }
+
     public void testGetStatus(){
     	String testConstraint = ""
         		+ "111_"
@@ -464,4 +477,17 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	assertEquals(ergebnisConstraint, ConstraintService.changeDozConstraint(testConstraint, 111, ConstraintService.CHANGE_SINGLESTATUS, changeStatus));
 	}
 
+	public void testchangeStatusException() {
+    	String testConstraint = ""
+        		+ "111_"
+        		+ "101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000_"
+        		+ "1161775163140,2161775163140,2161775173140_"
+        		+ "1\n"
+    			+ "222_"
+        		+ "100111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111_"
+        		+ "2161775183140,2161775193140_"
+        		+ "2";
+
+    	assertEquals("", ConstraintService.changeDozConstraint(testConstraint, 111, ConstraintService.CHANGE_SINGLESTATUS, "abc"));
+	}
 }
