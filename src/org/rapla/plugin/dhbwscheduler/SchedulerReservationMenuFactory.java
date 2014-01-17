@@ -449,7 +449,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							//Constraints initialisieren oder ändern. (Neuer Dozent = neuer Constraint.)
 							r = initConstraint(r);
 							int dozCount = 0;
-							
+						message += veranstaltungsTitel + ": \n"; 
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
 							{
@@ -477,7 +477,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 										if (isSend){
 											dozCount++;
 											getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
-											message += "\t email: check ";
+										//message += "\t email: check ";
 											//createMessage(getString("planning_open"), 200, 100, message, menuContext);
 
 											//ändere nun den Constraint!
@@ -509,7 +509,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								}
 								
 								//Message zusammenbauen
-								message += veranstaltungsTitel + ": \n"; 
+							
 								message += "   " + titel + " " + vorname + " " + name + ": ";
 								
 								//email
