@@ -167,6 +167,22 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			e.printStackTrace();
 		}
 		
+		//gesendete Daten werden hier ausgelesen, wenn eine Änderung vorgenommen wurde (changed = 1)
+		if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
+			time = request.getParameter("time");	
+			kontaktdaten= request.getParameter("contact");
+			try{stunden = Integer.parseInt(request.getParameter("hours"));}
+			catch(Exception e){}
+			ausnahmenArray = request.getParameter("exception").split(",");		
+			if(request.getParameter("control").equals("1")){
+				aufsicht= true;
+			}else if(request.getParameter("control").equals("0")){
+				aufsicht = false;
+			}
+			bemerkung=request.getParameter("comment");
+			
+		}
+		
 		out.println("<!DOCTYPE html>"); // we have HTML5 
 		out.println("<html>");
 		out.println("<head>");
@@ -246,7 +262,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 		out.println(" 			</tbody>");
 		out.println("		</table>");
-
+		out.println("		<p><b>3.</b>Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
 		//Datum für input type=date (id=inpDatepicker) formatieren
 		out.print("			<input id='inpDatepicker' type='date' min='' max='' value=''/>");
 		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
@@ -270,27 +286,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("			<input id='inpAusnahmen' type='hidden' name='exception' value=''>");		
 		out.println("			<input id='inpAufsicht' type='hidden' name='control' value=''>");
 		out.println("			<input id='inpBemerkungen' type='hidden' name='comment' value=''>");	
-		out.print("				<input type ='submit' name='rapla' value='Senden'/>");
+		out.print("				<input id='inpSubmit' type ='submit' name='rapla' value='Senden'/>");
 		out.println("		</form>");
 		out.println("	</div>");
 		out.println("</body>");
 		out.println("</html>");
 
-
-		if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
-			time = request.getParameter("time");	
-			kontaktdaten= request.getParameter("contact");
-			try{stunden = Integer.parseInt(request.getParameter("hours"));}
-			catch(Exception e){}
-			ausnahmenArray = request.getParameter("exception").split(",");		
-			if(request.getParameter("control").equals("1")){
-				aufsicht= true;
-			}else if(request.getParameter("control").equals("0")){
-				aufsicht = false;
-			}
-			bemerkung=request.getParameter("comment");
-			
-		}
 
 		out.close();
 
