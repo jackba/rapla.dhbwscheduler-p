@@ -399,10 +399,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							}
 
 						} catch (UnsupportedEncodingException e1) {
-							// TODO Auto-generated catch block
+							getLogger().info("ERROR:" + e1.toString());
 							e1.printStackTrace();
 						} catch (URISyntaxException e1) {
-							// TODO Auto-generated catch block
+							getLogger().info("ERROR:" + e1.toString());
 							e1.printStackTrace();
 						}
 
@@ -425,7 +425,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 
-			//TODO Logger infos richtig setzen.
 			final RaplaMenuItem menu = new RaplaMenuItem("EMAIL_SENDEN");
 			menu.setText(getString("E-Mail_senden"));
 			// Last the action for the marked menu 
@@ -439,6 +438,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 					int result = JOptionPane.showConfirmDialog(null, strQuestion, strTitel, JOptionPane.YES_NO_CANCEL_OPTION);
 					if (result == JOptionPane.YES_OPTION) {
+						getLogger().info("E-Mail wird rausgeschickt");
 						String message = "";
 
 						//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
@@ -533,6 +533,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						createMessage(getString("planning_open"), message, 400,200 , menuContext, true);
 						//System.exit(0);
 					} else if (result == JOptionPane.NO_OPTION) {
+						getLogger().info("E-Mail senden abgebrochen");
 						//System.exit(0);
 					}
 
@@ -566,8 +567,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			}
 
 		}catch (RaplaException e) {
-			// TODO Sinvolle Loggerinfo einbauen
 			e.printStackTrace();
+			getLogger().info("ERROR:" + e.toString());
 		}
 	}
 
@@ -588,8 +589,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			getClientFacade().refresh();
 			return editableEvent;
 		} catch (RaplaException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			getLogger().info("ERROR:" + e1.toString());
 		}
 		return r;
 	}
@@ -620,6 +621,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		try{
 			return new URL( codeBase,"rapla?" + key).toExternalForm();
 		}catch(MalformedURLException ex){
+			getLogger().info("ERROR:" + ex.toString());
 			return "error";
 		}
 
