@@ -70,29 +70,58 @@ public class ConstraintService{
 		result = buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
 		return result;
 	}
-	public static String deleteSingleDozConstraint(String constraint, int dozID){
-		String newConstraint =constraint;
 		
-		if (newConstraint == null){
-			return null;
-		}
+	public static String initDozConstraint(String constraint, int[] dozID){
+		
+		String newConstraint ="";
+		
+		if (constraint == null){
+			int[] dozentid = new int[dozID.length];
+			int[] newStatus = new int[dozID.length];
 
-		String dozCount[] = constraint.split("\n");
-		int[] result = new int[dozCount.length];
-		
-		
-		for(int i = 0; i < dozCount.length; i++){
-			String[] split = dozCount[i].split("_");
-			result[i] = Integer.valueOf(split[0]);
-			if(result[i] == dozID){
-				newConstraint = newConstraint.replace(split[i] + "\n", "");
-				newConstraint = newConstraint.replace(split[i], "");
+			for (int x = 0; x < dozID.length; x++){
+				dozentid[x] 	= dozID[x];
+				newStatus[x] 	= 0;
+			}
+
+			newConstraint = ConstraintService.buildDozConstraint(dozentid, new String[dozID.length], new Date[dozID.length][], newStatus);
+			
+		}else{
+			
+			//ConstraintService.addorchangeSingleDozConstraint();
+			for (int x = 0; x < dozID.length; x++){
+				boolean hit = false;
+				
+				//ist der Dozent schon vorhanden, wird der Constraint beibehalten, bei einem neuen Dozenten wird dieser hinzugefügt. 
+				for(int i = 0; i< ConstraintService.getDozIDs(constraint).length ; i++){
+					
+					int key = ConstraintService.getDozIDs(constraint)[i];
+					
+					if (key == dozID[x]){
+						
+						
+						newConstraint += buildDozConstraint(key, 
+								getDozStringConstraint(constraint, key), 
+								getExceptionDatesDoz(constraint, key),								
+								getStatus(constraint, key)); 
+						
+						hit = true;		
+					}
+				}
+				//neuer Dozent
+				if(!hit){
+					newConstraint += buildDozConstraint(dozID[x], null, null, 0);
+				}
+				
+				if(x < dozID.length-1) {
+					newConstraint += "\n";
+				}
 			}
 		}
 		
-		
 		return newConstraint;
 	}
+	
 	//TODO Name oder vlt. 2 Methoden
 	public static String addorchangeSingleDozConstraint(String constraint, int dozID, String dozConst, Date[] exceptDate, int status){
 		

@@ -619,66 +619,20 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	private Reservation initConstraint(Reservation r) {
 		
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
-		String newConstraint ="";
 		
-		if (strConstraint == null){
-			int[] dozentid = new int[r.getPersons().length];
-			int[] newStatus = new int[r.getPersons().length];
-
-			for (int x = 0; x < r.getPersons().length; x++){
-
-				Comparable pDozi = ((RefEntity<?>) r.getPersons()[x]).getId();
-				SimpleIdentifier pID = (SimpleIdentifier) pDozi;
-
-				dozentid[x] 	= pID.getKey();
-				newStatus[x] 	= 0;
-
-			}
-
-			newConstraint = ConstraintService.buildDozConstraint(dozentid, new String[r.getPersons().length], new Date[r.getPersons().length][], newStatus);
+		int[] dozids = new int[r.getPersons().length];
+		
+		for (int x = 0; x < r.getPersons().length; x++){
+			Comparable pDozi = ((RefEntity<?>) r.getPersons()[x]).getId();
+			SimpleIdentifier pID = (SimpleIdentifier) pDozi;
 			
-
-		}else{
-			
-			
-			//ConstraintService.addorchangeSingleDozConstraint();
-			for (int x = 0; x < r.getPersons().length; x++){
-				
-				Comparable pDozi = ((RefEntity<?>) r.getPersons()[x]).getId();
-				SimpleIdentifier pID = (SimpleIdentifier) pDozi;
-				boolean hit = false;
-				//wer bleibt drin
-				// alte rausschmeisen
-				int[] keya = ConstraintService.getDozIDs(strConstraint);
-				
-				//ist der Dozent schon vorhanden, wird der Constraint beibehalten, bei einem neuen Dozenten wird dieser hinzugefügt. 
-				for(int i = 0; i< ConstraintService.getDozIDs(strConstraint).length ; i++){
-					
-					int key = ConstraintService.getDozIDs(strConstraint)[i];
-					
-					if (key == pID.getKey()){
-						
-						
-						newConstraint += ConstraintService.buildDozConstraint(key, 
-								ConstraintService.getDozStringConstraint(strConstraint, key), 
-								ConstraintService.getExceptionDatesDoz(strConstraint, key),								
-								ConstraintService.getStatus(strConstraint, key)); 
-						
-						hit = true;		
-					}
-				}
-				//neuer Dozent
-				if(!hit){
-					newConstraint += ConstraintService.buildDozConstraint(pID.getKey(),	null, null ,0);
-				}
-				
-				if(x < r.getPersons().length-1) {
-					newConstraint += "\n";
-				}
-			}
+			dozids[x] = pID.getKey();
 		}
 		
+		String newConstraint = ConstraintService.initDozConstraint(strConstraint,dozids);
+		
 		return changeReservationAttribute(r,"planungsconstraints",newConstraint);
+		
 	}
 	
 
