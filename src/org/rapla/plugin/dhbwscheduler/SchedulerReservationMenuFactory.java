@@ -30,6 +30,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -433,99 +434,107 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				public void actionPerformed( ActionEvent e )
 				{
 					
-					//createMessage("email", "möchten Sie die email an die ausgewählten Veranstaltungen senden?", 100, 100, menuContext, true);
-					//TODO Wollen Sie wirklich senden
+					String strTitel = getString("Email_Title");
+					String strQuestion = getString("Email_senden_frage");
 					
-					String message = "";
-					
-					//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
-					for (Reservation r : selectedReservations)
-					{
+					int result = JOptionPane.showConfirmDialog(null, strQuestion, strTitel, JOptionPane.YES_NO_CANCEL_OPTION);
+					if (result == JOptionPane.YES_OPTION) {
+						String message = "";
 						
-						String veranstaltungsTitel = (String) r.getClassification().getValue("title");						
-						//Constraints initialisieren oder ändern. (Neuer Dozent = neuer Constraint.)
-						r = initConstraint(r);
-						int dozCount = 0;
-						
-						//Jeder Dozent bekommt eine E-Mail
-						for (int t = 0; t < r.getPersons().length; t++)
+						//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
+						for (Reservation r : selectedReservations)
 						{
 							
-							String name		= (String) r.getPersons()[t].getClassification().getValue("surname");
-							String vorname	= (String) r.getPersons()[t].getClassification().getValue("firstname");
-							String titel 	= (String) r.getPersons()[t].getClassification().getValue("title");
-							String email 	= (String) r.getPersons()[t].getClassification().getValue("email");
+							String veranstaltungsTitel = (String) r.getClassification().getValue("title");						
+							//Constraints initialisieren oder ändern. (Neuer Dozent = neuer Constraint.)
+							r = initConstraint(r);
+							int dozCount = 0;
 							
-							boolean isSend = false;
+							//Jeder Dozent bekommt eine E-Mail
+							for (int t = 0; t < r.getPersons().length; t++)
+							{
+								
+								String name		= (String) r.getPersons()[t].getClassification().getValue("surname");
+								String vorname	= (String) r.getPersons()[t].getClassification().getValue("firstname");
+								String titel 	= (String) r.getPersons()[t].getClassification().getValue("title");
+								String email 	= (String) r.getPersons()[t].getClassification().getValue("email");
+								
+								boolean isSend = false;
 
-							Comparable compDoz = ((RefEntity<?>) r.getPersons()[t]).getId();
-							SimpleIdentifier dozentID = (SimpleIdentifier) compDoz;
+								Comparable compDoz = ((RefEntity<?>) r.getPersons()[t]).getId();
+								SimpleIdentifier dozentID = (SimpleIdentifier) compDoz;
 
-							Comparable pTest = ((RefEntity<?>) r).getId();
-							SimpleIdentifier reservationID = (SimpleIdentifier) pTest;
-							
-							//Überprüfung ob es nötig ist eine E-Mail zu versenden.
-							if(EmailVersendeBerechtigung(r,dozentID.getKey())){
-							
-								try {
-									String url = getUrl(reservationID,dozentID);
-									isSend = service.sendMail(reservationID, dozentID,getUser().getName(),url);
-									
-									if (isSend){
-										dozCount++;
-										getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
-										message += "\t email: check ";
-										//createMessage(getString("planning_open"), 200, 100, message, menuContext);
-
-										//ändere nun den Constraint!
-										String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
+								Comparable pTest = ((RefEntity<?>) r).getId();
+								SimpleIdentifier reservationID = (SimpleIdentifier) pTest;
+								
+								//Überprüfung ob es nötig ist eine E-Mail zu versenden.
+								if(EmailVersendeBerechtigung(r,dozentID.getKey())){
+								
+									try {
+										String url = getUrl(reservationID,dozentID);
+										isSend = service.sendMail(reservationID, dozentID,getUser().getName(),url);
 										
-										//nur Ändern wenn der Status nich schon 1 ist 1 = eingeladen
-										if(ConstraintService.getStatus(strConstraint, dozentID.getKey()) != 1){
+										if (isSend){
+											dozCount++;
+											getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
+											message += "\t email: check ";
+											//createMessage(getString("planning_open"), 200, 100, message, menuContext);
+
+											//ändere nun den Constraint!
+											String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 											
-											String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID.getKey(), ConstraintService.CHANGE_SINGLESTATUS, 1);
-											//Status auf eingeladen setzen;
-											if (newConstraint == null){
-												//Fehler beim ändern des Constraints
-											//	createMessage(getString("planning_open"), 200, 100, message, menuContext);
-											}else{
-												r = changeReservationAttribute(r,"planungsconstraints",newConstraint );
-												getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
+											//nur Ändern wenn der Status nich schon 1 ist 1 = eingeladen
+											if(ConstraintService.getStatus(strConstraint, dozentID.getKey()) != 1){
 												
+												String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID.getKey(), ConstraintService.CHANGE_SINGLESTATUS, 1);
+												//Status auf eingeladen setzen;
+												if (newConstraint == null){
+													//Fehler beim ändern des Constraints
+												//	createMessage(getString("planning_open"), 200, 100, message, menuContext);
+												}else{
+													r = changeReservationAttribute(r,"planungsconstraints",newConstraint );
+													getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
+													
+												}
 											}
+											
 										}
 										
+									} catch (RaplaException | UnsupportedEncodingException e1) {
+										e1.printStackTrace();
+										getLogger().error(veranstaltungsTitel + ": Unable to sent e-mail to " + email);
+										
+										
 									}
-									
-								} catch (RaplaException | UnsupportedEncodingException e1) {
-									e1.printStackTrace();
-									getLogger().error(veranstaltungsTitel + ": Unable to sent e-mail to " + email);
-									
-									
 								}
+								
+								//Message zusammenbauen
+								message += veranstaltungsTitel + ": \n"; 
+								message += "   " + titel + " " + vorname + " " + name + ": ";
+								
+								//email
+								if(isSend){
+									message += "\t email: sent ";
+								}else{
+									message += "\t email: not sent ";
+								}
+								
+								//status
+								message += "\t status: " + getErfassungsstatus(r,dozentID.getKey()) + "\n";
+								
 							}
 							
-							//Message zusammenbauen
-							message += veranstaltungsTitel + ": \n"; 
-							message += "   " + titel + " " + vorname + " " + name + ": ";
-							
-							//email
-							if(isSend){
-								message += "\t email: sent ";
-							}else{
-								message += "\t email: not sent ";
-							}
-							
-							//status
-							message += "\t status: " + getErfassungsstatus(r,dozentID.getKey()) + "\n";
-							
-						}
-						
-						message += "\n";
-				
-					}		
-						// Veranstaltung, Dozent, Senden, speichern /n
-						createMessage(getString("planning_open"), message, 400,200 , menuContext, true);
+							message += "\n";
+					
+						}		
+							// Veranstaltung, Dozent, Senden, speichern /n
+							createMessage(getString("planning_open"), message, 400,200 , menuContext, true);
+						//System.exit(0);
+					} else if (result == JOptionPane.NO_OPTION) {
+						//System.exit(0);
+					}
+					
+
 				}
 			});
 			menus.add( menu );

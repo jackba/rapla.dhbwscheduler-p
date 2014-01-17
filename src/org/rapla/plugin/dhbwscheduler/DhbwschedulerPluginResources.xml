@@ -46,23 +46,23 @@
 		<text lang="de">über folgenden Link vornehmen:</text>
 	</entry>
 	<entry key="Planung_abschliessen">
-		<text lang="en">complete planing</text>
+		<text lang="en">Complete planing</text>
 		<text lang="de">Planung abschliessen</text>
 	</entry>
 	<entry key="Scheduling_anstossen">
-		<text lang="en">initiate scheduling</text>
+		<text lang="en">Initiate scheduling</text>
 		<text lang="de">Scheduling anstossen</text>
 	</entry>
 	<entry key="Planung_schliessen">
-		<text lang="en">close planing</text>
+		<text lang="en">Close planing</text>
 		<text lang="de">Planung schliessen</text>
 	</entry>
 	<entry key="Planung_oeffnen">
-		<text lang="en">open planing</text>
+		<text lang="en">Open planing</text>
 		<text lang="de">Planung öffnen</text>
 	</entry>
 	<entry key="E-Mail_senden">
-		<text lang="en">send E-mail</text>
+		<text lang="en">Send E-mail</text>
 		<text lang="de">E-Mail senden</text>
 	</entry>
 	<entry key="Erfassungslink">
@@ -92,5 +92,13 @@
 	<entry key="erfasst">
 		<text lang="en">register</text>
 		<text lang="de">erfasst</text>
+	</entry>
+	<entry key="Email_Title">
+		<text lang="en">Send E-mail</text>
+		<text lang="de">E-Mail senden</text>
+	</entry>
+	<entry key="Email_senden_frage">
+		<text lang="en">Do you really want to send?</text>
+		<text lang="de">Wollen Sie wirklich senden?</text>
 	</entry>
 </resources>
