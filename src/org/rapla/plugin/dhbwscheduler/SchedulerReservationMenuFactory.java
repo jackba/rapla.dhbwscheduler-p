@@ -660,7 +660,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						
 						
 						newConstraint += ConstraintService.buildDozConstraint(key, 
-								ConstraintService.getDozStringConstraints(strConstraint)[i], 
+								ConstraintService.getDozStringConstraint(strConstraint, key), 
 								ConstraintService.getExceptionDatesDoz(strConstraint, key),								
 								ConstraintService.getStatus(strConstraint, key)); 
 						
