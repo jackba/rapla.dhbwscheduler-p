@@ -246,7 +246,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 		out.println(" 			</tbody>");
 		out.println("		</table>");
-		out.println("		<p><b>3.</b>  Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
+
 		//Datum für input type=date (id=inpDatepicker) formatieren
 		out.print("			<input id='inpDatepicker' type='date' min='' max='' value=''/>");
 		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
@@ -276,6 +276,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("</body>");
 		out.println("</html>");
 
+
 		if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
 			time = request.getParameter("time");	
 			kontaktdaten= request.getParameter("contact");
@@ -290,13 +291,13 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			bemerkung=request.getParameter("comment");
 			
 		}
+
 		out.close();
 
 					}
 	String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
-	
 	public void storeIntoReservation(int reservationID, int[][] calendar, Date[] ausnahmeDatum, int DozentID) throws RaplaContextException, EntityNotFoundException
 	{
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
