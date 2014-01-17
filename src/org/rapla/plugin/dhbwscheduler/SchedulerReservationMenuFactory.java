@@ -514,9 +514,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 								//email
 								if(isSend){
-									message += "\t email: sent ";
+									//message += "\t email: sent ";
+									message += "\t " + getString("E-Mail") + ": " + getString("gesendet") + " ";
 								}else{
-									message += "\t email: not sent ";
+									//message += "\t email: not sent ";
+									message += "\t " + getString("E-Mail") + ": " + getString("nichtgesendet") + " ";
 								}
 
 								//status

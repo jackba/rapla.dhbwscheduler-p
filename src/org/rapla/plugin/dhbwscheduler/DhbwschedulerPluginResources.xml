@@ -94,11 +94,23 @@
 		<text lang="de">erfasst</text>
 	</entry>
 	<entry key="Email_Title">
-		<text lang="en">Send E-mail</text>
+		<text lang="en">Send email</text>
 		<text lang="de">E-Mail senden</text>
 	</entry>
 	<entry key="Email_senden_frage">
 		<text lang="en">Do you really want to send?</text>
 		<text lang="de">Wollen Sie wirklich senden?</text>
+	</entry>
+	<entry key="E-Mail">
+		<text lang="en">email</text>
+		<text lang="de">E-Mail</text>
+	</entry>
+	<entry key="gesendet">
+		<text lang="en">send</text>
+		<text lang="de">gesendet</text>
+	</entry>
+	<entry key="nichtgesendet">
+		<text lang="en">not send</text>
+		<text lang="de">nicht gesendet</text>
 	</entry>
 </resources>
