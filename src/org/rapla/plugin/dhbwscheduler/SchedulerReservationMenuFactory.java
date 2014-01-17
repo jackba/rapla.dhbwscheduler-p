@@ -619,7 +619,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	private Reservation initConstraint(Reservation r) {
 		
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
-
+		String newConstraint ="";
+		
 		if (strConstraint == null){
 			int[] dozentid = new int[r.getPersons().length];
 			int[] newStatus = new int[r.getPersons().length];
@@ -634,20 +635,21 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 			}
 
-			strConstraint = ConstraintService.buildDozConstraint(dozentid, new String[r.getPersons().length], new Date[r.getPersons().length][], newStatus);
-			return changeReservationAttribute(r,"planungsconstraints",strConstraint);
+			newConstraint = ConstraintService.buildDozConstraint(dozentid, new String[r.getPersons().length], new Date[r.getPersons().length][], newStatus);
+			
 
 		}else{
 			
-			String newConstraint ="";
 			
+			//ConstraintService.addorchangeSingleDozConstraint();
 			for (int x = 0; x < r.getPersons().length; x++){
 				
 				Comparable pDozi = ((RefEntity<?>) r.getPersons()[x]).getId();
 				SimpleIdentifier pID = (SimpleIdentifier) pDozi;
 				boolean hit = false;
-				
+				//wer bleibt drin
 				// alte rausschmeisen
+				int[] keya = ConstraintService.getDozIDs(strConstraint);
 				
 				//ist der Dozent schon vorhanden, wird der Constraint beibehalten, bei einem neuen Dozenten wird dieser hinzugefügt. 
 				for(int i = 0; i< ConstraintService.getDozIDs(strConstraint).length ; i++){
@@ -655,6 +657,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					int key = ConstraintService.getDozIDs(strConstraint)[i];
 					
 					if (key == pID.getKey()){
+						
 						
 						newConstraint += ConstraintService.buildDozConstraint(key, 
 								ConstraintService.getDozStringConstraints(strConstraint)[i], 
@@ -672,10 +675,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				if(x < r.getPersons().length-1) {
 					newConstraint += "\n";
 				}
-				
 			}
-			return changeReservationAttribute(r,"planungsconstraints",newConstraint);
 		}
+		
+		return changeReservationAttribute(r,"planungsconstraints",newConstraint);
 	}
 	
 

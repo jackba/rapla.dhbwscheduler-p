@@ -19,13 +19,13 @@ public class ConstraintService{
 	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
 	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
 	 */
-
-	//TODO: Marco: Ich habe die Schnittstelle der Methode geändert. Kannst du bitte statt Strings die Konstanten verwenden. Danke
+	
 	
 	public static final int CHANGE_SINGLECONSTRAINT = 1;
 	public static final int CHANGE_SINGLEDATES = 2;
 	public static final int CHANGE_SINGLESTATUS = 3;
 
+	//TODO Verbesserung: wenn nichts zu ändern ist soll auch keine weitere Methode aufgerufen werden. (default zweig)
 	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object value){
 		
 		if (constraint == null){
@@ -64,9 +64,6 @@ public class ConstraintService{
 				
 			}
 			
-			//ES kommt hier zum Fehler, da das Array gefüllt wird und bei buildDozConstraint als "befüllt angesehen wird.
-			// Benjamin kannst du dir das bitte anschauen??
-			//TODO Benjamin kannst du hier mal schauen?
 			execptions[i] 	= dozentExecption;
 		
 			status[i] 		= dozstatus;
@@ -74,6 +71,55 @@ public class ConstraintService{
 		}
 			
 		return buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
+	}
+	public static String deleteSingleDozConstraint(String constraint, int dozID){
+		String newConstraint =constraint;
+		
+		if (newConstraint == null){
+			return null;
+		}
+
+		String dozCount[] = constraint.split("\n");
+		int[] result = new int[dozCount.length];
+		
+		
+		for(int i = 0; i < dozCount.length; i++){
+			String[] split = dozCount[i].split("_");
+			result[i] = Integer.valueOf(split[0]);
+			if(result[i] == dozID){
+				newConstraint = newConstraint.replace(split[i] + "\n", "");
+				newConstraint = newConstraint.replace(split[i], "");
+			}
+		}
+		
+		
+		return newConstraint;
+	}
+	//TODO Name oder vlt. 2 Methoden
+	public static String addorchangeSingleDozConstraint(String constraint, int dozID, String dozConst, Date[] exceptDate, int status){
+		
+		
+		String newConstraint = constraint;
+		
+		if (newConstraint == null){
+			return buildDozConstraint(dozID,dozConst,exceptDate,status);
+		}
+		for(int dozkey : ConstraintService.getDozIDs(newConstraint)){
+			if(dozkey == dozID){
+				//Dozent gibt es schon da drin muss also nicht neu hinzugefügt werden
+				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLEDATES,exceptDate);
+				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLECONSTRAINT,dozConst);
+				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLESTATUS,status);
+			}else{
+				newConstraint += buildDozConstraint(dozID,dozConst,exceptDate,status);
+			}
+		}
+		
+		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLEDATES,exceptDate);
+		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLECONSTRAINT,dozConst);
+		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLESTATUS,status);
+			
+		return newConstraint;
 	}
 	
 	public static String buildDozConstraint(int dozID, String dozConst, Date[] exceptDate, int status){
