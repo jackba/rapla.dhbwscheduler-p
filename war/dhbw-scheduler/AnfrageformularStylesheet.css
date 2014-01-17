@@ -1,6 +1,7 @@
 #wrapper{
 	width:900px;
 	margin:0 auto 0 auto;
+	background-color: white;
 }
 #numberVorlesungsstunden{
 	text-align:center;
@@ -14,6 +15,10 @@
 	width:300px;
 }
 #taBemerkungen{
+	resize:none;
+	width:500px;
+}
+#taKontakt{
 	resize:none;
 	width:500px;
 }

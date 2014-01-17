@@ -1,20 +1,5 @@
-$('document').ready(function(){		
-	$('#btnSubmit').on('click',function(){
-		var json={timeTableArray:formatArray(),datelist:getDatelist()};
-		var url=$('#hiddenUrl').val();
-		$.ajax({
-			 url: 'Test',
-		     type: 'POST',
-		     data:	{json:json},
-		     datatype: json,
-		     success: function (data){
-		    	 alert("Gesendet");
-		     },
-		     error: function(){
-		    	 alert("Error");
-		     }		
-		});
-	});	
+$('document').ready(function(){	
+	//Erlaubt das Ausw‰hlen mehrer Zellen der Stundentabelle
 	$(function (){
 		var isMouseDown = false;
 		var isHighlighted;
@@ -34,27 +19,47 @@ $('document').ready(function(){
 			isMouseDown= false;			
 		});
 	});
-	//Selection Funktion
-	/*$('#timeTableBody td').on('click',function(){
-		if($(this).attr('class') != 'tdSelect'){
-			$(this).removeClass();
-			$(this).addClass('tdSelect');
+	$('#taKontakt').change(function(){
+		$('#inpKontakt').val($(this).val());
+		$('#inpChanged').val(1);
+	});
+	$('#numberVorlesungsstunden').change(function(){
+		$('#inpStunden').val($(this).val());
+		$('#inpChanged').val(1);
+	});
+	//Markiert alle ausgew√§hlten Zellen mit +
+	$('#btnPlus').on('click',function(){
+		var obj=getSelectedTd();
+		for(var i in obj){
+			obj[i].removeClass();
+			obj[i].addClass('tdPlus');
+			obj[i].html('+');
 		}
-		else{
-			if($(this).html() == '+'){
-				$(this).removeClass();
-				$(this).addClass('tdPlus');
-			}
-			else if($(this).html() == '-'){
-				$(this).removeClass();
-				$(this).addClass('tdMinus');
-			}
-			else{
-				$(this).removeClass();
-				$(this).addClass('tdNeutral');
-			}
+		$('#inpTimeTable').val(getTimeTableToString());
+		$('#inpChanged').val(1);
+	});
+	//Markiert alle ausgew√§hlten Zellen mit -
+	$('#btnMinus').on('click',function(){
+		var obj=getSelectedTd();
+		for(var i in obj){
+			obj[i].removeClass();
+			obj[i].addClass('tdMinus');
+			obj[i].html('-');
 		}
-	});*/
+		$('#inpTimeTable').val(getTimeTableToString());
+		$('#inpChanged').val(1);
+	});
+	//Macht alle ausgew√§hlten Zellen leer
+	$('#btnClear').on('click',function(){
+		var obj=getSelectedTd();
+		for(var i in obj){
+			obj[i].removeClass();
+			obj[i].addClass('tdNeutral');
+			obj[i].html('');
+		}		
+		$('#inpTimeTable').val(getTimeTableToString());
+		$('#inpChanged').val(1);
+	});
 	//Datum der Liste hinzuf√ºgen, falls noch nicht vorhanden
 	$('#btnSetDate').on('click',function(){
 		var write= true;
@@ -68,105 +73,35 @@ $('document').ready(function(){
 		if(write ==true){
 			var item='<li>'+value+'</li>';
 			$('#ulDateList').append(item);
+			$('#inpAusnahmen').val(getDatelist());
+			$('#inpChanged').val(1);
 		}
 	});
-	//Markiert alle ausgew√§hlten Zellen mit +
-	$('#btnPlus').on('click',function(){
-		var obj=getSelectedTd();
-		for(var i in obj){
-			obj[i].removeClass();
-			obj[i].addClass('tdPlus');
-			obj[i].html('+');
-		}
+	$('#cbNo').change(function(){
+		$('#inpAufsicht').val($(this).val());
+		$('#inpChanged').val(1);
 	});
-	//Markiert alle ausgew√§hlten Zellen mit -
-	$('#btnMinus').on('click',function(){
-		var obj=getSelectedTd();
-		for(var i in obj){
-			obj[i].removeClass();
-			obj[i].addClass('tdMinus');
-			obj[i].html('-');
-		}
+	$('#cbYes').change(function(){
+		$('#inpAufsicht').val($(this).val());
+		$('#inpChanged').val(1);
 	});
-	//Macht alle ausgew√§hlten Zellen leer
-	$('#btnClear').on('click',function(){
-		var obj=getSelectedTd();
-		for(var i in obj){
-			obj[i].removeClass();
-			obj[i].addClass('tdNeutral');
-			obj[i].html('');
-		}
+	$('#taBemerkungen').change(function(){
+		$('#inpBemerkungen').val($(this).val());
+		$('#inpChanged').val(1);
 	});
 			
 });
-//Bef√ºllt die Stundentabelle dynamisch
-function fillTimeTable(){				
-	var tbody='';
-	for(var i=8;i<18;i++){
-		tbody+='<tr>';
-		tbody+='<th>'+i+'.00 - '+(i+1)+'.00</th>';
-		tbody+='<td></td>';
-		tbody+='<td></td>';
-		tbody+='<td></td>';
-		tbody+='<td></td>';
-		tbody+='<td></td>';
-		tbody+='<td></td>';
-		tbody+='</tr>';
-	}					
-	return tbody;
-}
 //Gibt alle ausgew√§hlten Zellen der Stundentabelle
 function getSelectedTd(){
 	var counter=0;
 	var selectedTds=new Array();
 	$('#timeTableBody td').each(function(){
-		if($(this).attr('class') == "tdSelect"){
+		if($(this).hasClass("tdSelect")){
 			selectedTds[counter]=$(this);
 			counter++;
 		}
 	});
 	return selectedTds;
-}
-//Liest alle Zellen der Timetable aus ( "-" = -1,"+"=1,""=0)
-function getTimeTableVal(){
-	var tableArray = new Array();
-	var currVal=0;
-	var rowCounter=0;
-	$('#timeTableBody tr').each(function(){
-		var rowArray = new Array();
-		var tdCounter=0;
-		$(this).find('td').each(function(){
-			if($(this).html() == '+'){
-				currVal=1;
-			}
-			else if($(this).html() == '-'){
-				currVal=-1;
-			}
-			else{
-				currVal=0;
-			}
-			rowArray[tdCounter] = currVal;
-			tdCounter++;
-		});
-		tableArray[rowCounter] = rowArray;
-		rowCounter++;
-	});
-	return tableArray;
-}
-//Formatiert das Array 
-function formatArray(){
-	var tableArray = getTimeTableVal();
-	var taFdLength = tableArray.length;
-	var newTableArray = new Array();
-	var startTime = parseInt($('#timeTableBody tr').first().find('th').html().split('.')[0]); //Start Uhrzeit der Tabelle ( 8.00-9.00 = 8)				
-	for(var i=0;i<6;i++){
-		newTableArray[i] = new Array();
-		for(var j=0;j<taFdLength;j++){
-			var tempT= startTime+j;
-			newTableArray[i][tempT]=tableArray[j][i];
-		}
-	}				
-	return newTableArray;
 }
 //Holt die Daten der Ausnahmen
 function getDatelist(){
@@ -177,4 +112,39 @@ function getDatelist(){
 		counter++;
 	});
 	return dateArray;
+}
+function getTimeTableToString(){
+	var tempVal;	//tempor‰rer Wert
+	var counter;	//Z‰hler um Zeitraum der Stundentabelle zu z‰hlen (z.B. 8.00-18.00 = 10)
+	var str='';
+	//Start Uhrzeit der Tabelle ( 8.00-9.00 = 8)
+	var startTime = parseInt($('#timeTableBody tr').first().find('th').html().split('.')[0]);
+	//Schleife z‰hlt Wochentage durch (So bis Mo)
+	//Beginnt bei 1, da Montag Spalte 2
+	for(var i=1;i<8;i++){
+		counter=0;
+		//Schleife z‰hlt von 0.00 Uhr bis Start der Stundentabelle (z.B. 8.00 Uhr)
+		//und f¸llt 
+		for(var j=0;j<startTime;j++){
+			str+='0';
+		}
+		$('#timeTableBody').find('tr').find('td:nth-child('+i+')').each(function(){				
+			if($(this).html() == '+'){
+				tempVal =2;
+			}
+			else if($(this).html() == '-'){
+				tempVal =0;
+			}
+			else{
+				tempVal =1;
+			}
+			str+=''+tempVal;
+			counter++;
+		});
+		counter+=startTime;
+		for(var l=counter;l<24;l++){
+			str+='0';
+		}
+	}
+	return str;
 }

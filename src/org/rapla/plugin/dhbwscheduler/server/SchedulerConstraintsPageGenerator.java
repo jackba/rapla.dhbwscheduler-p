@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -26,7 +27,6 @@ import org.rapla.plugin.dhbwscheduler.*;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
 
-@WebServlet(urlPatterns = {"/Test"})
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 
 	public SchedulerConstraintsPageGenerator(RaplaContext context,Configuration config) {
@@ -34,12 +34,13 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {         
 
         PrintWriter out = response.getWriter();            
-        String descr = request.getParameter("comment");            
-        String[] myJsonData = request.getParameterValues("json[]");
+        out.println();
+  //      String descr = request.getParameter("comment");            
+    //    String[] myJsonData = request.getParameterValues("json[]");
 
         String test = "test";
 
@@ -76,13 +77,15 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String endZeit="dd.mm.jjjj";			//Ende der Veranstaltung
 		String vorlesungsZeit ="dd.mm.jj";		//Ende der Vorlesungszeit
 		String veranst="Unbekannt";				//Veranstaltungsname
-		String[] kontaktdatenArray;				//Liste mit geänderten Kontaktdaten 
-		int[][] timeTableArray;					//Inhalt der StundenTabelle
+		String kontaktdaten;				//Liste mit geänderten Kontaktdaten 
+		String time;							//Inhalt der StundenTabelle
 		String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
 		int stunden = 4;						//Vorlesungsstunden am Stück
+		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
 		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
 		int dayTimeStart = 8;					//Benötigt zum Aufbauen der Stundentabelle
 		int dayTimeEnd = 18;					//Benötigt zum Aufbauen der Stundentabelle		
+		String key = request.getParameter("key"); 
 
 		String eventId = request.getParameter("id");	//ID der Veranstaltung
 		String dozentId = request.getParameter("dozent");	//ID des Dozenten
@@ -151,6 +154,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 				}
 			}
+			
 			beginZeit = veranstaltung.getFirstDate().toLocaleString();
 			endZeit = veranstaltung.getMaxEnd().toLocaleString();
 			beginZeit = beginZeit.substring(0,beginZeit.indexOf(" "));
@@ -162,11 +166,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		out.println("<!DOCTYPE html>"); // we have HTML5 
 		out.println("<html>");
 		out.println("<head>");
-		out.println("  <title>MyPage</title>");
+		
+		out.println("  <title>Semesterplanung</title>");
 
 		//out.println(" <link REL=\"stylesheet\" href=\""+linkPrefix + "calendar.css\" type=\"text/css\">");
 		out.println("	<link REL=\"stylesheet\" type=\"text/css\" href=\""+linkPrefix+"dhbw-scheduler/AnfrageformularStylesheet.css\">");
@@ -179,7 +184,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("		<input id='hiddenUrl' type='hidden' name='' value='"+linkPrefix+"rapla\'>");
 		out.print("		<div id='wrapper'>");
 		out.println("		<h3>");
-		out.print("				Planung des "+semester+". Semesters " + studiengang + "</br>");
+		out.print("				Planung des "+semester+". Semesters " + studiengang +  ";</br>");
 		out.print("				Kurs " + kursName + ", "+beginZeit+" bis "+endZeit+" (Ende der Vorlesungszeit: "+vorlesungsZeit+")");
 		out.println("		</h3>");
 
@@ -195,24 +200,15 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("		</table>");
 
 		out.println("		<p>Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&auml;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:</p>");
-
-		out.println("		<input id='inpKontaktdaten' type='text' value='' list='kontaktdaten'/>");
-		out.println("		<datalist id='kontaktdaten'>");
-		out.print("				<option value='E-mail'/>");
-		out.print("				<option value='Telefonnummer'/>");
-		out.print("				<option value='Handynummer'/>");
-		out.print("				<option value='Adresse'/>");
-		out.print("				<option value='Firma'/>");
-		out.println("		</datalist>");
-
+		out.println("		<textarea id='taKontakt' rows='5' col='65'></textarea>");
 		out.println("		<p><b>1.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
 		out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' max='10' value='"+stunden+"'/>");
 		out.println("		<label for='inpVorlesungsstunden'>Vorlesungsstunden</label>");
 
-		out.println("		<p>Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:</p>");
+		out.println("		<p><b>2.</b> Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:</p>");
 
-		out.println("		<p><b>2.</b>Setzen Sie ein <b>- (Minus)</b> in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</p>");
-		out.println("		<p><b>3.</b>Setzen Sie ein <b>+ (Plus)</b> in alle Zeitfelder, die f&uuml;r Sie besonders angenehm sind!</p>");
+		out.println("		<p> Setzen Sie ein <b>- (Minus)</b> in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</p>");
+		out.println("		<p> Setzen Sie ein <b>+ (Plus)</b> in alle Zeitfelder, die f&uuml;r Sie besonders angenehm sind!</p>");
 		out.println("		<table id='timeTable'>");
 		out.println("			<thead>");
 		out.print("					<tr>");
@@ -240,7 +236,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.print("<tr>");
 			out.print("	<th>"+i+".00 - "+(i+1)+".00</th>");
 			//Schleife zum Erstellen der Zellen pro Wochentag (Mo-Sa)
-			for(int j=0;j<6;j++){
+			for(int j=1;j<7;j++){
 				//timeTableArray
 				out.print("	<td class='tdNeutral'></td>");
 			}
@@ -250,46 +246,50 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 		out.println(" 			</tbody>");
 		out.println("		</table>");
-
-
-
-		out.println("		<p><b>4.</b>  Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
+		out.println("		<p><b>3.</b>  Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
 		//Datum für input type=date (id=inpDatepicker) formatieren
-		try{
-			String[] splitResult = beginZeit.split(".");
-			beginZeit= splitResult[2]+"-"+splitResult[1]+"-"+splitResult[0];				
-			splitResult = endZeit.split(".");
-			endZeit = splitResult[2]+"-"+splitResult[1]+"-"+splitResult[0];
-		}
-		catch(Exception e){
-			String error = "DatumFormat: "+e;			
-		}
-		out.print("			<input id='inpDatepicker' type='date' min='"+beginZeit+"' max='"+endZeit+"' value='"+beginZeit+"'/>");
+		out.print("			<input id='inpDatepicker' type='date' min='' max='' value=''/>");
 		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
 		out.println("		<ul id='ulDateList'>");
 		/*Schleife um Ausnahmenauszulesen*/
-		out.println("		</ul>");	
-		out.println("		<p><b>5.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
-		out.print("			<input id='cbYes' type='checkbox' group='cbGroupKlausur' value='1'/>");
+		out.println("		</ul>");
+		out.println("		<p><b>4.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
+		out.print("			<input id='cbYes' type='radio' name='cbGroupKlausur' value='1'/>");
 		out.print("			<label for='cbYes'>Ja</label>");
-		out.print("			<input id='cbNo' type='checkbox' group='cbGroupKlausur' value='0' checked='checked'/>");
+		out.print("			<input id='cbNo' type='radio' name='cbGroupKlausur' value='0' checked='checked'/>");
 		out.print("			<label for='cbNo'>Nein</label>");
 
 		out.println("		<p>Platz f&uuml;r weitere Bemerkungen :</p>");
 		out.println("		<textarea id='taBemerkungen' rows='5' col='65'>"+bemerkung+"</textarea>");
-
-		out.print("			<input id='btnSubmit' type='button' value='Flickis Submitbutton'");
+		out.println("		<form action=\"rapla\" method=\"get\">");
+					out.println(getHiddenField("key", key));
+		out.println("			<input id='inpChanged' type='hidden' name='changed' value='0'>");
+		out.println("			<input id='inpKontakt' type='hidden' name='contact' value=''>");
+		out.println("			<input id='inpStunden' type='hidden' name='hours' value=''>");
+		out.println("			<input id='inpTimeTable' type='hidden' name='time' value=''>");
+		out.println("			<input id='inpAusnahmen' type='hidden' name='exception' value=''>");		
+		out.println("			<input id='inpAufsicht' type='hidden' name='control' value=''>");
+		out.println("			<input id='inpBemerkungen' type='hidden' name='comment' value=''>");	
+		out.print("				<input type ='submit' name='rapla' value='Senden'/>");
+		out.println("		</form>");
 		out.println("	</div>");
 		out.println("</body>");
 		out.println("</html>");
 
-		/*out.println("<form action=\""+linkPrefix + "rapla\" method=\"get\">");
-
-		out.println(getHiddenField("page", "scheduler-constraints"));
-		out.println(getHiddenField("ID", "test"));
-
-
-		out.print("<input type ='submit' value='anlegen'/>");*/
+		if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
+			time = request.getParameter("time");	
+			kontaktdaten= request.getParameter("contact");
+			try{stunden = Integer.parseInt(request.getParameter("hours"));}
+			catch(Exception e){}
+			ausnahmenArray = request.getParameter("exception").split(",");		
+			if(request.getParameter("control").equals("1")){
+				aufsicht= true;
+			}else if(request.getParameter("control").equals("0")){
+				aufsicht = false;
+			}
+			bemerkung=request.getParameter("comment");
+			
+		}
 		out.close();
 
 					}
