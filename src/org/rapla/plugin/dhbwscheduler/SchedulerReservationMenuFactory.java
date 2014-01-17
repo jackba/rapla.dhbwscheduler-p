@@ -145,7 +145,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		 */
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_ABSCHLIESSEN");
-			menu.setText( "Planung abschliessen" );
+			menu.setText(getString("Planung_abschliessen"));
 			// Last the action for the marked menu 
 			menu.addActionListener( new ActionListener()
 			{
@@ -169,7 +169,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_OEFFNEN");
-			menu.setText( "Planung oeffnen" );
+			menu.setText(getString("Planung_oeffnen"));
 			// Last the action for the marked menu 
 			menu.addActionListener( new ActionListener()
 			{
@@ -194,7 +194,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_SCHLIESSEN");
-			menu.setText( "Planung schliessen" );
+			menu.setText( getString("Planung_schliessen"));
 			// Last the action for the marked menu 
 			menu.addActionListener( new ActionListener()
 			{
@@ -219,7 +219,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("SCHEDULING_ANSTOSSEN");
-			menu.setText( "Scheduling anstossen" );
+			menu.setText( getString("Scheduling_anstossen"));
 			//menu.setIcon( getIcon("icon.help"));
 			menu.addActionListener( new ActionListener()
 			{
@@ -260,7 +260,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("ERFASSUNG");
-			menu.setText( "Erfassungslink öffnen" );
+			menu.setText( getString("Erfassungslink") );
 			menu.addActionListener( new ActionListener()
 			{
 
@@ -322,10 +322,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									label[i] = new JLabel();
 									labelHead.setFont(new Font("Arial",Font.BOLD,16));
 									label[i].setFont(new Font("Arial",Font.CENTER_BASELINE,14));
-									//TODO Übersetzung?
-									labelHead.setText("Studiengang " + studiengang
-											+ ", Veranstaltung: " + r.getName(getLocale()));
-									label[i].setText("Dozent: " 
+									labelHead.setText(getString("Studiengang") + ": " + studiengang
+											+ ", " + getString("Veranstaltung") + ": " + r.getName(getLocale()));
+									label[i].setText(getString("Dozent") + ": " 
 											+ r.getPersons()[t].getClassification().getValue("firstname").toString()
 											+ " " + r.getPersons()[t].getClassification().getValue("surname").toString());
 
@@ -408,7 +407,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 						DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,panel,new String[] {"OK"});
 						dialogUI.setSize( 600, 300);
-						dialogUI.setTitle("Erfassungslink");
+						dialogUI.setTitle(getString("Erfassungslink"));
 						if (menuContext.getPoint() != null)
 						{    
 							dialogUI.setLocation( menuContext.getPoint() );
@@ -425,9 +424,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			
-			//TODO ÜBersetzungen und Message bearbeiten. Logger infos richtig setzen.
+			//TODO Logger infos richtig setzen.
 			final RaplaMenuItem menu = new RaplaMenuItem("EMAIL_SENDEN");
-			menu.setText( "E-Mail senden" );
+			menu.setText(getString("E-Mail_senden"));
 			// Last the action for the marked menu 
 			menu.addActionListener( new ActionListener()
 			{
@@ -687,7 +686,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	 */
 	private boolean EmailVersendeBerechtigung(Reservation r, int dozentenID) {
 		
-		
+		final int intUneingeladen = 0;
+		final int intEingeladen = 1;
+		final int intErfasst = 2;
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 		//ConstraintService.buildDozConstraint(dozentenID, null, null, status);
 		int erfassungsstatus = ConstraintService.getStatus(strConstraint, dozentenID);
@@ -698,18 +699,14 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				r.getClassification().getValue("planungsstatus").equals(closed)){
 			returnvalue = false;
 		}else{
-			//TODO Konstanten definieren?
 			switch(erfassungsstatus){
-			//uneingeladen
-			case 0:
+			case intUneingeladen:
 				returnvalue = true;
 				break;
-			//eingeladen
-			case 1:
+			case intEingeladen:
 				returnvalue = true;
 				break;
-			//erfasst
-			case 2:
+			case intErfasst:
 				returnvalue = false;
 				break;
 			default:
@@ -722,7 +719,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	}
 
 	private String getErfassungsstatus(Reservation r, int key) {
-		// TODO Übersetzungen
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 		String returnvalue = "";
 		if (strConstraint ==null){
@@ -731,16 +727,16 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		
 		switch(ConstraintService.getStatus(strConstraint, key)){
 		case 0:
-			returnvalue = "uneingeladen";
+			returnvalue = getString("uneingeladen");
 			break;
 		case 1:
-			returnvalue = "eingeladen";
+			returnvalue = getString("eingeladen");
 			break;
 		case 2:
-			returnvalue = "erfasst";
+			returnvalue = getString("erfasst");
 			break;
 		default:
-			returnvalue = "error";							
+			returnvalue = "error";						
 		};
 		
 		return returnvalue;
