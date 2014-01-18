@@ -184,7 +184,7 @@ public class ConstraintService{
 	}
 	
 	public static String buildDozConstraint(int[] dozIDs, String[] dozConsts, Date[][] exceptDates, int[] status){
-		String result = "";
+ 		String result = "";
 		
 		for(int i = 0; i<dozIDs.length; i++) {
 			result += dozIDs[i] + "_";
@@ -194,16 +194,22 @@ public class ConstraintService{
 			}
 			
 			result += "_";
-			if( exceptDates[i] != null) {
-				for (int j = 0; j<exceptDates[i].length; j++) {
-					if (exceptDates[i][j] == null) {
-						result = result.substring(0, result.length()-1);
-						break;
+			if( exceptDates != null && exceptDates[i] != null && exceptDates[i].length > 0) {
+				int asd = exceptDates[i].length;
+				int dsa = exceptDates.length;
+				if ( exceptDates[i][0] != null){
+
+					for (int j = 0; j<exceptDates[i].length; j++) {
+						if (exceptDates[i][j] == null) {
+							result = result.substring(0, result.length()-1);
+							break;
+						}
+						result += exceptDates[i][j].getTime();
+						if(j < exceptDates[i].length-1) {
+							result += ",";
+						}
 					}
-					result += exceptDates[i][j].getTime();
-					if(j < exceptDates[i].length-1) {
-						result += ",";
-					}
+
 				}
 			}
 			result += "_";

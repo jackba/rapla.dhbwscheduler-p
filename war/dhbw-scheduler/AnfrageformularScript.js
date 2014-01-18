@@ -19,6 +19,9 @@ $('document').ready(function(){
 			isMouseDown= false;			
 		});
 	});
+	$('#inpSubmit').on('click',function(){
+		
+	});
 	$('#taKontakt').change(function(){
 		$('#inpKontakt').val($(this).val());
 		$('#inpChanged').val(1);
