@@ -3,6 +3,8 @@ package org.rapla.plugin.dhbwscheduler.server;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.rapla.components.util.DateTools;
+import org.rapla.components.util.ParseDateException;
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
@@ -289,156 +292,243 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				aufsicht = false;
 			}
 			bemerkung=request.getParameter("comment");
+			boolean constraintIsSend = sendConstrainttoReservation(eventId,dozentId,time,ausnahmenArray);
 			
+			if(!constraintIsSend){
+				//error konnte nicht gesendet werden! alter an den Dozenten
+				out.print("alert('konnte nicht gespeichert werden');");
+			}else{
+				out.print("alert('gesendet');");
+			}
+		
 		}
 
 		out.close();
 
-					}
+	}
+
+
 	String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
-	public void storeIntoReservation(int reservationID, int[][] calendar, Date[] ausnahmeDatum, int DozentID) throws RaplaContextException, EntityNotFoundException
-	{
-		StorageOperator lookup = getContext().lookup( StorageOperator.class);
-		SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, reservationID); 
-		Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
-
-
-		//Attribute setzen
+	
+	private boolean sendConstrainttoReservation(String eventId, String dozentId,
+			String time, String[] ausnahmenArray) {
+		
+		String constraint = "";
+		String newConstraint="";
+		int status = 2;
+		int verId = Integer.parseInt(eventId);
+		int dozId = Integer.parseInt(dozentId);
+		Date[] ausnahmenDateArray = new Date[ausnahmenArray.length];
+		SimpleDateFormat strToDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		
+		StorageOperator lookup;
+		Reservation veranstaltung;
 		try {
-			Reservation editVeranstaltung =getClientFacade().edit(veranstaltung);
-
-			String planungsconstrains = (String) editVeranstaltung.getClassification().getValue("planungsconstraints");
-			String ausnahmenconstraints = (String) editVeranstaltung.getClassification().getValue("ausnahmeconstraints");
-
-
-			String newPlanungsconstraint = reservationStringbearbeiten(DozentID, planungsconstrains, constraintToString(calendar));
-			String newAusnahmeconstraint = reservationStringbearbeiten(DozentID, ausnahmenconstraints, ausnahmenToString(ausnahmeDatum));
-
-
-			if (!newPlanungsconstraint.isEmpty()){
-				editVeranstaltung.getClassification().setValue("planungsconstraints", newPlanungsconstraint);
-			}
-
-			if(!newAusnahmeconstraint.isEmpty()){
-				editVeranstaltung.getClassification().setValue("ausnahmeconstraints", newAusnahmeconstraint);
-			}
-
-			getClientFacade().store( editVeranstaltung );
-
-
-		} catch (RaplaException e) {
+			lookup = getContext().lookup( StorageOperator.class);
+			SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, verId);
+			veranstaltung = (Reservation) lookup.resolve(idtype);
+			
+		} catch (RaplaContextException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return false;
+		} catch (EntityNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
-
-
-	}
-
-	private String reservationStringbearbeiten(int dozentID, String getconstraint, String changeconstraint) {
-		// TODO Auto-generated method stub
-		if(getconstraint == null){
-			getconstraint = "";
-		}
-		if (changeconstraint == null || changeconstraint.isEmpty()){
-			return "";
-		}
-
-		String dozent = String.valueOf(dozentID) + "_";
-		String DozentConstraints = "";
-		String[] dozentenString = getconstraint.split("\n");
-
-		if(getconstraint.contains(dozent)){
-			for(int i = 0; i < dozentenString.length ; i++){
-
-				if(dozentenString[i].contains(dozent)){
-					dozentenString[i] = dozent + changeconstraint;
+		
+		if (ausnahmenArray != null ){
+			for(int i = 0 ; i< ausnahmenArray.length; i++){
+				if(!ausnahmenArray[i].equals("") && ausnahmenArray[i] != null){
+					try {
+						ausnahmenDateArray[i] = strToDate.parse(ausnahmenArray[i]);
+					} catch (ParseException e) {
+						e.printStackTrace();
+						return false;
+					}
 				}
-
-				DozentConstraints += dozentenString[i] + "\n"; 
-
+					
 			}
+		}
+		
+		
+		
+		constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints"); 
+		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozId, time, ausnahmenDateArray, status);
+		
+		veranstaltung = changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
+		
+		if(veranstaltung == null){
+			return false;
 		}else{
-			if (getconstraint.isEmpty()){
-				DozentConstraints += dozent + changeconstraint;
-			}else{
-				DozentConstraints += getconstraint + "\n" +  dozent + changeconstraint;
-			}
-
+			return true;
 		}
-
-
-
-		if(DozentConstraints.endsWith("\n")){
-			DozentConstraints = DozentConstraints.substring(0, DozentConstraints.length()-1);
-		}
-
-		return DozentConstraints;
 
 	}
-
-	private String ausnahmenToString(Date[] ausnahmeDatum) {
-
-		String ausnahmenString = "";
-
-		for (int i = 0; i< ausnahmeDatum.length ; i++)
-		{
-			if (ausnahmeDatum[i] != null){
-				ausnahmenString = ausnahmenString + DateTools.formatDate(ausnahmeDatum[i]) + "," ;
-			}
-
+	
+	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
+		try {
+			Reservation editableEvent = getClientFacade().edit( r);
+			editableEvent = getClientFacade().edit( r);
+			editableEvent.getClassification().setValue(Attribute, value);
+			getClientFacade().store( editableEvent );
+			getClientFacade().refresh();
+			return editableEvent;
+		} catch (RaplaException e1) {
+			e1.printStackTrace();
+			getLogger().info("ERROR:" + e1.toString());
 		}
-
-		if (ausnahmenString.endsWith(",")){
-			ausnahmenString = ausnahmenString.substring(0, ausnahmenString.length()-1);
-		}
-
-		return ausnahmenString;
-
+		return null;
 	}
-
-	private String constraintToString(int[][] constraints) {
-
-		String stringconstraint = "";
-
-		for (int day = 0; day < constraints.length; day++){
-
-			int Time1 = 0;
-			int Time2 = 0;
-			int Marker = 0;
-			stringconstraint = stringconstraint + String.valueOf(day+1) + ":"; 
-
-			for (int hour = 0; hour < constraints[day].length; hour++){
-
-				if (constraints[day][hour] == 1 && Marker == 0){
-
-					//start
-					Marker = 1;
-
-					Time1 = hour;
-					stringconstraint = stringconstraint + String.valueOf(Time1);
-
-				}
-
-				if (constraints[day][hour] == 0 && Marker == 1){
-
-					//end
-					Marker = 0;
-
-					Time2 = hour;
-					stringconstraint = stringconstraint + "-" + String.valueOf(Time2) + ",";
-
-				}
-
-			}
-			if (stringconstraint.endsWith(",")){
-				stringconstraint = stringconstraint.substring(0, stringconstraint.length()-1);
-			}
-			stringconstraint = stringconstraint + ";";
-
-		}
-		return stringconstraint;
-	}
+	
+	
+	
+	
+//TODO wird nicht mehr benötigt?	
+//	public void storeIntoReservation(int reservationID, int[][] calendar, Date[] ausnahmeDatum, int DozentID) throws RaplaContextException, EntityNotFoundException
+//	{
+//		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+//		SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, reservationID); 
+//		Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
+//
+//
+//		//Attribute setzen
+//		try {
+//			Reservation editVeranstaltung =getClientFacade().edit(veranstaltung);
+//
+//			String planungsconstrains = (String) editVeranstaltung.getClassification().getValue("planungsconstraints");
+//			String ausnahmenconstraints = (String) editVeranstaltung.getClassification().getValue("ausnahmeconstraints");
+//
+//
+//			String newPlanungsconstraint = reservationStringbearbeiten(DozentID, planungsconstrains, constraintToString(calendar));
+//			String newAusnahmeconstraint = reservationStringbearbeiten(DozentID, ausnahmenconstraints, ausnahmenToString(ausnahmeDatum));
+//
+//
+//			if (!newPlanungsconstraint.isEmpty()){
+//				editVeranstaltung.getClassification().setValue("planungsconstraints", newPlanungsconstraint);
+//			}
+//
+//			if(!newAusnahmeconstraint.isEmpty()){
+//				editVeranstaltung.getClassification().setValue("ausnahmeconstraints", newAusnahmeconstraint);
+//			}
+//
+//			getClientFacade().store( editVeranstaltung );
+//
+//
+//		} catch (RaplaException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//
+//	}
+//
+//	private String reservationStringbearbeiten(int dozentID, String getconstraint, String changeconstraint) {
+//		// TODO Auto-generated method stub
+//		if(getconstraint == null){
+//			getconstraint = "";
+//		}
+//		if (changeconstraint == null || changeconstraint.isEmpty()){
+//			return "";
+//		}
+//
+//		String dozent = String.valueOf(dozentID) + "_";
+//		String DozentConstraints = "";
+//		String[] dozentenString = getconstraint.split("\n");
+//
+//		if(getconstraint.contains(dozent)){
+//			for(int i = 0; i < dozentenString.length ; i++){
+//
+//				if(dozentenString[i].contains(dozent)){
+//					dozentenString[i] = dozent + changeconstraint;
+//				}
+//
+//				DozentConstraints += dozentenString[i] + "\n"; 
+//
+//			}
+//		}else{
+//			if (getconstraint.isEmpty()){
+//				DozentConstraints += dozent + changeconstraint;
+//			}else{
+//				DozentConstraints += getconstraint + "\n" +  dozent + changeconstraint;
+//			}
+//
+//		}
+//
+//
+//
+//		if(DozentConstraints.endsWith("\n")){
+//			DozentConstraints = DozentConstraints.substring(0, DozentConstraints.length()-1);
+//		}
+//
+//		return DozentConstraints;
+//
+//	}
+//
+//	private String ausnahmenToString(Date[] ausnahmeDatum) {
+//
+//		String ausnahmenString = "";
+//
+//		for (int i = 0; i< ausnahmeDatum.length ; i++)
+//		{
+//			if (ausnahmeDatum[i] != null){
+//				ausnahmenString = ausnahmenString + DateTools.formatDate(ausnahmeDatum[i]) + "," ;
+//			}
+//
+//		}
+//
+//		if (ausnahmenString.endsWith(",")){
+//			ausnahmenString = ausnahmenString.substring(0, ausnahmenString.length()-1);
+//		}
+//
+//		return ausnahmenString;
+//
+//	}
+//
+//	private String constraintToString(int[][] constraints) {
+//
+//		String stringconstraint = "";
+//
+//		for (int day = 0; day < constraints.length; day++){
+//
+//			int Time1 = 0;
+//			int Time2 = 0;
+//			int Marker = 0;
+//			stringconstraint = stringconstraint + String.valueOf(day+1) + ":"; 
+//
+//			for (int hour = 0; hour < constraints[day].length; hour++){
+//
+//				if (constraints[day][hour] == 1 && Marker == 0){
+//
+//					//start
+//					Marker = 1;
+//
+//					Time1 = hour;
+//					stringconstraint = stringconstraint + String.valueOf(Time1);
+//
+//				}
+//
+//				if (constraints[day][hour] == 0 && Marker == 1){
+//
+//					//end
+//					Marker = 0;
+//
+//					Time2 = hour;
+//					stringconstraint = stringconstraint + "-" + String.valueOf(Time2) + ",";
+//
+//				}
+//
+//			}
+//			if (stringconstraint.endsWith(",")){
+//				stringconstraint = stringconstraint.substring(0, stringconstraint.length()-1);
+//			}
+//			stringconstraint = stringconstraint + ";";
+//
+//		}
+//		return stringconstraint;
+//	}
 
 }

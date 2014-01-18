@@ -26,11 +26,21 @@ public class ConstraintService{
 
 	//TODO Verbesserung: wenn nichts zu ändern ist soll auch keine weitere Methode aufgerufen werden. (default zweig)
 	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object value){
+		Object[] obj = new Object[1];
+		obj[0] = value;
+		return changeDozConstraint(constraint, doz_ID, changevalue, obj );
+	}
+	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object[] value){
 		String result = "";
 		
 		if (constraint == null){
 			return result;
 		}
+		
+//		if(value == null || value[0] == null){
+//			//es soll doch keine änderung vorgenommen werden
+//			return constraint;
+//		}
 		
 		int[] dozentIds = getDozIDs(constraint);
 		String[] dozentConstraints = new String[dozentIds.length];
@@ -51,10 +61,10 @@ public class ConstraintService{
 						dozentExecption = (Date[]) value;
 						break;
 					case CHANGE_SINGLESTATUS:
-						dozstatus = (Integer) value;
+						dozstatus = (Integer) value[0];
 						break;
 					case CHANGE_SINGLECONSTRAINT:
-						dozentConstraints[i] = (String) value;
+						dozentConstraints[i] = (String) value[0];
 						break;
 					}
 				}catch(ClassCastException ce){
@@ -157,7 +167,7 @@ public class ConstraintService{
 		dozConsts[0] = dozConst;
 		
 		Date[][] exceptDates;
-		if ( exceptDate == null) {
+		if ( exceptDate == null || exceptDate[0] == null) {
 			exceptDates = new Date[1][0];
 		}
 		else {
