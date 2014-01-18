@@ -167,7 +167,7 @@ public class ConstraintService{
 		dozConsts[0] = dozConst;
 		
 		Date[][] exceptDates;
-		if ( exceptDate == null || exceptDate[0] == null) {
+		if ( exceptDate == null) {
 			exceptDates = new Date[1][0];
 		}
 		else {
