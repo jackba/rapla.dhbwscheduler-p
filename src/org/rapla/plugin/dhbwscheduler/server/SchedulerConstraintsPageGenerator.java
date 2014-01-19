@@ -80,8 +80,8 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String endZeit="dd.mm.jjjj";			//Ende der Veranstaltung
 		String vorlesungsZeit ="dd.mm.jj";		//Ende der Vorlesungszeit
 		String veranst="Unbekannt";				//Veranstaltungsname
-		String kontaktdaten;				//Liste mit geänderten Kontaktdaten 
-		String time;							//Inhalt der StundenTabelle
+		String kontaktdaten="";				//Liste mit geänderten Kontaktdaten 
+		String time = "";							//Inhalt der StundenTabelle
 		String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
 		int stunden = 4;						//Vorlesungsstunden am Stück
 		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
@@ -228,7 +228,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("		</table>");
 
 		out.println("		<p>Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&auml;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:</p>");
-		out.println("		<textarea id='taKontakt' rows='5' col='65'></textarea>");
+		out.println("		<textarea id='taKontakt' rows='5' col='65'>"+kontaktdaten+"</textarea>");
 		out.println("		<p><b>1.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
 		out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' max='10' value='"+stunden+"'/>");
 		out.println("		<label for='inpVorlesungsstunden'>Vorlesungsstunden</label>");
@@ -259,6 +259,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("			</thead>");
 		out.println(" 			<tbody id='timeTableBody'>");
 
+		String[][] timeArray = formatTimeString(time);
 		for(int i=dayTimeStart;i<dayTimeEnd;i++){
 
 			out.print("<tr>");
@@ -266,7 +267,15 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			//Schleife zum Erstellen der Zellen pro Wochentag (Mo-Sa)
 			for(int j=1;j<7;j++){
 				//timeTableArray
-				out.print("	<td class='tdNeutral'></td>");
+				if(timeArray[j][i]=="0"){
+					out.print("	<td class='tdMinus'>-</td>");
+				}
+				else if(timeArray[j][i]=="2"){
+					out.print("	<td class='tdPlus'>+</td>");
+				}
+				else{
+					out.print("	<td class='tdNeutral'></td>");
+				}
 			}
 			out.print("</tr>");
 
@@ -278,14 +287,26 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("			<input id='inpDatepicker' type='date' min='' max='' value=''/>");
 		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
 		out.println("		<ul id='ulDateList'>");
-		/*Schleife um Ausnahmenauszulesen*/
+		/*
+		 * String[] dateArr = formatDates();
+		 * for(int i=0;i<dateArr.length;i++){
+		 * 	out.print("<li>"+dateArr[i]+"</li>");
+		 * }
+		 */
 		out.println("		</ul>");
 		out.println("		<p><b>4.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
-		out.print("			<input id='cbYes' type='radio' name='cbGroupKlausur' value='1'/>");
-		out.print("			<label for='cbYes'>Ja</label>");
-		out.print("			<input id='cbNo' type='radio' name='cbGroupKlausur' value='0' checked='checked'/>");
-		out.print("			<label for='cbNo'>Nein</label>");
-
+		if(aufsicht){
+			out.print("			<input id='cbYes' type='radio' name='cbGroupKlausur' value='1' checked='checked'/>");
+			out.print("			<label for='cbYes'>Ja</label>");
+			out.print("			<input id='cbNo' type='radio' name='cbGroupKlausur' value='0'/>");
+			out.print("			<label for='cbNo'>Nein</label>");
+		}
+		else{
+			out.print("			<input id='cbYes' type='radio' name='cbGroupKlausur' value='1'/>");
+			out.print("			<label for='cbYes'>Ja</label>");
+			out.print("			<input id='cbNo' type='radio' name='cbGroupKlausur' value='0' checked='checked'/>");
+			out.print("			<label for='cbNo'>Nein</label>");
+		}
 		out.println("		<p>Platz f&uuml;r weitere Bemerkungen :</p>");
 		out.println("		<textarea id='taBemerkungen' rows='5' col='65'>"+bemerkung+"</textarea>");
 		out.println("		<form action=\"rapla\" method=\"get\">");
@@ -322,6 +343,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	//!!!!Test noch notwendig!!!!
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
 	private String[][] formatTimeString(String str){
+		//Überprüfen ob TimeString leer ist, ggf. füllen
+		if(str==""){
+			for(int i=0;i<168;i++){
+				str+="0";
+			}
+		}
 		char[] charArray = str.toCharArray();
 		int counter=0;		//Zähler um Wochentage durch zu zählen
 		int count=0;		//Zähler um Stunden durch zu zählen
