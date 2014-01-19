@@ -81,6 +81,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 	private int vor_res[][] = {{}};
 	private int kurs_vor[][] = {{}};
 	private ArrayList<Reservation> reservations;
+	private ArrayList<Reservation> reservationsPlannedByScheduler = new ArrayList<Reservation>();
 	
 	private FreetimeService freetimeService = null;
 	
@@ -296,6 +297,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			
     		getClientFacade().store(reservation);
     		reservations.remove((solRes[i][0])-1);
+    		reservationsPlannedByScheduler.add(reservation);
         }
         
         //Dateien aufräumen
@@ -468,7 +470,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements GlpkCall
 			Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, start, ende, null);
 			for (Reservation vorlesungMitGleicherResource : vorlesungenMitGleichenResourcen){
 				//for each of these reservations, look if there are in planning_closed
-				if(vorlesungMitGleicherResource.getClassification().getValue(getString("design_status")).equals(getString("planning_closed"))){
+				if (vorlesungMitGleicherResource.getClassification()
+						.getValue(getString("design_status"))
+						.equals(getString("planning_closed"))
+						|| reservationsPlannedByScheduler
+								.contains(vorlesungMitGleicherResource)) {
 					//nur geplante Veranstaltungen muessen beachtet werden
 					Appointment[] termine = vorlesungMitGleicherResource.getAppointments();
 					for (Appointment termin : termine){
