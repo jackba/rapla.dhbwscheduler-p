@@ -271,7 +271,6 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.print("</tr>");
 
 		}
-
 		out.println(" 			</tbody>");
 		out.println("		</table>");
 		out.println("		<p><b>3.</b>Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
@@ -312,7 +311,33 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
-	
+	private void formatStringArrToDateArr(String[] strArr){
+		Date[] dateArr = new Date[strArr.length];
+		String[] tempArr;
+		Date tempDate= new Date();
+		for(int i=0;i<strArr.length;i++){
+			 tempArr=strArr[i].split("-");
+		}
+	}
+	//!!!!Test noch notwendig!!!!
+	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
+	private String[][] formatTimeString(String str){
+		char[] charArray = str.toCharArray();
+		int counter=0;		//Zähler um Wochentage durch zu zählen
+		int count=0;		//Zähler um Stunden durch zu zählen
+		String[][] timeArray = new String[7][24];
+		//Schleife um alle Zeichen (7*24 = 168) durch zu gehen
+		for(int i=0;i<charArray.length;i++){
+			//Wenn i ohen Rest durch 24 geteilt werden kann wird ein Tag weitergezählt
+			if((i+1)%24==0){
+				counter++;
+				count=0;
+			}
+			timeArray[counter][count] = ""+charArray[i];
+			count++;
+		}
+		return timeArray;
+	}
 	private boolean sendConstrainttoReservation(String eventId, String dozentId,
 			String time, String[] ausnahmenArray) {
 		
