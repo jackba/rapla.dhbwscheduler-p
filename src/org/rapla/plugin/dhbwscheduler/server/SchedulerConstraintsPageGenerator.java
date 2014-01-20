@@ -83,6 +83,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String kontaktdaten="";				//Liste mit geänderten Kontaktdaten 
 		String time = "";							//Inhalt der StundenTabelle
 		String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
+		Date[] dateArr;
 		int stunden = 4;						//Vorlesungsstunden am Stück
 		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
 		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
@@ -100,8 +101,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
 			Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
 			
-			//(String) veranstaltung.getClassification().getValue("planungsconstraints");
-			//ConstraintService.
+			String vs = (String) veranstaltung.getClassification().getValue("planungsconstraints");
+			dateArr=ConstraintService.getExceptionDatesDoz(vs, Integer.parseInt(dozentId));
+			time = ConstraintService.getDozStringConstraint(vs, Integer.parseInt(dozentId));
 			
 			veranst = veranstaltung.getName(getLocale());
 			for (int i = 0; i < veranstaltung.getPersons().length; i++)
@@ -173,6 +175,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		
 		out.println("<!DOCTYPE html>"); // we have HTML5 
 		out.println("<html>");
@@ -295,17 +298,17 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println(" 			</tbody>");
 		out.println("		</table>");
 		out.println("		<p><b>3.</b>Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
-		//Datum für input type=date (id=inpDatepicker) formatieren
-		out.print("			<input id='inpDatepicker' type='date' min='' max='' value=''/>");
+
+		out.print("			<input id='inpDatepicker' type='date' min='"+formatDateForDatepicker(beginZeit)+"' max='"+formatDateForDatepicker(endZeit)+"' value='"+formatDateForDatepicker(beginZeit)+"'/>");
 		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
 		out.println("		<input id='btnDeleteDate' type='button' value='l&ouml;schen'/>");
 		out.println("		<ul id='ulDateList'>");
-		/*
-		 * String[] dateArr = formatDates();
-		 * for(int i=0;i<dateArr.length;i++){
-		 * 	out.print("<li>"+dateArr[i]+"</li>");
-		 * }
-		 */
+		
+		//for(int i=0;i<ausnahmenArray.length;i++){
+		//	out.print("<li>"+ausnahmenArray[i]+"</li>");
+		//}
+		 
+	
 		out.println("		</ul>");
 		out.println("		<p><b>4.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
 		if(aufsicht){
@@ -344,6 +347,10 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 	String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
+	}
+	private String formatDateForDatepicker(String str){
+		String[] strArr= str.split("\\.");
+		return strArr[2]+"-"+strArr[1]+"-"+strArr[0];		
 	}
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
 	private String[][] formatTimeString(String str){
