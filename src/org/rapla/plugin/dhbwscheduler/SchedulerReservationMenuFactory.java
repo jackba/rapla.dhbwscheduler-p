@@ -539,6 +539,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 
 				}
+
+				
 			});
 			menus.add( menu );
 		}
@@ -685,6 +687,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		return returnvalue;
 	}
 
+	//TODO könnte auch mit constraint realisiert werden und in der constraint klasse verschwinden
 	private String getErfassungsstatus(Reservation r, int key) {
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 		String returnvalue = "";

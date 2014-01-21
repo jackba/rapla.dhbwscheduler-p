@@ -418,7 +418,6 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		
 		
-		
 		constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints"); 
 		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozId, time, ausnahmenDateArray, status);
 		

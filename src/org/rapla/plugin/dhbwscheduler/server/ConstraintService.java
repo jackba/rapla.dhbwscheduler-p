@@ -132,12 +132,12 @@ public class ConstraintService{
 		return newConstraint;
 	}
 	
-	//TODO Name oder vlt. 2 Methoden
+	
 	public static String addorchangeSingleDozConstraint(String constraint, int dozID, String dozConst, Date[] exceptDate, int status){
 		
 		
 		String newConstraint = constraint;
-		
+		boolean newdoz = false;
 		if (newConstraint == null){
 			return buildDozConstraint(dozID,dozConst,exceptDate,status);
 		}
@@ -148,8 +148,11 @@ public class ConstraintService{
 				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLECONSTRAINT,dozConst);
 				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLESTATUS,status);
 			}else{
-				newConstraint += buildDozConstraint(dozID,dozConst,exceptDate,status);
+				newdoz = true;
 			}
+		}
+		if(newdoz){
+			newConstraint += "\n" + buildDozConstraint(dozID,dozConst,exceptDate,status);
 		}
 		
 		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLEDATES,exceptDate);
