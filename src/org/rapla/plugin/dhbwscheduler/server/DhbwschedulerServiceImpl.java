@@ -458,6 +458,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 * @throws RaplaException
 	 */
 	private int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende) throws RaplaException {
+
+		//TODO: pruefen ob diese Methode sauber arbeitet. Ich bin mir nicht sicher
 		Calendar startCal = Calendar.getInstance(DateTools.getTimeZone());
 		Calendar endeCal = Calendar.getInstance(DateTools.getTimeZone());
 		startCal.setTime(start);
