@@ -83,6 +83,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String kontaktdaten="";				//Liste mit geänderten Kontaktdaten 
 		String time = "";							//Inhalt der StundenTabelle
 		String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
+		Date[] dateArr;
 		int stunden = 4;						//Vorlesungsstunden am Stück
 		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
 		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
@@ -99,6 +100,11 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			lookup = getContext().lookup( StorageOperator.class);
 			SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
 			Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
+			
+			String vs = (String) veranstaltung.getClassification().getValue("planungsconstraints");
+			dateArr=ConstraintService.getExceptionDatesDoz(vs, Integer.parseInt(dozentId));
+			time = ConstraintService.getDozStringConstraint(vs, Integer.parseInt(dozentId));
+			
 			veranst = veranstaltung.getName(getLocale());
 			for (int i = 0; i < veranstaltung.getPersons().length; i++)
 			{
@@ -170,6 +176,10 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			e.printStackTrace();
 		}
 		
+		
+		out.println("<!DOCTYPE html>"); // we have HTML5 
+		out.println("<html>");
+		
 		//gesendete Daten werden hier ausgelesen, wenn eine Änderung vorgenommen wurde (changed = 1)
 		if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
 			time = request.getParameter("time");	
@@ -189,14 +199,18 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				//TODO christian hier könnte dann ein alert Feld erscheinen
 				//error konnte nicht gesendet werden! alter an den Dozenten
 				//out.print("alert('konnte nicht gespeichert werden');");
+				out.println("<script type='text/javascript'>");
+				out.print("alert('Daten gesendet!');");
+				out.println("</script>");
 			}else{
-				//out.print("alert('gesendet');");
+				out.println("<script type='text/javascript'>");
+				out.print("alert('Daten gesendet!');");
+				out.println("</script>");
 			}
 			
 		}
 		
-		out.println("<!DOCTYPE html>"); // we have HTML5 
-		out.println("<html>");
+		
 		out.println("<head>");
 		
 		out.println("  <title>Semesterplanung</title>");
@@ -260,17 +274,18 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println(" 			<tbody id='timeTableBody'>");
 
 		String[][] timeArray = formatTimeString(time);
+		String tempVal="";
 		for(int i=dayTimeStart;i<dayTimeEnd;i++){
 
 			out.print("<tr>");
 			out.print("	<th>"+i+".00 - "+(i+1)+".00</th>");
 			//Schleife zum Erstellen der Zellen pro Wochentag (Mo-Sa)
 			for(int j=1;j<7;j++){
-				//timeTableArray
-				if(timeArray[j][i]=="0"){
+				tempVal=timeArray[j][i];
+				if(tempVal.equals("0")){
 					out.print("	<td class='tdMinus'>-</td>");
 				}
-				else if(timeArray[j][i]=="2"){
+				else if(tempVal.equals("2")){
 					out.print("	<td class='tdPlus'>+</td>");
 				}
 				else{
@@ -283,16 +298,17 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println(" 			</tbody>");
 		out.println("		</table>");
 		out.println("		<p><b>3.</b>Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
-		//Datum für input type=date (id=inpDatepicker) formatieren
-		out.print("			<input id='inpDatepicker' type='date' min='' max='' value=''/>");
+
+		out.print("			<input id='inpDatepicker' type='date' min='"+formatDateForDatepicker(beginZeit)+"' max='"+formatDateForDatepicker(endZeit)+"' value='"+formatDateForDatepicker(beginZeit)+"'/>");
 		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
+		out.println("		<input id='btnDeleteDate' type='button' value='l&ouml;schen'/>");
 		out.println("		<ul id='ulDateList'>");
-		/*
-		 * String[] dateArr = formatDates();
-		 * for(int i=0;i<dateArr.length;i++){
-		 * 	out.print("<li>"+dateArr[i]+"</li>");
-		 * }
-		 */
+		
+		//for(int i=0;i<ausnahmenArray.length;i++){
+		//	out.print("<li>"+ausnahmenArray[i]+"</li>");
+		//}
+		 
+	
 		out.println("		</ul>");
 		out.println("		<p><b>4.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
 		if(aufsicht){
@@ -332,21 +348,16 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
-	private void formatStringArrToDateArr(String[] strArr){
-		Date[] dateArr = new Date[strArr.length];
-		String[] tempArr;
-		Date tempDate= new Date();
-		for(int i=0;i<strArr.length;i++){
-			 tempArr=strArr[i].split("-");
-		}
+	private String formatDateForDatepicker(String str){
+		String[] strArr= str.split("\\.");
+		return strArr[2]+"-"+strArr[1]+"-"+strArr[0];		
 	}
-	//!!!!Test noch notwendig!!!!
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
 	private String[][] formatTimeString(String str){
 		//Überprüfen ob TimeString leer ist, ggf. füllen
 		if(str==""){
 			for(int i=0;i<168;i++){
-				str+="0";
+				str+="1";
 			}
 		}
 		char[] charArray = str.toCharArray();
@@ -355,13 +366,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String[][] timeArray = new String[7][24];
 		//Schleife um alle Zeichen (7*24 = 168) durch zu gehen
 		for(int i=0;i<charArray.length;i++){
-			//Wenn i ohen Rest durch 24 geteilt werden kann wird ein Tag weitergezählt
-			if((i+1)%24==0){
+			timeArray[counter][count] = ""+charArray[i];			
+			count++;
+			if(count==24){
 				counter++;
 				count=0;
 			}
-			timeArray[counter][count] = ""+charArray[i];
-			count++;
 		}
 		return timeArray;
 	}
@@ -374,7 +384,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		int verId = Integer.parseInt(eventId);
 		int dozId = Integer.parseInt(dozentId);
 		Date[] ausnahmenDateArray = new Date[ausnahmenArray.length];
-		SimpleDateFormat strToDate = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		SimpleDateFormat strToDate = new SimpleDateFormat("yyyy-MM-dd");
 		
 		StorageOperator lookup;
 		Reservation veranstaltung;

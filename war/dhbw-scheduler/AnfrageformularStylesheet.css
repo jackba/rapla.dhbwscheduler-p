@@ -49,6 +49,9 @@
 	text-align:center;
 	border-collapse:collapse;		
 }
+#ulDateList li{
+	cursor:pointer;
+}
 /*Klassen für Stundentabellenzellen*/
 .tdNeutral{
 	background-color:white;

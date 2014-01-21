@@ -19,8 +19,24 @@ $('document').ready(function(){
 			isMouseDown= false;			
 		});
 	});
-	$('#inpSubmit').on('click',function(){
-		
+	$('#ulDateList li').each(function(){
+		$(this).on('click',function(){
+			if($(this).hasClass("tdSelect")){
+				$(this).removeClass();
+			}
+			else{
+				$(this).removeClass();
+				$(this).addClass("tdSelect");
+			}
+		});
+	});
+	//Erlaubt das Auswählen mehrer Zellen der Ausnahmedaten Liste
+	$('#btnDeleteDate').on('click',function(){
+		var obj=getSelectedLi();
+		for(var i in obj){
+			obj[i].remove();
+		}
+		$('#inpChanged').val(1);
 	});
 	$('#taKontakt').change(function(){
 		$('#inpKontakt').val($(this).val());
@@ -74,8 +90,17 @@ $('document').ready(function(){
 			}
 		});
 		if(write ==true){
-			var item='<li>'+value+'</li>';
-			$('#ulDateList').append(item);
+			var item=$('<li>'+value+'</li>');
+			$('#ulDateList').append(item);	
+			item.on('click',function(){
+				if($(this).hasClass("tdSelect")){
+					$(this).removeClass();
+				}
+				else{
+					$(this).removeClass();
+					$(this).addClass("tdSelect");
+				}
+			});
 			$('#inpAusnahmen').val(getDatelist());
 			$('#inpChanged').val(1);
 		}
@@ -106,6 +131,18 @@ function getSelectedTd(){
 	});
 	return selectedTds;
 }
+//Gibt alle ausgewÃ¤hlten Zellen der Ausnahmedaten Liste
+function getSelectedLi(){
+	var counter=0;
+	var selectedLis=new Array();
+	$('#ulDateList li').each(function(){
+		if($(this).hasClass("tdSelect")){
+			selectedLis[counter]=$(this);
+			counter++;
+		}
+	});
+	return selectedLis;
+}
 //Holt die Daten der Ausnahmen
 function getDatelist(){
 	var dateArray=new Array();
@@ -116,6 +153,7 @@ function getDatelist(){
 	});
 	return dateArray;
 }
+//Methode liest Daten der Stundentabelle
 function getTimeTableToString(){
 	var tempVal;	//temporärer Wert
 	var counter;	//Zähler um Zeitraum der Stundentabelle zu zählen (z.B. 8.00-18.00 = 10)
@@ -129,7 +167,7 @@ function getTimeTableToString(){
 		//Schleife zählt von 0.00 Uhr bis Start der Stundentabelle (z.B. 8.00 Uhr)
 		//und füllt 
 		for(var j=0;j<startTime;j++){
-			str+='0';
+			str+='1';
 		}
 		$('#timeTableBody').find('tr').find('td:nth-child('+i+')').each(function(){				
 			if($(this).html() == '+'){
@@ -146,7 +184,7 @@ function getTimeTableToString(){
 		});
 		counter+=startTime;
 		for(var l=counter;l<24;l++){
-			str+='0';
+			str+='1';
 		}
 	}
 	return str;
