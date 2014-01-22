@@ -433,11 +433,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-
+					
+					DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 					try {
 						getClientFacade().refresh();
 					} catch (RaplaException e2) {
-						// TODO Auto-generated catch block
+						// TODO mit Kohlhaas abklären. Refresh funktioniert nicht, sodass die Daten vom Server geladen werden.
 						e2.printStackTrace();
 					}
 					String strTitel = getString("Email_Title");
@@ -503,7 +504,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 													//Fehler beim ändern des Constraints
 													//	createMessage(getString("planning_open"), 200, 100, message, menuContext);
 												}else{
-													r = changeReservationAttribute(r,"planungsconstraints",newConstraint );
+													r = HelperClass.changeReservationAttribute(r,"planungsconstraints",newConstraint );
 													
 													getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
 
@@ -531,7 +532,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								//status
 								message += "\t status: " + getErfassungsstatusDoz(r,dozentID.getKey()) + "\n";
 								String statusConstraint = (String) r.getClassification().getValue("planungsconstraints");
-								r = changeReservationAttribute(r,"erfassungsstatus",getStringStatus(ConstraintService.getReservationStatus(statusConstraint)));
+								r = HelperClass.changeReservationAttribute(r,"erfassungsstatus",HelperClass.getStringStatus(ConstraintService.getReservationStatus(statusConstraint)));
 							}
 
 							message += "\n";
@@ -626,7 +627,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	}
 
 	private Reservation initConstraint(Reservation r) {
-
+		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 
 		int[] dozids = new int[r.getPersons().length];
@@ -640,7 +641,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 		String newConstraint = ConstraintService.initDozConstraint(strConstraint,dozids);
 
-		return changeReservationAttribute(r,"planungsconstraints",newConstraint);
+		return HelperClass.changeReservationAttribute(r,"planungsconstraints",newConstraint);
 
 	}
 
@@ -684,51 +685,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 	
 	private String getErfassungsstatusDoz(Reservation r, int key) {
+		
+		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
+		
 		if (strConstraint ==null){
 			return null;
 		}
-
-		return getStringStatus(ConstraintService.getStatus(strConstraint, key));
-	}
-
-	private String getStringStatus(int status) {
-		String returnvalue = "";
-		switch(status){
-		case 0:
-			returnvalue = getString("uneingeladen");
-			break;
-		case 1:
-			returnvalue = getString("eingeladen");
-			break;
-		case 2:
-			returnvalue = getString("erfasst");
-			break;
-		case 3:
-			returnvalue = getString("teileingeladen");
-			break;
-		case 4:
-			returnvalue = getString("teilerfasst");
-			break;
-		default:
-			returnvalue = "error";						
-		}
-		return returnvalue;
-	}
-	
-	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
-		try {
-			Reservation editableEvent = getClientFacade().edit( r);
-			editableEvent = getClientFacade().edit( r);
-			editableEvent.getClassification().setValue(Attribute, value);
-			getClientFacade().store( editableEvent );
-			getClientFacade().refresh();
-			return editableEvent;
-		} catch (RaplaException e1) {
-			e1.printStackTrace();
-			getLogger().info("ERROR:" + e1.toString());
-		}
-		return r;
+		
+		return HelperClass.getStringStatus(ConstraintService.getStatus(strConstraint, key));
 	}
 	
 }
