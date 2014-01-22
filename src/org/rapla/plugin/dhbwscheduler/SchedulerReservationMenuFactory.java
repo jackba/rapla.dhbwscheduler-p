@@ -433,6 +433,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				public void actionPerformed( ActionEvent e )
 				{
 
+					try {
+						getClientFacade().refresh();
+					} catch (RaplaException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
 					String strTitel = getString("Email_Title");
 					String strQuestion = getString("Email_senden_frage");
 
@@ -583,21 +589,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		getClientFacade().store( editableEvent ); 
 	}
-
-	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
-		try {
-			Reservation editableEvent = getClientFacade().edit( r);
-			editableEvent = getClientFacade().edit( r);
-			editableEvent.getClassification().setValue(Attribute, value);
-			getClientFacade().store( editableEvent );
-			getClientFacade().refresh();
-			return editableEvent;
-		} catch (RaplaException e1) {
-			e1.printStackTrace();
-			getLogger().info("ERROR:" + e1.toString());
-		}
-		return r;
-	}
+	
 	public String getUrl(SimpleIdentifier reservationID, SimpleIdentifier dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
 
@@ -722,5 +714,20 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		return returnvalue;
 	}
-
+	
+	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
+		try {
+			Reservation editableEvent = getClientFacade().edit( r);
+			editableEvent = getClientFacade().edit( r);
+			editableEvent.getClassification().setValue(Attribute, value);
+			getClientFacade().store( editableEvent );
+			getClientFacade().refresh();
+			return editableEvent;
+		} catch (RaplaException e1) {
+			e1.printStackTrace();
+			getLogger().info("ERROR:" + e1.toString());
+		}
+		return r;
+	}
+	
 }
