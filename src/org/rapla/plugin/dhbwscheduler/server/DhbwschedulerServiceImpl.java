@@ -195,6 +195,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				result += reservations.get(0).getClassification().getName(getLocale()) + "\n";
 				reservations.remove(0);
 			}
+			resolveConflicts();
 			return result;
 		}
 	}
@@ -331,6 +332,24 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		new File(solution).delete();
 
 		return result;
+	}
+	
+	private String resolveConflicts() throws RaplaException{
+		String notResolved = "";
+		for (Reservation veranstaltung : reservationsPlannedByScheduler){
+			//get all conflicts caused by this reservation
+			Conflict[] conflicts = getClientFacade().getConflicts(veranstaltung);
+			//if there are conflicts, move the appointment
+			//füge der reservation eine Ausnahme hinzu am Tag mit dem Konflikt
+			//füge der reservation ein neues appointment hinzu am Tag für den Konflikt 
+			//(vgl. split @ AppointmentListEdit.edit)
+			//get next free time for all resources of the reservation with the new appointment
+			//(vgl. setStartDate)
+			//move the appointment
+			//store the reservation
+		}
+		return notResolved;
+		
 	}
 
 	/**
