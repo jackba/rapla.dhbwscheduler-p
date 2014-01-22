@@ -10,6 +10,7 @@ public class DhbwschedulerReservationHelper extends RaplaComponent
 
 	public DhbwschedulerReservationHelper(RaplaContext context) {
 		super(context);
+		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 	public Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
 		try {
