@@ -166,6 +166,10 @@
     	<text lang="en">planning constraints</text>
     	<text lang="de">planungsconstraints</text>
     </entry>
+     <entry key="conflict_resolving_not_successful">
+    	<text lang="en">The conflicts for the following reservations could not be resolved:</text>
+    	<text lang="de">Die Konflikte für folgende Veranstaltungen konnten nicht aufgelöst werden:</text>
+    </entry>
      <entry key="planning_not_successful">
     	<text lang="en">For the following events, the planning was not successful: </text>
     	<text lang="de">Die folgenden Veranstaltungen konnten nicht geplant werden: </text>

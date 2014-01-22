@@ -187,6 +187,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			tmp.add(Calendar.DAY_OF_YEAR, 5);
 			endeWoche = new Date(tmp.getTimeInMillis());
 		}
+		
+		String notResolved = resolveConflicts(startDatum, endeDatum);
+		if(!(notResolved.equals(""))){
+			postProcessingResults += (getString("conflict_resolving_not_successful") + notResolved);
+		}
 
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
@@ -197,7 +202,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				result += reservations.get(0).getClassification().getName(getLocale()) + "\n";
 				reservations.remove(0);
 			}
-			resolveConflicts();
 			return result;
 		}
 	}
@@ -409,19 +413,41 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		return result;
 	}
 	
-	private String resolveConflicts() throws RaplaException{
+	private String resolveConflicts(Date startDatum, Date endDatum) throws RaplaException{
 		String notResolved = "";
 		for (Reservation veranstaltung : reservationsPlannedByScheduler){
 			//get all conflicts caused by this reservation
-			Conflict[] conflicts = getClientFacade().getConflicts(veranstaltung);
-			//if there are conflicts, move the appointment
-			//füge der reservation eine Ausnahme hinzu am Tag mit dem Konflikt
-			//füge der reservation ein neues appointment hinzu am Tag für den Konflikt 
-			//(vgl. split @ AppointmentListEdit.edit)
-			//get next free time for all resources of the reservation with the new appointment
-			//(vgl. setStartDate)
-			//move the appointment
-			//store the reservation
+			while (getClientFacade().getConflicts(veranstaltung).length > 0) {
+				// if there are conflicts, move the appointment
+				Conflict[] conflicts = getClientFacade().getConflicts(veranstaltung);
+				Conflict conflict = conflicts[0];
+				Appointment newApp = null;
+				// add an exception to the conflicting appointment for the conflicting date
+				Appointment conflictingAppointment = conflict.getAppointment1();
+				Date dateOfConflict = conflict.getFirstConflictDate(startDatum, endDatum);
+				Repeating repeating = conflictingAppointment.getRepeating();
+				if (repeating != null) {
+					if (!(repeating.isException(dateOfConflict.getTime()))) {
+						repeating.addException(dateOfConflict);
+					}
+					// add a new appointment for the date with the conflict
+					newApp = getModification().newAppointment(conflictingAppointment.getStart(), conflictingAppointment.getEnd());
+					veranstaltung.addAppointment(newApp);
+				} else {
+					newApp = conflictingAppointment;
+				}
+				// get next free time for all resources of the reservation with the new appointment
+				Date newStart = getNextFreeTime(veranstaltung.getAllocatables(), newApp, startDatum, endDatum);
+				if (newStart != null) {
+					// move the appointment
+					newApp.move(newStart);
+					// store the reservation
+					getClientFacade().store(veranstaltung);
+				} else {
+					notResolved = notResolved + "<br>" + veranstaltung.getName(getLocale()) + "</br>";
+					break;
+				}
+			}
 		}
 		return notResolved;
 		
