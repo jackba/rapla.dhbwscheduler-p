@@ -123,7 +123,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		for (SimpleIdentifier id : reservationIds) {
 			RefEntity<?> object = lookup.resolve(id);
 			Reservation reservation = (Reservation) object;
-			if (reservation.getClassification().getValue(getString("design_status")).equals(getString("planning_closed"))) {
+			String labelDesign = getString("design_status");
+			String string = getString("planning_closed");
+			Object value = reservation.getClassification().getValue(labelDesign);
+			if (value.equals(string)) {
 				reservations.add(reservation);
 			}
 		}
