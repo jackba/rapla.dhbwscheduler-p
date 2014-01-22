@@ -79,13 +79,14 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	int[][] timeSlots = { {}, {}, { 0, 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 }, { 8, 9 } };
 	private boolean hookUsed = false;
-	private String model = "scheduler_gmpl" + new Date().getTime() + ".mod";
-	private String data = "scheduler_data" + new Date().getTime() + ".dat";
-	private String solution = "scheduler_solution" + new Date().getTime() + ".dat";
+	private String model;
+	private String data;
+	private String solution;
 
 	private int doz_vor[][] = { {} };
 	private int vor_res[][] = { {} };
 	private int kurs_vor[][] = { {} };
+	private int doz_cost[][] = { {} };
 	private ArrayList<Reservation> reservations;
 	private ArrayList<Reservation> reservationsPlannedByScheduler = new ArrayList<Reservation>();
 
@@ -171,7 +172,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			// Schedule
 			aufbau_scheduler_mod(model, solution);
 
-			aufbau_scheduler_data(data, doz_vor, kurs_vor, vor_res);
+//			aufbau_scheduler_data(data, doz_vor, kurs_vor, vor_res);
+			aufbau_scheduler_data(data, doz_vor, kurs_vor, vor_res, doz_cost);
 
 			solve();
 
@@ -271,6 +273,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			throws RaplaException {
 		String result = "";
 
+		model = "scheduler_gmpl" + new Date().getTime() + ".mod";
+		data = "scheduler_data" + new Date().getTime() + ".dat";
+		solution = "scheduler_solution" + new Date().getTime() + ".dat";
+
 		try {
 			doz_vor = buildZuordnungDozentenVorlesung();
 		} catch (RaplaException e) {
@@ -289,11 +295,79 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			result += e.getMessage();
 		}
 
+		try {
+			doz_cost = buildDozentenKosten();
+		} catch (RaplaException e) {
+			result += e.getMessage();
+		}
+
 		if (!result.isEmpty()) {
 			throw new RaplaException(result);
 		}
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws RaplaException
+	 */
+	private int[][] buildDozentenKosten() throws RaplaException {
+		int[][] doz_cost = new int[reservations.size()][10];
+		
+		for (int i = 0; i < reservations.size(); i++) {
+			for (int j = 0; j < 10; j++) {
+				doz_cost[i][j] = 0;
+			}
+		}
+
+		ArrayList<Reservation> veranstaltungenOhnePlanungsconstraints = new ArrayList<Reservation>();
+		int vorlesungNr = 0;
+		for (Reservation vorlesung : reservations) {
+			// get the planungsconstraints
+			String planungsconstraint = getDozentenConstraint(vorlesung);
+			if (planungsconstraint.isEmpty()) {
+				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
+			} else {
+				// get the slots blocked by the planungsconstraints
+				int[] slotsKosten = splitDozentenKostenSlots(planungsconstraint);
+				for (int i = 0; i < 10; i++) {
+					doz_cost[vorlesungNr][i] = slotsKosten[i];
+				}
+			}
+			vorlesungNr++;
+		}
+		if (!(veranstaltungenOhnePlanungsconstraints.isEmpty())) {
+			String veranstaltungenOhnePlanungsconstraintsListe = "";
+			for (Reservation r : veranstaltungenOhnePlanungsconstraints) {
+				veranstaltungenOhnePlanungsconstraintsListe = veranstaltungenOhnePlanungsconstraintsListe + "<br>" + r.getName(getLocale()) + "<br/>";
+			}
+			throw (new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
+		}
+		return doz_cost;
+	}
+
+	/**
+	 * @param Dozentenconstraint
+	 * @return int[]
+	 */
+	private int[] splitDozentenKostenSlots(String dozentenConstraint) {
+		int[] belegteSlots = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+		int[] dozConst = ConstraintService.getDozConstraints(dozentenConstraint);
+
+		int slotCounter = 0;
+
+		for (int i = 24; i < dozConst.length - 24; i++) {
+			int stundenCounter = (i % 24);
+			belegteSlots[slotCounter] += dozConst[i];
+
+			if (stundenCounter == 11) {
+				slotCounter++;
+			}
+		}
+		return belegteSlots;
+	}
+	
 	/**
 	 * 
 	 * @param startDatum
@@ -326,11 +400,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			reservationsPlannedByScheduler.add(reservation);
 		}
 
+		//TODO: Kommentar entfernen
 		// Dateien aufräumen
-		new File(model).delete();
+/*		new File(model).delete();
 		new File(data).delete();
 		new File(solution).delete();
-
+*/
 		return result;
 	}
 	
@@ -429,6 +504,23 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 		appointment.move(newStart);
 
+		newStart = getNextFreeTime(allocatables, appointment, startDate, endDate);
+
+		appointment.move(oldDate);
+
+		return newStart;
+	}
+
+	/**
+	 * 
+	 * @param allocatables
+	 * @param appointment
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws RaplaException
+	 */
+	private Date getNextFreeTime(Allocatable[] allocatables, Appointment appointment, Date startDate, Date endDate) throws RaplaException {
 		// Alle gerade geplanten Reservierungen bei der Betrachtung ausschließen
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
 
@@ -440,13 +532,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 		HashSet<Reservation> ignoreList = getIgnoreList(allocatables, startDate, endDate);
 
-		newStart = lookup.getNextAllocatableDate(Arrays.asList(allocatables), appointment, ignoreList, worktimeStartMinutes, worktimeEndMinutes, excludedDays, rowsPerHour);
-
-		appointment.move(oldDate);
-
-		return newStart;
+		return lookup.getNextAllocatableDate(Arrays.asList(allocatables), appointment, ignoreList, worktimeStartMinutes, worktimeEndMinutes, excludedDays, rowsPerHour);
 	}
-
+	
 	/**
 	 * 
 	 * @param allocatables
@@ -794,9 +882,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 * @param vor_res
 	 */
 	private void aufbau_scheduler_data(String data_file, int[][] doz_vor,
-			int[][] kurs_vor, int[][] vor_res) {
+			int[][] kurs_vor, int[][] vor_res, int[][] doz_cost) {
 		String file = "data; \n";
-		if (doz_vor.length == 0 || kurs_vor.length == 0 || vor_res.length == 0) {
+		if (doz_vor.length == 0 || kurs_vor.length == 0 || vor_res.length == 0 || doz_cost.length == 0) {
 			return;
 		}
 
@@ -856,6 +944,20 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 		file += "; \n";
 
+		// Dozenten Kosten
+		file += "param doz_cost :  ";
+		for (int i = 1; i <= doz_cost[0].length; i++) {
+			file += "" + i + " ";
+		}
+		file += " :=";
+		for (int i = 1; i <= doz_cost.length; i++) {
+			file += "\n  " + i;
+			for (int j = 0; j < doz_cost[0].length; j++) {
+				file += " " + doz_cost[i - 1][j];
+			}
+		}
+		file += "; \n";
+		
 		// Zuordnung Kurs, Vorlesung
 		file += "param kurs_vor :  ";
 		for (int i = 1; i <= kurs_vor[0].length; i++) {
@@ -905,9 +1007,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		file += "param vor_res{i in I, t in T};\n";
 		file += "#Zuordnung Kurs, Vorlesung\n";
 		file += "param kurs_vor{k in K, i in I};\n";
+		file += "#Kosten Vorlesung, Timeslots\n";
+		file += "param doz_cost{i in I, t in T};\n";
 		file += "var x{i in I, t in T}, binary;\n";
 
-		file += "maximize obj : sum{i in I, t in T}(vor_res[i,t]*x[i,t]);\n";
+		file += "maximize obj : sum{i in I, t in T}(vor_res[i,t]*x[i,t]*doz_cost[i,t]);\n";
 
 		file += "#Veranstalung nur einmal planen\n";
 		file += "s.t. veranst{i in I}: sum{t in T} x[i,t] <= 1;\n";

@@ -117,7 +117,8 @@ public class ConstraintService{
 								getExceptionDatesDoz(constraint, key),								
 								getStatus(constraint, key)); 
 						
-						hit = true;		
+						hit = true;
+						break;
 					}
 				}
 				//neuer Dozent

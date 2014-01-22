@@ -25,7 +25,6 @@ import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
-import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.*;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
@@ -420,201 +419,14 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints"); 
 		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozId, time, ausnahmenDateArray, status);
-		
-		veranstaltung = changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
-		veranstaltung = changeReservationAttribute(veranstaltung,"erfassungsstatus",getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
+		DhbwschedulerReservationHelper helperClass = new DhbwschedulerReservationHelper( getContext());
+		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
+		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"erfassungsstatus",helperClass.getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
 		if(veranstaltung == null){
 			return false;
 		}else{
 			return true;
 		}
 
-	}
-	
-	private String getStringStatus(int status) {
-		String returnvalue = "";
-		switch(status){
-		case 0:
-			returnvalue = getString("uneingeladen");
-			break;
-		case 1:
-			returnvalue = getString("eingeladen");
-			break;
-		case 2:
-			returnvalue = getString("erfasst");
-			break;
-		case 3:
-			returnvalue = getString("teileingeladen");
-			break;
-		case 4:
-			returnvalue = getString("teilerfasst");
-			break;
-		default:
-			returnvalue = "error";						
-		}
-		return returnvalue;
-	}
-	
-	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
-		try {
-			Reservation editableEvent = getClientFacade().edit( r);
-			editableEvent = getClientFacade().edit( r);
-			editableEvent.getClassification().setValue(Attribute, value);
-			getClientFacade().store( editableEvent );
-			getClientFacade().refresh();
-			return editableEvent;
-		} catch (RaplaException e1) {
-			e1.printStackTrace();
-			getLogger().info("ERROR:" + e1.toString());
-		}
-		return null;
-	}
-	
-	
-	
-	
-//TODO wird nicht mehr benötigt?	
-//	public void storeIntoReservation(int reservationID, int[][] calendar, Date[] ausnahmeDatum, int DozentID) throws RaplaContextException, EntityNotFoundException
-//	{
-//		StorageOperator lookup = getContext().lookup( StorageOperator.class);
-//		SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, reservationID); 
-//		Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
-//
-//
-//		//Attribute setzen
-//		try {
-//			Reservation editVeranstaltung =getClientFacade().edit(veranstaltung);
-//
-//			String planungsconstrains = (String) editVeranstaltung.getClassification().getValue("planungsconstraints");
-//			String ausnahmenconstraints = (String) editVeranstaltung.getClassification().getValue("ausnahmeconstraints");
-//
-//
-//			String newPlanungsconstraint = reservationStringbearbeiten(DozentID, planungsconstrains, constraintToString(calendar));
-//			String newAusnahmeconstraint = reservationStringbearbeiten(DozentID, ausnahmenconstraints, ausnahmenToString(ausnahmeDatum));
-//
-//
-//			if (!newPlanungsconstraint.isEmpty()){
-//				editVeranstaltung.getClassification().setValue("planungsconstraints", newPlanungsconstraint);
-//			}
-//
-//			if(!newAusnahmeconstraint.isEmpty()){
-//				editVeranstaltung.getClassification().setValue("ausnahmeconstraints", newAusnahmeconstraint);
-//			}
-//
-//			getClientFacade().store( editVeranstaltung );
-//
-//
-//		} catch (RaplaException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//
-//	}
-//
-//	private String reservationStringbearbeiten(int dozentID, String getconstraint, String changeconstraint) {
-//		// TODO Auto-generated method stub
-//		if(getconstraint == null){
-//			getconstraint = "";
-//		}
-//		if (changeconstraint == null || changeconstraint.isEmpty()){
-//			return "";
-//		}
-//
-//		String dozent = String.valueOf(dozentID) + "_";
-//		String DozentConstraints = "";
-//		String[] dozentenString = getconstraint.split("\n");
-//
-//		if(getconstraint.contains(dozent)){
-//			for(int i = 0; i < dozentenString.length ; i++){
-//
-//				if(dozentenString[i].contains(dozent)){
-//					dozentenString[i] = dozent + changeconstraint;
-//				}
-//
-//				DozentConstraints += dozentenString[i] + "\n"; 
-//
-//			}
-//		}else{
-//			if (getconstraint.isEmpty()){
-//				DozentConstraints += dozent + changeconstraint;
-//			}else{
-//				DozentConstraints += getconstraint + "\n" +  dozent + changeconstraint;
-//			}
-//
-//		}
-//
-//
-//
-//		if(DozentConstraints.endsWith("\n")){
-//			DozentConstraints = DozentConstraints.substring(0, DozentConstraints.length()-1);
-//		}
-//
-//		return DozentConstraints;
-//
-//	}
-//
-//	private String ausnahmenToString(Date[] ausnahmeDatum) {
-//
-//		String ausnahmenString = "";
-//
-//		for (int i = 0; i< ausnahmeDatum.length ; i++)
-//		{
-//			if (ausnahmeDatum[i] != null){
-//				ausnahmenString = ausnahmenString + DateTools.formatDate(ausnahmeDatum[i]) + "," ;
-//			}
-//
-//		}
-//
-//		if (ausnahmenString.endsWith(",")){
-//			ausnahmenString = ausnahmenString.substring(0, ausnahmenString.length()-1);
-//		}
-//
-//		return ausnahmenString;
-//
-//	}
-//
-//	private String constraintToString(int[][] constraints) {
-//
-//		String stringconstraint = "";
-//
-//		for (int day = 0; day < constraints.length; day++){
-//
-//			int Time1 = 0;
-//			int Time2 = 0;
-//			int Marker = 0;
-//			stringconstraint = stringconstraint + String.valueOf(day+1) + ":"; 
-//
-//			for (int hour = 0; hour < constraints[day].length; hour++){
-//
-//				if (constraints[day][hour] == 1 && Marker == 0){
-//
-//					//start
-//					Marker = 1;
-//
-//					Time1 = hour;
-//					stringconstraint = stringconstraint + String.valueOf(Time1);
-//
-//				}
-//
-//				if (constraints[day][hour] == 0 && Marker == 1){
-//
-//					//end
-//					Marker = 0;
-//
-//					Time2 = hour;
-//					stringconstraint = stringconstraint + "-" + String.valueOf(Time2) + ",";
-//
-//				}
-//
-//			}
-//			if (stringconstraint.endsWith(",")){
-//				stringconstraint = stringconstraint.substring(0, stringconstraint.length()-1);
-//			}
-//			stringconstraint = stringconstraint + ";";
-//
-//		}
-//		return stringconstraint;
-//	}
-
+	}	
 }
