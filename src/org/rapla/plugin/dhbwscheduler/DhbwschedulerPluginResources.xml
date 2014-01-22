@@ -90,8 +90,16 @@
 		<text lang="de">eingeladen</text>
 	</entry>
 	<entry key="erfasst">
-		<text lang="en">register</text>
+		<text lang="en">registered</text>
 		<text lang="de">erfasst</text>
+	</entry>
+	<entry key="teileingeladen">
+		<text lang="en">partly invited</text>
+		<text lang="de">teilweise eingeladen</text>
+	</entry>
+	<entry key="teilerfasst">
+		<text lang="en">partly registered</text>
+		<text lang="de">teilweise erfasst</text>
 	</entry>
 	<entry key="Email_Title">
 		<text lang="en">Send email</text>

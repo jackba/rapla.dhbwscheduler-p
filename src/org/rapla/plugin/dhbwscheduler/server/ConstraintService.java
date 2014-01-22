@@ -2,11 +2,13 @@ package org.rapla.plugin.dhbwscheduler.server;
 
 import java.util.Date;
 
+import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
+import org.rapla.framework.RaplaContextException;
 import org.rapla.storage.StorageOperator;
 
 public class ConstraintService{
@@ -132,12 +134,12 @@ public class ConstraintService{
 		return newConstraint;
 	}
 	
-	//TODO Name oder vlt. 2 Methoden
+	
 	public static String addorchangeSingleDozConstraint(String constraint, int dozID, String dozConst, Date[] exceptDate, int status){
 		
 		
 		String newConstraint = constraint;
-		
+		boolean newdoz = false;
 		if (newConstraint == null){
 			return buildDozConstraint(dozID,dozConst,exceptDate,status);
 		}
@@ -147,9 +149,15 @@ public class ConstraintService{
 				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLEDATES,exceptDate);
 				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLECONSTRAINT,dozConst);
 				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLESTATUS,status);
+				newdoz = false;
+				break;
+				
 			}else{
-				newConstraint += buildDozConstraint(dozID,dozConst,exceptDate,status);
+				newdoz = true;
 			}
+		}
+		if(newdoz){
+			newConstraint += "\n" + buildDozConstraint(dozID,dozConst,exceptDate,status);
 		}
 		
 		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLEDATES,exceptDate);
@@ -412,6 +420,52 @@ public class ConstraintService{
 		return ergebnis;
 	}
 
+	public static int getReservationStatus(String constraint){
+		int[] dozIDs = getDozIDs(constraint);
+		
+		int returnvalue = -1;
+		
+		boolean uneingeladen = false;
+		boolean eingeladen = false;
+		boolean erfasst = false;
+		;
+		
+		for(int i = 0 ; i < dozIDs.length ; i++){
+						
+			switch(getStatus(constraint,dozIDs[i])){
+			case 0:
+				uneingeladen = true;
+				break;
+			case 1:
+				eingeladen = true;
+				break;
+			case 2:
+				erfasst = true;
+				break;
+			}
+		}
+		
+		if(eingeladen && erfasst || uneingeladen && erfasst || uneingeladen && eingeladen){
+			if(erfasst){
+				//Teilwese erfasst
+				returnvalue = 4;
+			}else{
+				//teilweise eingeladen
+				returnvalue = 3;
+			}
+		}else{
+			if(uneingeladen)
+				returnvalue = 0;
+			if(eingeladen)
+				returnvalue = 1;
+			if(erfasst)
+				returnvalue = 2;
+		}
+		
+		return returnvalue;
+		
+	}
+	
 	
 	public static int getStatus(String constraint, int doz_ID){
 		

@@ -956,13 +956,19 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		String titel = "";
 
 		isPerson = dozent.isPerson();
-		email = (String) dozent.getClassification().getValue("email");
-		name = (String) dozent.getClassification().getValue("surname");
-		vorname = (String) dozent.getClassification().getValue("firstname");
-		titel = (String) dozent.getClassification().getValue("title");
-
+		
+		
 		// Dozent.getClassification().getValue("");
 		if (isPerson) {
+			
+			email = (String) dozent.getClassification().getValue("email");
+			name = (String) dozent.getClassification().getValue("surname");
+			vorname = (String) dozent.getClassification().getValue("firstname");
+			titel = (String) dozent.getClassification().getValue("title");
+
+			if(email == null || email.equals("leer") || email.equals("")){
+				return false;
+			}
 			String studiengang = "";
 			if (veranstaltung.getClassification().getValue("studiengang") != null) {
 				studiengang = veranstaltung.getClassification().getValue("studiengang").toString();

@@ -473,7 +473,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									try {
 										String url = getUrl(reservationID,dozentID);
 										isSend = service.sendMail(reservationID, dozentID,getUser().getName(),url);
-
+									} catch (RaplaException | UnsupportedEncodingException e1) {
+										//e1.printStackTrace();
+										getLogger().error(veranstaltungsTitel + ": Unable to sent e-mail to " + email);
+										isSend = false;
+									}
 										if (isSend){
 											dozCount++;
 											getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
@@ -493,6 +497,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 													//	createMessage(getString("planning_open"), 200, 100, message, menuContext);
 												}else{
 													r = changeReservationAttribute(r,"planungsconstraints",newConstraint );
+													
 													getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
 
 												}
@@ -500,12 +505,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 										}
 
-									} catch (RaplaException | UnsupportedEncodingException e1) {
-										e1.printStackTrace();
-										getLogger().error(veranstaltungsTitel + ": Unable to sent e-mail to " + email);
-
-
-									}
+									
 								}
 
 								//Message zusammenbauen
@@ -522,11 +522,13 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								}
 
 								//status
-								message += "\t status: " + getErfassungsstatus(r,dozentID.getKey()) + "\n";
-
+								message += "\t status: " + getErfassungsstatusDoz(r,dozentID.getKey()) + "\n";
+								String statusConstraint = (String) r.getClassification().getValue("planungsconstraints");
+								r = changeReservationAttribute(r,"erfassungsstatus",getStringStatus(ConstraintService.getReservationStatus(statusConstraint)));
 							}
 
 							message += "\n";
+							
 
 						}		
 						// Veranstaltung, Dozent, Senden, speichern /n
@@ -539,6 +541,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 
 				}
+
+				
 			});
 			menus.add( menu );
 		}
@@ -685,14 +689,19 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		return returnvalue;
 	}
 
-	private String getErfassungsstatus(Reservation r, int key) {
+	
+	private String getErfassungsstatusDoz(Reservation r, int key) {
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
-		String returnvalue = "";
 		if (strConstraint ==null){
 			return null;
 		}
 
-		switch(ConstraintService.getStatus(strConstraint, key)){
+		return getStringStatus(ConstraintService.getStatus(strConstraint, key));
+	}
+
+	private String getStringStatus(int status) {
+		String returnvalue = "";
+		switch(status){
 		case 0:
 			returnvalue = getString("uneingeladen");
 			break;
@@ -702,10 +711,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		case 2:
 			returnvalue = getString("erfasst");
 			break;
+		case 3:
+			returnvalue = getString("teileingeladen");
+			break;
+		case 4:
+			returnvalue = getString("teilerfasst");
+			break;
 		default:
 			returnvalue = "error";						
-		};
-
+		}
 		return returnvalue;
 	}
 

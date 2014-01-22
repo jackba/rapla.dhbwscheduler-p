@@ -43,7 +43,7 @@ public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements Ide
           try {
               final MyDialog myDialog = new MyDialog(getContext());
               DialogUI dialog = DialogUI.create( getContext(),getMainComponent(),true, myDialog.getComponent(), new String[] {getString("ok")});
-              dialog.setTitle( "Help Usecase");
+              dialog.setTitle("Help Usecase");
               dialog.setSize( 800, 600);
               dialog.startNoPack();
            } catch (Exception ex) {
@@ -68,8 +68,8 @@ public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements Ide
 	        super(sm);
 	        setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	        getLogger().info("Help Dialog started");
-	        String helpText = getString("scheduler_help");
-			label.setText( helpText);
+//	        String helpText = "Hallo, ist da wer?";
+//			label.setText( helpText);
 	    }
 
 	    public JComponent getComponent() {

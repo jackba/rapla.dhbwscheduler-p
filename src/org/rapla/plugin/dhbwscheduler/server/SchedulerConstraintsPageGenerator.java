@@ -355,7 +355,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
 	private String[][] formatTimeString(String str){
 		//Überprüfen ob TimeString leer ist, ggf. füllen
-		if(str==""){
+		if(str.equals("") || str == null){
 			for(int i=0;i<168;i++){
 				str+="1";
 			}
@@ -418,18 +418,41 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		
 		
-		
 		constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints"); 
 		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozId, time, ausnahmenDateArray, status);
 		
 		veranstaltung = changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
-		
+		veranstaltung = changeReservationAttribute(veranstaltung,"erfassungsstatus",getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
 		if(veranstaltung == null){
 			return false;
 		}else{
 			return true;
 		}
 
+	}
+	
+	private String getStringStatus(int status) {
+		String returnvalue = "";
+		switch(status){
+		case 0:
+			returnvalue = getString("uneingeladen");
+			break;
+		case 1:
+			returnvalue = getString("eingeladen");
+			break;
+		case 2:
+			returnvalue = getString("erfasst");
+			break;
+		case 3:
+			returnvalue = getString("teileingeladen");
+			break;
+		case 4:
+			returnvalue = getString("teilerfasst");
+			break;
+		default:
+			returnvalue = "error";						
+		}
+		return returnvalue;
 	}
 	
 	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
