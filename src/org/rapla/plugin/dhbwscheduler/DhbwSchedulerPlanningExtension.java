@@ -21,16 +21,16 @@ import org.rapla.plugin.dhbwscheduler.SchedulerHelpMenuExtension.MyDialog;
 public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements ActionListener, IdentifiableMenuEntry 
 {
 
-	String id = getString("planning_gui");
+	String id;
 	JMenuItem item;
 	
 	public DhbwSchedulerPlanningExtension(RaplaContext context) {
 		super(context);
+		setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
+		id = getString("planning_gui");
 		item = new JMenuItem( id );
         item.setIcon( getIcon("icon.planning") );
         item.addActionListener(this);
-		setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
-
 	}
 
 	public void actionPerformed(ActionEvent evt) {

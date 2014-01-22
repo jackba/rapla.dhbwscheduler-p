@@ -121,8 +121,8 @@
 		<text lang="en">not send</text>
 		<text lang="de">nicht gesendet</text>
 	</entry>
-	    <entry key="icon.planning">
-		<icon src="gui/images/planning.png"/>
+	<entry key="icon.planning">
+		<icon src="planning.png"/>
 	</entry>
 	<entry key="planning_gui">
         <text lang="en"></text>
