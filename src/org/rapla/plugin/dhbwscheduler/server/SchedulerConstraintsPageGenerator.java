@@ -25,7 +25,6 @@ import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
-import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.*;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
@@ -420,9 +419,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints"); 
 		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozId, time, ausnahmenDateArray, status);
-		
-		veranstaltung = changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
-		veranstaltung = changeReservationAttribute(veranstaltung,"erfassungsstatus",getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
+		Test test = new Test( getContext());
+		veranstaltung = test.changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
+		veranstaltung = test.changeReservationAttribute(veranstaltung,"erfassungsstatus",getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
 		if(veranstaltung == null){
 			return false;
 		}else{
@@ -455,20 +454,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		return returnvalue;
 	}
 	
-	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
-		try {
-			Reservation editableEvent = getClientFacade().edit( r);
-			editableEvent = getClientFacade().edit( r);
-			editableEvent.getClassification().setValue(Attribute, value);
-			getClientFacade().store( editableEvent );
-			getClientFacade().refresh();
-			return editableEvent;
-		} catch (RaplaException e1) {
-			e1.printStackTrace();
-			getLogger().info("ERROR:" + e1.toString());
-		}
-		return null;
-	}
+	
 	
 	
 	
