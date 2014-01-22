@@ -34,7 +34,7 @@ public class DhbwschedulerPlugin   implements   PluginDescriptor<ClientServiceCo
         container.addContainerProvidedComponent( RESOURCE_FILE, I18nBundleImpl.class,I18nBundleImpl.createConfig( RESOURCE_FILE.getId() ) );
         container.addContainerProvidedComponent( RaplaClientExtensionPoints.HELP_MENU_EXTENSION_POINT, SchedulerHelpMenuExtension.class);
         container.addContainerProvidedComponent( RaplaClientExtensionPoints.OBJECT_MENU_EXTENSION, SchedulerReservationMenuFactory.class, config);
-        
+        container.addContainerProvidedComponent( RaplaClientExtensionPoints.VIEW_MENU_EXTENSION_POINT, DhbwSchedulerPlanningExtension.class);
     }
 
 }
