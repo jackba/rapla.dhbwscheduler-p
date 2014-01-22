@@ -29,6 +29,8 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		item = new JMenuItem( id );
         item.setIcon( getIcon("icon.planning") );
         item.addActionListener(this);
+		setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
+
 	}
 
 	public void actionPerformed(ActionEvent evt) {
