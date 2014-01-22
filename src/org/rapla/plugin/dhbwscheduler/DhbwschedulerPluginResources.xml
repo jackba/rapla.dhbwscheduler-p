@@ -45,4 +45,80 @@
 		<text lang="en">via the following link:</text>
 		<text lang="de">über folgenden Link vornehmen:</text>
 	</entry>
+	<entry key="Planung_abschliessen">
+		<text lang="en">Complete planing</text>
+		<text lang="de">Planung abschliessen</text>
+	</entry>
+	<entry key="Scheduling_anstossen">
+		<text lang="en">Initiate scheduling</text>
+		<text lang="de">Scheduling anstossen</text>
+	</entry>
+	<entry key="Planung_schliessen">
+		<text lang="en">Close planing</text>
+		<text lang="de">Planung schliessen</text>
+	</entry>
+	<entry key="Planung_oeffnen">
+		<text lang="en">Open planing</text>
+		<text lang="de">Planung öffnen</text>
+	</entry>
+	<entry key="E-Mail_senden">
+		<text lang="en">Send E-mail</text>
+		<text lang="de">E-Mail senden</text>
+	</entry>
+	<entry key="Erfassungslink">
+		<text lang="en">Linkdetektion</text>
+		<text lang="de">Erfassungslink</text>
+	</entry>
+	<entry key="Studiengang">
+		<text lang="en">Course of studies</text>
+		<text lang="de">Studiengang</text>
+	</entry>
+	<entry key="Veranstaltung">
+		<text lang="en">Event</text>
+		<text lang="de">Veranstaltung</text>
+	</entry>
+	<entry key="Dozent">
+		<text lang="en">Instructor</text>
+		<text lang="de">Dozent</text>
+	</entry>
+	<entry key="uneingeladen">
+		<text lang="en">uninvited</text>
+		<text lang="de">uneingeladen</text>
+	</entry>
+	<entry key="eingeladen">
+		<text lang="en">invited</text>
+		<text lang="de">eingeladen</text>
+	</entry>
+	<entry key="erfasst">
+		<text lang="en">registered</text>
+		<text lang="de">erfasst</text>
+	</entry>
+	<entry key="teileingeladen">
+		<text lang="en">partly invited</text>
+		<text lang="de">teilweise eingeladen</text>
+	</entry>
+	<entry key="teilerfasst">
+		<text lang="en">partly registered</text>
+		<text lang="de">teilweise erfasst</text>
+	</entry>
+	<entry key="Email_Title">
+		<text lang="en">Send email</text>
+		<text lang="de">E-Mail senden</text>
+	</entry>
+	<entry key="Email_senden_frage">
+		<text lang="en">Do you really want to send?</text>
+		<text lang="de">Wollen Sie wirklich senden?</text>
+	</entry>
+	<entry key="E-Mail">
+		<text lang="en">email</text>
+		<text lang="de">E-Mail</text>
+	</entry>
+	<entry key="gesendet">
+		<text lang="en">send</text>
+		<text lang="de">gesendet</text>
+	</entry>
+	<entry key="nichtgesendet">
+		<text lang="en">not send</text>
+		<text lang="de">nicht gesendet</text>
+	</entry>
 </resources>

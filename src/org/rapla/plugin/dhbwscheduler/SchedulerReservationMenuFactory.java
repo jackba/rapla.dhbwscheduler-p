@@ -30,6 +30,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -57,6 +58,7 @@ import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.RaplaButton;
 import org.rapla.gui.toolkit.RaplaMenuItem;
+import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
@@ -144,7 +146,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		 */
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_ABSCHLIESSEN");
-			menu.setText( "Planung abschliessen" );
+			menu.setText(getString("Planung_abschliessen"));
 			// Last the action for the marked menu 
 			menu.addActionListener( new ActionListener()
 			{
@@ -156,7 +158,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Reservation editableEvent = getClientFacade().edit( event);
 
 						setDesignStatus(editableEvent, getString("closed"));
-						createMessage(getString("closed"), 200, 100, getString("design_status"), menuContext);
+						createMessage(getString("design_status"), getString("closed"), 200, 100, menuContext, false);
 					}
 					catch (RaplaException ex )
 					{
@@ -168,7 +170,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_OEFFNEN");
-			menu.setText( "Planung oeffnen" );
+			menu.setText(getString("Planung_oeffnen"));
 			// Last the action for the marked menu 
 			menu.addActionListener( new ActionListener()
 			{
@@ -180,7 +182,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Reservation editableEvent = getClientFacade().edit( event);
 						// do something with the reservation
 						setDesignStatus(editableEvent, getString("planning_open"));
-						createMessage(getString("planning_open"), 200, 100, getString("design_status"), menuContext);
+						createMessage(getString("design_status"), getString("planning_open"), 200, 100, menuContext, false);
 
 					}
 					catch (RaplaException ex )
@@ -193,7 +195,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_SCHLIESSEN");
-			menu.setText( "Planung schliessen" );
+			menu.setText( getString("Planung_schliessen"));
 			// Last the action for the marked menu 
 			menu.addActionListener( new ActionListener()
 			{
@@ -205,7 +207,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Reservation editableEvent = getClientFacade().edit( event);
 						// do something with the reservation
 						setDesignStatus(editableEvent, getString("planning_closed"));
-						createMessage(getString("planning_closed"), 200, 100, getString("design_status"), menuContext);
+						createMessage(getString("design_status"), getString("planning_closed"), 200, 100, menuContext, false);
 
 					}
 					catch (RaplaException ex )
@@ -218,7 +220,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("SCHEDULING_ANSTOSSEN");
-			menu.setText( "Scheduling anstossen" );
+			menu.setText( getString("Scheduling_anstossen"));
 			//menu.setIcon( getIcon("icon.help"));
 			menu.addActionListener( new ActionListener()
 			{
@@ -259,7 +261,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("ERFASSUNG");
-			menu.setText( "Erfassungslink öffnen" );
+			menu.setText( getString("Erfassungslink") );
 			menu.addActionListener( new ActionListener()
 			{
 
@@ -298,6 +300,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 									Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
 									SimpleIdentifier pID = (SimpleIdentifier) pTest;
+
+									Comparable rSI = ((RefEntity<?>) r).getId();
+									SimpleIdentifier resID = (SimpleIdentifier) rSI;
+
 									String studiengang = "";
 									if (r.getClassification().getValue("studiengang")!=null)
 									{
@@ -317,9 +323,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									label[i] = new JLabel();
 									labelHead.setFont(new Font("Arial",Font.BOLD,16));
 									label[i].setFont(new Font("Arial",Font.CENTER_BASELINE,14));
-									labelHead.setText("Studiengang " + studiengang
-											+ ", Veranstaltung: " + r.getName(getLocale()));
-									label[i].setText("Dozent: " 
+									labelHead.setText(getString("Studiengang") + ": " + studiengang
+											+ ", " + getString("Veranstaltung") + ": " + r.getName(getLocale()));
+									label[i].setText(getString("Dozent") + ": " 
 											+ r.getPersons()[t].getClassification().getValue("firstname").toString()
 											+ " " + r.getPersons()[t].getClassification().getValue("surname").toString());
 
@@ -330,7 +336,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									urlField[i] = new JTextArea();
 									urlField[i].setWrapStyleWord(true);
 									urlField[i].setLineWrap(true);
-									urlField[i].setText(getUrl(r,pID.getKey()));
+									urlField[i].setText(getUrl(resID,pID));
 									urlField[i].setSize(100, 20);
 									urlField[i].setEditable(false);
 									copyButton[i] = new RaplaButton();
@@ -393,16 +399,16 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							}
 
 						} catch (UnsupportedEncodingException e1) {
-							// TODO Auto-generated catch block
+							getLogger().info("ERROR:" + e1.toString());
 							e1.printStackTrace();
 						} catch (URISyntaxException e1) {
-							// TODO Auto-generated catch block
+							getLogger().info("ERROR:" + e1.toString());
 							e1.printStackTrace();
 						}
 
 						DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,panel,new String[] {"OK"});
 						dialogUI.setSize( 600, 300);
-						dialogUI.setTitle("Erfassungslink");
+						dialogUI.setTitle(getString("Erfassungslink"));
 						if (menuContext.getPoint() != null)
 						{    
 							dialogUI.setLocation( menuContext.getPoint() );
@@ -418,153 +424,125 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			menus.add( menu );
 		}
 		{
+
 			final RaplaMenuItem menu = new RaplaMenuItem("EMAIL_SENDEN");
-			menu.setText( "E-Mail senden" );
+			menu.setText(getString("E-Mail_senden"));
 			// Last the action for the marked menu 
 			menu.addActionListener( new ActionListener()
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
-					for (Reservation r : selectedReservations)
-					{
-						//Überprüfung ob es nötig ist eine E-Mail zu versenden.
-						if(EmailVersendeBerechtigung(r)){
 
+					String strTitel = getString("Email_Title");
+					String strQuestion = getString("Email_senden_frage");
+
+					int result = JOptionPane.showConfirmDialog(null, strQuestion, strTitel, JOptionPane.YES_NO_CANCEL_OPTION);
+					if (result == JOptionPane.YES_OPTION) {
+						getLogger().info("E-Mail wird rausgeschickt");
+						String message = "";
+
+						//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
+						for (Reservation r : selectedReservations)
+						{
+
+							String veranstaltungsTitel = (String) r.getClassification().getValue("title");						
+							//Constraints initialisieren oder ändern. (Neuer Dozent = neuer Constraint.)
+							r = initConstraint(r);
+							int dozCount = 0;
+							message += veranstaltungsTitel + ": \n"; 
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
 							{
-								Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
-								SimpleIdentifier pID = (SimpleIdentifier) pTest;
-								Sende_mail(r,pID);
-							}
-						}
 
+								String name		= (String) r.getPersons()[t].getClassification().getValue("surname");
+								String vorname	= (String) r.getPersons()[t].getClassification().getValue("firstname");
+								String titel 	= (String) r.getPersons()[t].getClassification().getValue("title");
+								String email 	= (String) r.getPersons()[t].getClassification().getValue("email");
 
-					}
-				}
+								boolean isSend = false;
 
-				/*
-				 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
-				 */
-				private boolean EmailVersendeBerechtigung(Reservation r) {
+								Comparable compDoz = ((RefEntity<?>) r.getPersons()[t]).getId();
+								SimpleIdentifier dozentID = (SimpleIdentifier) compDoz;
 
-					String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
-					boolean returnvalue = false;
+								Comparable pTest = ((RefEntity<?>) r).getId();
+								SimpleIdentifier reservationID = (SimpleIdentifier) pTest;
 
-					if(r.getClassification().getValue("planungsstatus").equals(planning_closed) ||
-							r.getClassification().getValue("planungsstatus").equals(closed)){
-						returnvalue = false;
-					}else{
-						switch(erfassungsstatus){
-						case "uneingeladen":
-							returnvalue = true;
-							break;
-						case "eingeladen":
-							returnvalue = true;
-							break;
-						case "erfasst":
-							returnvalue = false;
-							break;
-						default:
-							break;
-						}
-					}
+								//Überprüfung ob es nötig ist eine E-Mail zu versenden.
+								if(EmailVersendeBerechtigung(r,dozentID.getKey())){
 
+									try {
+										String url = getUrl(reservationID,dozentID);
+										isSend = service.sendMail(reservationID, dozentID,getUser().getName(),url);
+									} catch (RaplaException | UnsupportedEncodingException e1) {
+										//e1.printStackTrace();
+										getLogger().error(veranstaltungsTitel + ": Unable to sent e-mail to " + email);
+										isSend = false;
+									}
+										if (isSend){
+											dozCount++;
+											getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
+											//message += "\t email: check ";
+											//createMessage(getString("planning_open"), 200, 100, message, menuContext);
 
-					return returnvalue;
-				}
+											//ändere nun den Constraint!
+											String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 
-				private void Sende_mail(Reservation r, SimpleIdentifier pID) {
-					// TODO Auto-generated method stub
-					try {
-						boolean isPerson = false;
-						boolean reminder = false;
-						String email = "";
-						String name = "";
-						String vorname = "";
-						String titel = "";
+											//nur Ändern wenn der Status nich schon 1 ist 1 = eingeladen
+											if(ConstraintService.getStatus(strConstraint, dozentID.getKey()) != 1){
 
-						for(int i = 0 ; i<r.getPersons().length; i++){
-							Comparable pTest = ((RefEntity<?>) r.getPersons()[i]).getId();
-							SimpleIdentifier dID = (SimpleIdentifier) pTest;
+												String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID.getKey(), ConstraintService.CHANGE_SINGLESTATUS, 1);
+												//Status auf eingeladen setzen;
+												if (newConstraint == null){
+													//Fehler beim ändern des Constraints
+													//	createMessage(getString("planning_open"), 200, 100, message, menuContext);
+												}else{
+													r = changeReservationAttribute(r,"planungsconstraints",newConstraint );
+													
+													getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
 
-							if(dID.getKey() == pID.getKey()){
-								isPerson 	= r.getPersons()[i].isPerson();
-								email		= (String) r.getPersons()[i].getClassification().getValue("email");
-								name		= (String) r.getPersons()[i].getClassification().getValue("surname");
-								vorname		= (String) r.getPersons()[i].getClassification().getValue("firstname");
-								titel 		= (String) r.getPersons()[i].getClassification().getValue("title");
-								break;
-							}
+												}
+											}
 
-						}
+										}
 
-						//Dozent.getClassification().getValue("");
-						if(isPerson){	
-							String studiengang = "";
-							if (r.getClassification().getValue("studiengang")!=null)
-							{
-								studiengang = r.getClassification().getValue("studiengang").toString();
-								if (studiengang.contains(" "))
-								{
-									int pos = studiengang.indexOf(" ");
-									studiengang = studiengang.substring(0, pos);
+									
 								}
+
+								//Message zusammenbauen
+
+								message += "   " + titel + " " + vorname + " " + name + ": ";
+
+								//email
+								if(isSend){
+									//message += "\t email: sent ";
+									message += "\t " + getString("E-Mail") + ": " + getString("gesendet") + " ";
+								}else{
+									//message += "\t email: not sent ";
+									message += "\t " + getString("E-Mail") + ": " + getString("nichtgesendet") + " ";
+								}
+
+								//status
+								message += "\t status: " + getErfassungsstatusDoz(r,dozentID.getKey()) + "\n";
+								String statusConstraint = (String) r.getClassification().getValue("planungsconstraints");
+								r = changeReservationAttribute(r,"erfassungsstatus",getStringStatus(ConstraintService.getReservationStatus(statusConstraint)));
 							}
-							String veranstaltungstitel 	= (String) r.getClassification().getValue("title");
-							String betreff;
-							String url = getUrl(r,pID.getKey());
+
+							message += "\n";
 							
-							String erfassungsstatus = (String) r.getClassification().getValue("erfassungsstatus");
-							switch(erfassungsstatus){
-							case "uneingeladen":
-								reminder=false;
-								break;
-							case "eingeladen":
-								reminder=true;
-								break;
-							case "erfasst":
-								reminder=false;
-								break;
-							default:
-								break;
-							}
-							
-							if(reminder){
-								betreff = getString("email_Betreff_Erinnerung");
-							}else{
-								betreff = getString("email_Betreff_Einladung");
-							}
-							betreff += veranstaltungstitel;
 
-							String Inhalt = getString("email_anrede") + titel+ " " + vorname + " " + name + ",\n\n" + 
-									getString("email_Inhalt") + "\n" + 
-									veranstaltungstitel +  " (" + studiengang + ")" + "\n\n"  +
-									getString("Link_Text") + "\n" +
-									url + "\n\n" +
-									getString("email_Signatur") + "\n" + 
-									getUser().getName() + "\n";
-							//getUser().getEmail();
-								
-							//Muss das so gemacht werden ?????????
-							MailToUserInterface MailClient = getService(MailToUserInterface.class);
-							MailClient.sendMail(getUser().getUsername(), betreff, Inhalt);
-
-							//createMessage(Inhalt, 200, 100, "Planungsstatus", menuContext);
-							//Link generieren
-							// Text einfügen
-							//Senden!
-
-						}else{
-							;
-						}
-					} catch ( RaplaException | UnsupportedEncodingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						}		
+						// Veranstaltung, Dozent, Senden, speichern /n
+						createMessage(getString("planning_open"), message, 400,200 , menuContext, true);
+						//System.exit(0);
+					} else if (result == JOptionPane.NO_OPTION) {
+						getLogger().info("E-Mail senden abgebrochen");
+						//System.exit(0);
 					}
 
+
 				}
+
+				
 			});
 			menus.add( menu );
 		}
@@ -572,81 +550,31 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		return menus.toArray(new RaplaMenuItem[] {});
 	}
 
-	private void createMessage(String message, int x, int y, String title, final MenuContext menuContext) throws RaplaException {
+	private void createMessage(String title, String message, int x, int y, final MenuContext menuContext, boolean pack){
 		JTextArea content = new JTextArea();
 		content.setText(message);
-		DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
-		dialogUI.setSize(x,y);
-		dialogUI.setTitle(title);
-		if (menuContext.getPoint() != null)
-		{    
-			dialogUI.setLocation( menuContext.getPoint() );
-		}
-		dialogUI.startNoPack();
-	}
-
-	private String getUrl(Reservation selectedReservation, int dozentId) throws UnsupportedEncodingException
-	{
-		Comparable test = ((RefEntity<?>) selectedReservation).getId();
-		SimpleIdentifier id = (SimpleIdentifier) test;
-		String strId = String.valueOf(id.getKey());
-		//		String strName = selectedReservation.getName(getLocale());
-		//		String strKurs = "";
-		//		String studiengang = "";
-		//		for (int i = 0; i < selectedReservation.getResources().length; i++)
-		//		{
-		//			if (selectedReservation.getResources()[i].getClassification().getType().getElementKey().equals("kurs"))
-		//			{
-		//				if (strKurs=="")
-		//				{
-		//					strKurs = selectedReservation.getResources()[i].getClassification().getValue("name").toString(); 
-		//
-		//				}
-		//				else
-		//				{
-		//					strKurs = strKurs + "," + selectedReservation.getResources()[i].getClassification().getValue("name").toString();
-		//				}
-		//				//studiengang = selectedReservation.getResources()[i].getClassification().getValue("abteilung").toString();
-		//			}
-		//		}
-
-		//		String strDozent = selectedReservation.getPersons()[0].getClassification().getValue("surname").toString();
-		//		strDozent = strDozent + "," + selectedReservation.getPersons()[0].getClassification().getValue("firstname").toString();
-		//		String strBegin = selectedReservation.getFirstDate().toString();
-		//		String strEnd = selectedReservation.getMaxEnd().toString();
-
-		String result;
-		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
-		//				+ "&name=" + strName + "&kurs=" + strKurs + "&dozent=" + strDozent
-		//				+ "&begin=" + strBegin + "&end=" + strEnd;
-		//		result = "http://localhost:8051/rapla?page=scheduler-constraints&id=" + strId
-		//		+ "&dozent=" + String.valueOf(dozentId);
-
-		//Dynamische Generierung "Servername:Port"
-		StartupEnvironment env = getService( StartupEnvironment.class );
-		//Dynamische Generierung "webpage"
-
-		URL codeBase;
-		UrlEncryption webservice;
-		String key;
+		DialogUI dialogUI;
 		try {
-			codeBase = env.getDownloadURL();
-			result = codeBase + "rapla?page=scheduler-constraints&id=" + strId + "&dozent=" + String.valueOf(dozentId);
-			webservice = getWebservice(UrlEncryption.class);
-			String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + strId + "&dozent=" + String.valueOf(dozentId));
-			key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
-			return new URL( codeBase,"rapla?" + key).toExternalForm();
-		} catch (RaplaException e) {
-			// TODO Auto-generated catch block
+			dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content, new String[] {"OK"});
+
+			dialogUI.setSize(x,y);
+			dialogUI.setTitle(title);
+			if (menuContext.getPoint() != null)
+			{    
+				dialogUI.setLocation( menuContext.getPoint() );
+			}
+
+			if (pack){
+				dialogUI.start();
+			}else{
+				dialogUI.startNoPack();
+			}
+
+		}catch (RaplaException e) {
 			e.printStackTrace();
-			return "Error";
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "Error";
+			getLogger().info("ERROR:" + e.toString());
 		}
 	}
-
 
 	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
 		String istStatus = (String) editableEvent.getClassification().getValue("planungsstatus");
@@ -656,5 +584,143 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		getClientFacade().store( editableEvent ); 
 	}
 
+	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
+		try {
+			Reservation editableEvent = getClientFacade().edit( r);
+			editableEvent = getClientFacade().edit( r);
+			editableEvent.getClassification().setValue(Attribute, value);
+			getClientFacade().store( editableEvent );
+			getClientFacade().refresh();
+			return editableEvent;
+		} catch (RaplaException e1) {
+			e1.printStackTrace();
+			getLogger().info("ERROR:" + e1.toString());
+		}
+		return r;
+	}
+	public String getUrl(SimpleIdentifier reservationID, SimpleIdentifier dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
+	{
+
+		StorageOperator lookup;
+		Reservation veranstaltung;			
+
+		String veranstaltungsId = String.valueOf(reservationID.getKey());
+
+		String result;
+
+
+		//Dynamische Generierung "Servername:Port"
+		StartupEnvironment env = getService( StartupEnvironment.class );
+		URL codeBase = env.getDownloadURL();
+
+		UrlEncryption webservice;
+		String key;
+
+
+		result = codeBase + "rapla?page=scheduler-constraints&id=" + veranstaltungsId + "&dozent=" + String.valueOf(dozentId.getKey());
+		webservice = getService(UrlEncryption.class);
+		String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + veranstaltungsId + "&dozent=" + String.valueOf(dozentId.getKey()));
+		key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
+
+		try{
+			return new URL( codeBase,"rapla?" + key).toExternalForm();
+		}catch(MalformedURLException ex){
+			getLogger().info("ERROR:" + ex.toString());
+			return "error";
+		}
+
+
+	}
+
+	private Reservation initConstraint(Reservation r) {
+
+		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
+
+		int[] dozids = new int[r.getPersons().length];
+
+		for (int x = 0; x < r.getPersons().length; x++){
+			Comparable pDozi = ((RefEntity<?>) r.getPersons()[x]).getId();
+			SimpleIdentifier pID = (SimpleIdentifier) pDozi;
+
+			dozids[x] = pID.getKey();
+		}
+
+		String newConstraint = ConstraintService.initDozConstraint(strConstraint,dozids);
+
+		return changeReservationAttribute(r,"planungsconstraints",newConstraint);
+
+	}
+
+
+	/*
+	 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
+	 */
+	private boolean EmailVersendeBerechtigung(Reservation r, int dozentenID) {
+
+		final int intUneingeladen = 0;
+		final int intEingeladen = 1;
+		final int intErfasst = 2;
+		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
+		//ConstraintService.buildDozConstraint(dozentenID, null, null, status);
+		int erfassungsstatus = ConstraintService.getStatus(strConstraint, dozentenID);
+
+		boolean returnvalue = false;
+
+		if(r.getClassification().getValue("planungsstatus").equals(planning_closed) ||
+				r.getClassification().getValue("planungsstatus").equals(closed)){
+			returnvalue = false;
+		}else{
+			switch(erfassungsstatus){
+			case intUneingeladen:
+				returnvalue = true;
+				break;
+			case intEingeladen:
+				returnvalue = true;
+				break;
+			case intErfasst:
+				returnvalue = false;
+				break;
+			default:
+				break;
+			}
+		}
+
+
+		return returnvalue;
+	}
+
+	
+	private String getErfassungsstatusDoz(Reservation r, int key) {
+		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
+		if (strConstraint ==null){
+			return null;
+		}
+
+		return getStringStatus(ConstraintService.getStatus(strConstraint, key));
+	}
+
+	private String getStringStatus(int status) {
+		String returnvalue = "";
+		switch(status){
+		case 0:
+			returnvalue = getString("uneingeladen");
+			break;
+		case 1:
+			returnvalue = getString("eingeladen");
+			break;
+		case 2:
+			returnvalue = getString("erfasst");
+			break;
+		case 3:
+			returnvalue = getString("teileingeladen");
+			break;
+		case 4:
+			returnvalue = getString("teilerfasst");
+			break;
+		default:
+			returnvalue = "error";						
+		}
+		return returnvalue;
+	}
 
 }
