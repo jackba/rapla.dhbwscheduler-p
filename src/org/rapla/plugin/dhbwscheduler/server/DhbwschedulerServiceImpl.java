@@ -183,8 +183,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			endeWoche = new Date(tmp.getTimeInMillis());
 		}
 
-		getClientFacade().refresh();
-
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
 			return postProcessingResults;
