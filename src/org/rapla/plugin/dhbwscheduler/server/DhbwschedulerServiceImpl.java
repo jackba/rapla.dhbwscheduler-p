@@ -123,9 +123,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		for (SimpleIdentifier id : reservationIds) {
 			RefEntity<?> object = lookup.resolve(id);
 			Reservation reservation = (Reservation) object;
-			if (reservation.getClassification()
-					.getValue(getString("design_status"))
-					.equals(getString("planning_closed"))) {
+			if (reservation.getClassification().getValue(getString("design_status")).equals(getString("planning_closed"))) {
 				reservations.add(reservation);
 			}
 		}
@@ -135,8 +133,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		try {
 			freetimeService = getService(FreetimeService.class);
 		} catch (UnsupportedOperationException e) {
-			postProcessingResults += "<br>" + getString("no_holiday_plugin")
-					+ "<br/";
+			postProcessingResults += "<br>" + getString("no_holiday_plugin") + "<br/";
 		}
 
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
