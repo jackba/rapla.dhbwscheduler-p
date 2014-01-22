@@ -158,7 +158,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Reservation editableEvent = getClientFacade().edit( event);
 
 						setDesignStatus(editableEvent, getString("closed"));
-						createMessage(getString("design_status"), getString("closed"), 200, 100, menuContext, false);
+						createMessage("planungsstatus", getString("closed"), 200, 100, menuContext, false);
 					}
 					catch (RaplaException ex )
 					{
@@ -182,7 +182,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Reservation editableEvent = getClientFacade().edit( event);
 						// do something with the reservation
 						setDesignStatus(editableEvent, getString("planning_open"));
-						createMessage(getString("design_status"), getString("planning_open"), 200, 100, menuContext, false);
+						createMessage("planungsstatus", getString("planning_open"), 200, 100, menuContext, false);
 
 					}
 					catch (RaplaException ex )
@@ -207,7 +207,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Reservation editableEvent = getClientFacade().edit( event);
 						// do something with the reservation
 						setDesignStatus(editableEvent, getString("planning_closed"));
-						createMessage(getString("design_status"), getString("planning_closed"), 200, 100, menuContext, false);
+						createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
 
 					}
 					catch (RaplaException ex )
