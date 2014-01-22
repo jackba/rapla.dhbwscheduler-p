@@ -485,6 +485,23 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 		appointment.move(newStart);
 
+		newStart = getNextFreeTime(allocatables, appointment, startDate, endDate);
+
+		appointment.move(oldDate);
+
+		return newStart;
+	}
+
+	/**
+	 * 
+	 * @param allocatables
+	 * @param appointment
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws RaplaException
+	 */
+	private Date getNextFreeTime(Allocatable[] allocatables, Appointment appointment, Date startDate, Date endDate) throws RaplaException {
 		// Alle gerade geplanten Reservierungen bei der Betrachtung ausschließen
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
 
@@ -496,13 +513,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 		HashSet<Reservation> ignoreList = getIgnoreList(allocatables, startDate, endDate);
 
-		newStart = lookup.getNextAllocatableDate(Arrays.asList(allocatables), appointment, ignoreList, worktimeStartMinutes, worktimeEndMinutes, excludedDays, rowsPerHour);
-
-		appointment.move(oldDate);
-
-		return newStart;
+		return lookup.getNextAllocatableDate(Arrays.asList(allocatables), appointment, ignoreList, worktimeStartMinutes, worktimeEndMinutes, excludedDays, rowsPerHour);
 	}
-
+	
 	/**
 	 * 
 	 * @param allocatables
