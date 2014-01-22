@@ -7,6 +7,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.rapla.RaplaTestCase;
+import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
 import org.rapla.entities.RaplaObject;
 import org.rapla.entities.RaplaType;
 import org.rapla.entities.domain.Allocatable;
@@ -15,6 +16,7 @@ import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
+import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 
 public class DhbwschedulerServiceTest extends RaplaTestCase {
@@ -32,10 +34,12 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		facade = getContext().lookup(ClientFacade.class);
+		raplaContainer.addContainerProvidedComponent( DhbwschedulerPlugin.RESOURCE_FILE, I18nBundleImpl.class,I18nBundleImpl.createConfig( DhbwschedulerPlugin.RESOURCE_FILE.getId() ) );
+		RaplaContext context = getContext();
+		facade = context.lookup(ClientFacade.class);
 		facade.login("homer", "duffs".toCharArray());
 		locale = Locale.getDefault();
-		service = new DhbwschedulerServiceImpl(getContext());
+		service = new DhbwschedulerServiceImpl(context);
 	}
 
 	protected void tearDown() throws Exception {

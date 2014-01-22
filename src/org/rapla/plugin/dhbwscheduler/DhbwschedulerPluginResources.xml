@@ -121,10 +121,23 @@
 		<text lang="en">not send</text>
 		<text lang="de">nicht gesendet</text>
 	</entry>
-	    <entry key="design_status">
+	<entry key="icon.planning">
+		<icon src="planning.png"/>
+	</entry>
+	<entry key="planning_gui">
+        <text lang="en"></text>
+        <text lang="de">PlanungsGUI</text>
+        <text lang="fr"></text>
+        <text lang="es"></text>
+        <text lang="cs"></text>
+        <text lang="nl"></text>
+        <text lang="pl"></text>
+		<text lang="pt"></text>
+    </entry>
+<!--	<entry key="design_status">
     	<text lang="en">design status</text>
     	<text lang="de">planungsstatus</text>
-    </entry>
+    </entry> -->
      <entry key="closed">
     	<text lang="en">planned</text>
     	<text lang="de">geplant</text>

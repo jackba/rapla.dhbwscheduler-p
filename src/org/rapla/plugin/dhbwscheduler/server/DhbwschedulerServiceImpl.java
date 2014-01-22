@@ -123,7 +123,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		for (SimpleIdentifier id : reservationIds) {
 			RefEntity<?> object = lookup.resolve(id);
 			Reservation reservation = (Reservation) object;
-			if (reservation.getClassification().getValue(getString("design_status")).equals(getString("planning_closed"))) {
+			
+			String string = getString("planning_closed");
+			Object value = reservation.getClassification().getValue("planungsstatus");
+			if (value.equals(string)) {
 				reservations.add(reservation);
 			}
 		}
@@ -182,8 +185,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			tmp.add(Calendar.DAY_OF_YEAR, 5);
 			endeWoche = new Date(tmp.getTimeInMillis());
 		}
-
-		getClientFacade().refresh();
 
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
@@ -441,7 +442,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, startDate, endDate, null);
 		for (Reservation vorlesungMitGleicherResource : vorlesungenMitGleichenResourcen) {
 			// for each of these reservations, look if there are in closed
-			if (vorlesungMitGleicherResource.getClassification().getValue(getString("design_status")).equals(getString("planning_closed"))) {
+			if (vorlesungMitGleicherResource.getClassification().getValue("planungsstatus").equals(getString("planning_closed"))) {
 				ignoreList.add(vorlesungMitGleicherResource);
 			}
 		}
@@ -499,7 +500,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, start, ende, null);
 			for (Reservation vorlesungMitGleicherResource : vorlesungenMitGleichenResourcen) {
 				// for each of these reservations, look if there are in planning_closed
-				if (vorlesungMitGleicherResource.getClassification().getValue(getString("design_status")).equals(getString("closed"))
+				if (vorlesungMitGleicherResource.getClassification().getValue("planungsstatus").equals(getString("closed"))
 						|| reservationsPlannedByScheduler.contains(vorlesungMitGleicherResource)) {
 					// nur geplante Veranstaltungen muessen beachtet werden
 					// Appointment[] termine = vorlesungMitGleicherResource.getAppointments();
