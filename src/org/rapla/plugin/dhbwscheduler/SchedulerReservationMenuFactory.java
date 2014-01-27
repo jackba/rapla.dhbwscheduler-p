@@ -75,7 +75,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	public static final String closed = new String("geplant");
 	public static final String planning_open = new String("in Planung");
 	public static final String planning_closed = new String("in Planung geschlossen");
+	public static final String planungsstatus = new String("planungsstatus");
 	DhbwschedulerService service;
+	DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
+	
 	public SchedulerReservationMenuFactory( RaplaContext context, Configuration config, DhbwschedulerService service) throws RaplaException
 	{
 		super( context );
@@ -152,18 +155,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					try 
-					{
-						Entity event = selectedReservations.get( 0);
-						Reservation editableEvent = getClientFacade().edit( event);
 
-						setDesignStatus(editableEvent, getString("closed"));
-						createMessage("planungsstatus", getString("closed"), 200, 100, menuContext, false);
-					}
-					catch (RaplaException ex )
-					{
-						showException( ex, menuContext.getComponent());
-					}
+					for (Reservation editableEvent : selectedReservations){
+						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("closed"));
+						}
+					createMessage("planungsstatus", getString("closed"), 200, 100, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -176,19 +172,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					try 
-					{
-						Entity event = selectedReservations.get( 0);
-						Reservation editableEvent = getClientFacade().edit( event);
-						// do something with the reservation
-						setDesignStatus(editableEvent, getString("planning_open"));
-						createMessage("planungsstatus", getString("planning_open"), 200, 100, menuContext, false);
-
+					for (Reservation editableEvent : selectedReservations){
+						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_open"));
 					}
-					catch (RaplaException ex )
-					{
-						showException( ex, menuContext.getComponent());
-					}
+					createMessage("planungsstatus", getString("planning_open"), 200, 100, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -201,19 +188,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					try 
-					{
-						Entity event = selectedReservations.get( 0);
-						Reservation editableEvent = getClientFacade().edit( event);
-						// do something with the reservation
-						setDesignStatus(editableEvent, getString("planning_closed"));
-						createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
-
+					for (Reservation editableEvent : selectedReservations){
+						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_closed"));
 					}
-					catch (RaplaException ex )
-					{
-						showException( ex, menuContext.getComponent());
-					}
+					createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -434,7 +412,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				public void actionPerformed( ActionEvent e )
 				{
 					
-					DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
+					//DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 					try {
 						getClientFacade().refresh();
 					} catch (RaplaException e2) {
@@ -582,14 +560,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			e.printStackTrace();
 			getLogger().info("ERROR:" + e.toString());
 		}
-	}
-
-	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
-		String istStatus = (String) editableEvent.getClassification().getValue("planungsstatus");
-		if (istStatus != zielStatus) {
-			editableEvent.getClassification().setValue("planungsstatus", zielStatus);
-		}
-		getClientFacade().store( editableEvent ); 
 	}
 	
 	public String getUrl(SimpleIdentifier reservationID, SimpleIdentifier dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
