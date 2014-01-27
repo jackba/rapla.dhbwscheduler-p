@@ -180,11 +180,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			tmp.add(Calendar.DAY_OF_YEAR, 5);
 			endeWoche = new Date(tmp.getTimeInMillis());
 		}
-		
-		String notResolved = resolveConflicts(startDatum, endeDatum);
-		if(!(notResolved.equals(""))){
-			postProcessingResults += (getString("conflict_resolving_not_successful") + notResolved);
-		}
 
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
@@ -396,13 +391,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			reservations.remove((solRes[i][0]) - 1);
 			reservationsPlannedByScheduler.add(reservation);
 		}
-
-		//TODO: Kommentar entfernen
-		// Dateien aufräumen
-/*		new File(model).delete();
+		
+		// Dateien aufraeumen
+		new File(model).delete();
 		new File(data).delete();
 		new File(solution).delete();
-*/
+		
 		return result;
 	}
 	
@@ -517,17 +511,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			}
 		}
 
-		newStart = new Date(cal.getTimeInMillis());
-
-		Date oldDate = appointment.getStart();
-
-		appointment.move(newStart);
-
-		newStart = getNextFreeTime(allocatables, appointment, startDate, endDate);
-
-		appointment.move(oldDate);
-
-		return newStart;
+		return new Date(cal.getTimeInMillis());
 	}
 
 	/**
@@ -617,6 +601,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				}
 			}
 		}
+		
 		ArrayList<Reservation> veranstaltungenOhnePlanungsconstraints = new ArrayList<Reservation>();
 		int vorlesungNr = 0;
 		for (Reservation vorlesung : reservations) {
@@ -629,7 +614,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				if (vorlesungMitGleicherResource.getClassification().getValue("planungsstatus") == null || vorlesungMitGleicherResource.getClassification().getValue("planungsstatus").equals(getString("closed"))
 						|| reservationsPlannedByScheduler.contains(vorlesungMitGleicherResource)) {
 					// nur geplante Veranstaltungen muessen beachtet werden
-					// Appointment[] termine = vorlesungMitGleicherResource.getAppointments();
 					Appointment[] termine = splitIntoSingleAppointments(vorlesungMitGleicherResource);
 					for (Appointment termin : termine) {
 						Date beginn = termin.getStart();
@@ -640,7 +624,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 							vor_res[vorlesungNr][timeSlots[cal.get(Calendar.DAY_OF_WEEK)][0]] = 0;
 							vor_res[vorlesungNr][timeSlots[cal.get(Calendar.DAY_OF_WEEK)][1]] = 0;
 						} else {
-							// Prüfung, ob innerhalb von Start und Ende
+							// Pruefung, ob innerhalb von Start und Ende
 							if (cal.after(startCal) && cal.before(endeCal)) {
 								if (cal.get(Calendar.HOUR_OF_DAY) < 12) {
 									// set the field for the vorlesungNr and the slot to zero if the appointment starts 
@@ -739,7 +723,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		int slotCounter = 0;
 
 		for (int i = 24; i < dozConst.length - 24; i++) {
-			int stundenCounter = (i % 24);
+			int stundenCounter = (i % 12);
 			if (dozConst[i] > 0) {
 				// sobald eine Stunde verfügbar ist, ist der Slot verfügbar
 				belegteSlots[slotCounter] = 1;
@@ -1086,7 +1070,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	public boolean sendMail(SimpleIdentifier reservationID, SimpleIdentifier dozentId, String login, String url) throws RaplaException {
 
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
-		final MailInterface MailClient = getContext().lookup(MailInterface.class);
+		final MailInterface mailClient = getContext().lookup(MailInterface.class);
 
 		Reservation veranstaltung = (Reservation) lookup.resolve(reservationID);
 		Allocatable dozent = (Allocatable) lookup.resolve(dozentId);
@@ -1148,7 +1132,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			// getUser().getEmail();
 
 			try {
-				MailClient.sendMail(defaultSender, email, betreff, Inhalt);
+				mailClient.sendMail(defaultSender, email, betreff, Inhalt);
 				returnval = true;
 			} catch (MailException e) {
 				e.printStackTrace();
