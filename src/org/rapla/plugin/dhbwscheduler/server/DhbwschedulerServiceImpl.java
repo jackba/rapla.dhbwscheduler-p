@@ -180,13 +180,15 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			tmp.add(Calendar.DAY_OF_YEAR, 5);
 			endeWoche = new Date(tmp.getTimeInMillis());
 		}
+		
+		// TODO: postProcessingResults += resolveConflicts(startDatum, endeDatum);
 
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
 			getLogger().info(postProcessingResults);
 			return postProcessingResults;
 		} else {
-			String result = getString("planning_not_successful") + "\n";
+			String result = getString("planning_not_successful") + "\n" + postProcessingResults;
 			for(int i = 0; i < reservations.size(); i++) {
 				result += reservations.get(0).getClassification().getName(getLocale()) + "\n";
 				reservations.remove(0);
@@ -418,7 +420,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 						repeating.addException(dateOfConflict);
 					}
 					// add a new appointment for the date with the conflict
-					newApp = getModification().newAppointment(conflictingAppointment.getStart(), conflictingAppointment.getEnd());
+					newApp = new AppointmentImpl(conflictingAppointment.getStart(), conflictingAppointment.getEnd()); 
+					//getModification().newAppointment(conflictingAppointment.getStart(), conflictingAppointment.getEnd());
 					veranstaltung.addAppointment(newApp);
 				} else {
 					newApp = conflictingAppointment;
@@ -431,7 +434,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					// store the reservation
 					getClientFacade().store(veranstaltung);
 				} else {
-					notResolved = notResolved + "<br>" + veranstaltung.getName(getLocale()) + "</br>";
+					notResolved = notResolved + "\n" + veranstaltung.getName(getLocale()) + "\n";
 					break;
 				}
 			}
@@ -497,10 +500,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			int index = i;
 			getLogger().info("" + (slot % 2));
 			if ((slot % 2) != 0) {
-				// Morgens 000000001111
+				// Abends
 				index += cal.get(Calendar.HOUR_OF_DAY) - 1;
 			} else {
-				// Abends 111111100000
+				// Morgens
 				index += cal.get(Calendar.HOUR_OF_DAY) - 13;
 			}
 
