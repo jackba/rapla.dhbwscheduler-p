@@ -183,6 +183,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
+			getLogger().info(postProcessingResults);
 			return postProcessingResults;
 		} else {
 			String result = getString("planning_not_successful") + "\n";
@@ -190,6 +191,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				result += reservations.get(0).getClassification().getName(getLocale()) + "\n";
 				reservations.remove(0);
 			}
+			getLogger().info(result);
 			return result;
 		}
 	}
@@ -350,7 +352,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		int slotCounter = 0;
 
 		for (int i = 24; i < dozConst.length - 24; i++) {
-			int stundenCounter = (i % 24);
+			int stundenCounter = (i % 12);
 			belegteSlots[slotCounter] += dozConst[i];
 
 			if (stundenCounter == 11) {
@@ -381,10 +383,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			Appointment appointment = reservation.getAppointments()[0];
 			Allocatable[] allocatables = reservation.getAllocatablesFor(appointment);
 
-			// String dozConstraint = getDozentenConstraint(reservation);
-			// int[] dozConstr = splitDozentenConstraint(dozConstraint);
 			// Slot-Datum einstellen
-			newStart = setStartDate(solRes[i][1], startDatum, endeDatum, appointment, allocatables, reservation);
+			newStart = setStartDate(solRes[i][1], startDatum, reservation);
 			appointment.move(newStart);
 
 			getClientFacade().store(reservation);
@@ -473,10 +473,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 * @return
 	 * @throws RaplaException
 	 */
-	private Date setStartDate(int slot, Date startDate, Date endDate, Appointment appointment, Allocatable[] allocatables, Reservation reservation) throws RaplaException {
+	private Date setStartDate(int slot, Date startDate, Reservation reservation) throws RaplaException {
 		Date newStart;
-
+		 
 		Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
+		
 		cal.setTimeInMillis(startDate.getTime());
 		if (slot > 1) {
 			cal.add(Calendar.HOUR, (slot - 1) * 12);
@@ -486,17 +487,16 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		if (cal.get(Calendar.HOUR_OF_DAY) < (getCalendarOptions().getWorktimeStartMinutes() / 60)) {
 			cal.add(Calendar.MINUTE, getCalendarOptions().getWorktimeStartMinutes());
 		}
-		cal.add(Calendar.MINUTE, -15);
 
 		// Dozenten Constraint beachten
-		// TODO: muss noch getestet werden.
 
 		int[] dozConstr = ConstraintService.getDozConstraints(getDozentenConstraint(reservation));
-
-		int start = 24 + (slot * 12);
+		getLogger().info("Beginn: " + cal.get(Calendar.HOUR_OF_DAY));
+		int start = 24 + ((slot - 1) * 12);
 		for (int i = start; i < start + 12; i++) {
 			int index = i;
-			if ((slot % 2) == 0) {
+			getLogger().info("" + (slot % 2));
+			if ((slot % 2) != 0) {
 				// Morgens 000000001111
 				index += cal.get(Calendar.HOUR_OF_DAY) - 1;
 			} else {
