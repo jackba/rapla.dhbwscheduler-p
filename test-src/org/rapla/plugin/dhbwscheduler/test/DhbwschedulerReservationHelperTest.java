@@ -13,19 +13,20 @@ import org.rapla.entities.domain.Reservation;
 import org.rapla.facade.ClientFacade;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
+import org.rapla.plugin.dhbwscheduler.DhbwschedulerReservationHelper;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 
 
-public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
+public class DhbwschedulerReservationHelperTest extends RaplaTestCase {
 		ClientFacade facade;
 	    Locale locale;
 
-	    public SchedulerReservationMenuFactoryTest(String name) {
+	    public DhbwschedulerReservationHelperTest(String name) {
 	        super(name);
 	    }
 
 	    public static Test suite() {
-	        return new TestSuite(SchedulerReservationMenuFactoryTest.class);
+	        return new TestSuite(DhbwschedulerReservationHelperTest.class);
 	    }
 
 	    protected void setUp() throws Exception {
@@ -40,12 +41,17 @@ public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
 	        super.tearDown();
 	    }
 
-	    public void testgetClassification(){
+	    public void testchangeReservationAttribute() throws RaplaException {
+	    	DhbwschedulerReservationHelper helper = new DhbwschedulerReservationHelper(getContext());
+	    	Reservation[] reservations = facade.getReservations(null, null, null, null);
+	    	Reservation r = reservations[reservations.length-1];
+	    	helper.changeReservationAttribute(r, "planungsstatus", "geplant");
+	    	String istStatus = (String) r.getClassification().getValue("planungsstatus");
+	    	assertEquals("geplant", istStatus);
 	    	
-	    	//Reservation editableEvent = getFacade().getReservations(user, start, end, filters);
-			// do something with the reservation
-			//setDesignStatus(editableEvent, getString("planning_closed"));	    	
-	    	assertEquals(true, false);
+	    	helper.changeReservationAttribute(r, "planungsstatus", "in Planung");
+	    	istStatus = (String) r.getClassification().getValue("planungsstatus");
+	    	assertEquals("in Planung", istStatus);
 	    }
 	}
 

@@ -12,6 +12,7 @@ public class DhbwschedulerReservationHelper extends RaplaComponent
 		super(context);
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
+	
 	public Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
 		try {
 			Reservation editableEvent = getClientFacade().edit( r);
@@ -49,6 +50,20 @@ public class DhbwschedulerReservationHelper extends RaplaComponent
 			returnvalue = "error";						
 		}
 		return returnvalue;
+	}
+	
+	public String getStudiengang(Reservation r){
+		String studiengang = "";
+		if (r.getClassification().getValue("studiengang")!=null)
+		{
+			studiengang = r.getClassification().getValue("studiengang").toString();
+			if (studiengang.contains(" "))
+			{
+				int pos = studiengang.indexOf(" ");
+				studiengang = studiengang.substring(0, pos);
+			}
+		}
+		return studiengang;
 	}
 	
 }

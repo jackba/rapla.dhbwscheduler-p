@@ -283,16 +283,16 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									Comparable rSI = ((RefEntity<?>) r).getId();
 									SimpleIdentifier resID = (SimpleIdentifier) rSI;
 
-									String studiengang = "";
-									if (r.getClassification().getValue("studiengang")!=null)
-									{
-										studiengang = r.getClassification().getValue("studiengang").toString();
-										if (studiengang.contains(" "))
-										{
-											int pos = studiengang.indexOf(" ");
-											studiengang = studiengang.substring(0, pos);
-										}
-									}
+									String studiengang = HelperClass.getStudiengang(r);
+//									if (r.getClassification().getValue("studiengang")!=null)
+//									{
+//										studiengang = r.getClassification().getValue("studiengang").toString();
+//										if (studiengang.contains(" "))
+//										{
+//											int pos = studiengang.indexOf(" ");
+//											studiengang = studiengang.substring(0, pos);
+//										}
+//									}
 
 									p1[i] = new JPanel();
 									p2[i] = new JPanel();
