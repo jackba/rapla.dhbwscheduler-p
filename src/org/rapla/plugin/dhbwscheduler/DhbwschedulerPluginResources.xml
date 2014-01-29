@@ -174,4 +174,12 @@
     	<text lang="en">For the following events, the planning was not successful: </text>
     	<text lang="de">Die folgenden Veranstaltungen konnten nicht geplant werden: </text>
     </entry>
+    <entry key="missing_planningperiod">
+    	<text lang="en">For the given events, the planningperiod is missing.</text>
+    	<text lang="de">Bei den übergebenen Verantstaltungen fehlt der Planungszyklus.</text>
+    </entry>
+    <entry key="check_planningperiod">
+    	<text lang="en">For the given events, the planningperiod is corrupted.</text>
+    	<text lang="de">Bei den übergebenen Verantstaltungen ist der Planungszyklus fehlerhaft.</text>
+    </entry>
 </resources>
