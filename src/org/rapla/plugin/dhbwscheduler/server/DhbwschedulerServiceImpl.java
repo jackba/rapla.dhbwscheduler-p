@@ -5,19 +5,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.gnu.glpk.GLPK;
@@ -33,39 +26,27 @@ import org.gnu.glpk.glp_tree;
 import org.rapla.components.util.DateTools;
 import org.rapla.components.util.ParseDateException;
 import org.rapla.components.util.SerializableDateTimeFormat;
-import org.rapla.components.util.undo.CommandUndo;
-import org.rapla.entities.EntityNotFoundException;
+import org.rapla.entities.User;
 import org.rapla.entities.configuration.Preferences;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
-import org.rapla.entities.domain.Period;
-import org.rapla.entities.domain.Repeating;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.domain.internal.AppointmentImpl;
 import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
-import org.rapla.facade.Conflict;
-import org.rapla.facade.ModificationModule;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
-import org.rapla.framework.StartupEnvironment;
-import org.rapla.gui.RaplaGUIComponent;
-import org.rapla.gui.ReservationController;
-import org.rapla.gui.internal.edit.reservation.AppointmentController;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
 import org.rapla.plugin.freetime.server.FreetimeService;
 import org.rapla.plugin.mail.MailException;
 import org.rapla.plugin.mail.MailPlugin;
 import org.rapla.plugin.mail.server.MailInterface;
-import org.rapla.plugin.urlencryption.UrlEncryption;
-import org.rapla.server.RemoteMethodFactory;
-import org.rapla.server.RemoteSession;
 import org.rapla.storage.StorageOperator;
 
 /**
@@ -74,8 +55,7 @@ import org.rapla.storage.StorageOperator;
  */
 @SuppressWarnings({ "unused", "restriction" })
 public class DhbwschedulerServiceImpl extends RaplaComponent implements
-		GlpkCallbackListener, GlpkTerminalListener,
-		RemoteMethodFactory<DhbwschedulerService>, DhbwschedulerService {
+		GlpkCallbackListener, GlpkTerminalListener, DhbwschedulerService {
 
 	int[][] timeSlots = { {}, {}, { 0, 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 }, { 8, 9 } };
 	private boolean hookUsed = false;
@@ -90,23 +70,15 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	private ArrayList<Reservation> reservationsPlannedByScheduler = new ArrayList<Reservation>();
 
 	private FreetimeService freetimeService = null;
+	private User user;
 
 	/**
 	 * @param context
 	 */
-	public DhbwschedulerServiceImpl(RaplaContext context) {
+	public DhbwschedulerServiceImpl(RaplaContext context,User user) {
 		super(context);
+		this.user = user;
 		setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.rapla.server.RemoteMethodFactory#createService(org.rapla.server.RemoteSession)
-	 */
-	@Override
-	public DhbwschedulerService createService(RemoteSession remoteSession) {
-		return this;
 	}
 
 	/*

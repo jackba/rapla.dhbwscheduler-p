@@ -27,7 +27,7 @@ public class DhbwschedulerServerPlugin implements PluginDescriptor<ServerService
         
         container.addContainerProvidedComponent( DhbwschedulerPlugin.RESOURCE_FILE, I18nBundleImpl.class,I18nBundleImpl.createConfig( DhbwschedulerPlugin.RESOURCE_FILE.getId() ) );
         
-        container.addRemoteMethodFactory(DhbwschedulerService.class, DhbwschedulerServiceImpl.class);
+        container.addRemoteMethodFactory(DhbwschedulerService.class, DhbwschedulerServiceFactory.class);
     	container.addWebpage("scheduler-constraints",SchedulerConstraintsPageGenerator.class, config  );
     }
 

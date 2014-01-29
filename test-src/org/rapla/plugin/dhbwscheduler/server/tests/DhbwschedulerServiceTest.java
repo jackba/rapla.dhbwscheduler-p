@@ -10,6 +10,7 @@ import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
 import org.rapla.entities.RaplaObject;
 import org.rapla.entities.RaplaType;
+import org.rapla.entities.User;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
@@ -39,7 +40,8 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		facade = context.lookup(ClientFacade.class);
 		facade.login("homer", "duffs".toCharArray());
 		locale = Locale.getDefault();
-		service = new DhbwschedulerServiceImpl(context);
+		User user = facade.getUser();
+		service = new DhbwschedulerServiceImpl(context, user);
 	}
 
 	protected void tearDown() throws Exception {
