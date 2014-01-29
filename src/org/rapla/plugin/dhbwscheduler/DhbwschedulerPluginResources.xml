@@ -134,10 +134,10 @@
         <text lang="pl"></text>
 		<text lang="pt"></text>
     </entry>
-	<entry key="design_status">
+<!--	<entry key="design_status">
     	<text lang="en">design status</text>
     	<text lang="de">planungsstatus</text>
-    </entry>
+    </entry> -->
      <entry key="closed">
     	<text lang="en">planned</text>
     	<text lang="de">geplant</text>
@@ -165,6 +165,10 @@
      <entry key="planning_constraints">
     	<text lang="en">planning constraints</text>
     	<text lang="de">planungsconstraints</text>
+    </entry>
+     <entry key="conflict_resolving_not_successful">
+    	<text lang="en">The conflicts for the following reservations could not be resolved:</text>
+    	<text lang="de">Die Konflikte für folgende Veranstaltungen konnten nicht aufgelöst werden:</text>
     </entry>
      <entry key="planning_not_successful">
     	<text lang="en">For the following events, the planning was not successful: </text>
@@ -297,5 +301,17 @@
     <entry key="loeschen">
     	<text lang="en">delete</text>
     	<text lang="de">l&amp;#246;schen</text>
+    </entry>
+    <entry key="missing_planningperiod">
+    	<text lang="en">For the given events, the planningperiod is missing.</text>
+    	<text lang="de">Bei den übergebenen Verantstaltungen fehlt der Planungszyklus.</text>
+    </entry>
+     <entry key="beyond_planning_peroid">
+    	<text lang="en"> is planned beyond the planning peroid.</text>
+    	<text lang="de"> wurde über den Plaungszyklys hinaus geplant.</text>
+    </entry>
+    <entry key="check_planningperiod">
+    	<text lang="en">For the given events, the planningperiod is corrupted.</text>
+    	<text lang="de">Bei den übergebenen Verantstaltungen ist der Planungszyklus fehlerhaft.</text>
     </entry>
 </resources>

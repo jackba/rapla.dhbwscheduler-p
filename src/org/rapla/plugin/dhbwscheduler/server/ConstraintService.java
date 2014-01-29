@@ -2,15 +2,6 @@ package org.rapla.plugin.dhbwscheduler.server;
 
 import java.util.Date;
 
-import org.rapla.entities.EntityNotFoundException;
-import org.rapla.entities.domain.Reservation;
-import org.rapla.entities.storage.RefEntity;
-import org.rapla.entities.storage.internal.SimpleIdentifier;
-import org.rapla.facade.RaplaComponent;
-import org.rapla.framework.RaplaContext;
-import org.rapla.framework.RaplaContextException;
-import org.rapla.storage.StorageOperator;
-
 public class ConstraintService{
 
 	/*Constraint:
@@ -26,12 +17,28 @@ public class ConstraintService{
 	public static final int CHANGE_SINGLEDATES = 2;
 	public static final int CHANGE_SINGLESTATUS = 3;
 
-	//TODO Verbesserung: wenn nichts zu ändern ist soll auch keine weitere Methode aufgerufen werden. (default zweig)
+	/**
+	 * 
+	 * @param constraint
+	 * @param doz_ID
+	 * @param changevalue
+	 * @param value
+	 * @return
+	 */
 	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object value){
 		Object[] obj = new Object[1];
 		obj[0] = value;
 		return changeDozConstraint(constraint, doz_ID, changevalue, obj );
 	}
+	
+	/**
+	 * 
+	 * @param constraint
+	 * @param doz_ID
+	 * @param changevalue
+	 * @param value
+	 * @return
+	 */
 	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object[] value){
 		String result = "";
 		
@@ -82,7 +89,13 @@ public class ConstraintService{
 		result = buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
 		return result;
 	}
-		
+	
+	/**
+	 * Initializing the Constraints
+	 * @param constraint
+	 * @param dozID
+	 * @return
+	 */
 	public static String initDozConstraint(String constraint, int[] dozID){
 		
 		String newConstraint ="";
@@ -117,7 +130,8 @@ public class ConstraintService{
 								getExceptionDatesDoz(constraint, key),								
 								getStatus(constraint, key)); 
 						
-						hit = true;		
+						hit = true;
+						break;
 					}
 				}
 				//neuer Dozent
@@ -134,10 +148,16 @@ public class ConstraintService{
 		return newConstraint;
 	}
 	
-	
+	/**
+	 * 
+	 * @param constraint
+	 * @param dozID
+	 * @param dozConst
+	 * @param exceptDate
+	 * @param status
+	 * @return
+	 */
 	public static String addorchangeSingleDozConstraint(String constraint, int dozID, String dozConst, Date[] exceptDate, int status){
-		
-		
 		String newConstraint = constraint;
 		boolean newdoz = false;
 		if (newConstraint == null){
@@ -167,6 +187,14 @@ public class ConstraintService{
 		return newConstraint;
 	}
 	
+	/**
+	 * 
+	 * @param dozID
+	 * @param dozConst
+	 * @param exceptDate
+	 * @param status
+	 * @return
+	 */
 	public static String buildDozConstraint(int dozID, String dozConst, Date[] exceptDate, int status){
 		int[] dozIDs = new int[1];
 		dozIDs[0] = dozID;
@@ -191,6 +219,14 @@ public class ConstraintService{
 		return buildDozConstraint(dozIDs, dozConsts, exceptDates, stati);
 	}
 	
+	/**
+	 * 
+	 * @param dozIDs
+	 * @param dozConsts
+	 * @param exceptDates
+	 * @param status
+	 * @return
+	 */
 	public static String buildDozConstraint(int[] dozIDs, String[] dozConsts, Date[][] exceptDates, int[] status){
  		String result = "";
 		
@@ -203,8 +239,6 @@ public class ConstraintService{
 			
 			result += "_";
 			if( exceptDates != null && exceptDates[i] != null && exceptDates[i].length > 0) {
-				int asd = exceptDates[i].length;
-				int dsa = exceptDates.length;
 				if ( exceptDates[i][0] != null){
 
 					for (int j = 0; j<exceptDates[i].length; j++) {
@@ -232,6 +266,11 @@ public class ConstraintService{
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @param constraint
+	 * @return
+	 */
 	public static int[] getDozIDs(String constraint){
 		int[] result = {};
 		if (constraint == null || constraint.equals("")) {
@@ -248,26 +287,12 @@ public class ConstraintService{
 		return result;
 	}
 	
-//TODO: Brauchen wir die Methode überhaupt noch?
-/*	public static String[] getDozStringConstraints (String constraint){
-		String[] DozConstraints = {};
-		
-		if (constraint == null){
-			return DozConstraints;
-		}
-		
-		String[] DozCount = constraint.split("\n");
-		
-		DozConstraints = new String[DozCount.length];
-		for(int i = 0 ; i < DozCount.length; i++){
-			String[] split = DozCount[i].split("_");
-			DozConstraints[i] = split[1];
-		}
-	
-		return DozConstraints;
-	}
-*/
-	
+	/**
+	 * 
+	 * @param constraint
+	 * @param dozID
+	 * @return
+	 */
 	public static String getDozStringConstraint (String constraint, int dozID){
 		String dozConstraints = "";
 		
@@ -289,7 +314,15 @@ public class ConstraintService{
 		return dozConstraints;
 	}
 
+	/**
+	 * 
+	 * @param constraint
+	 * @return
+	 */
 	public static int[] getDozConstraints (String constraint){
+		
+		//TODO: mehrere Dozenten, einer hat Constraints eingetragen der andere nicht. Was passiert dann?
+		
 		int [] ergebnis = {};
 		
 		if (constraint == null){
@@ -322,6 +355,12 @@ public class ConstraintService{
 		return ergebnis;
 	}
 	
+	/**
+	 * 
+	 * @param constraint
+	 * @param doz_ID
+	 * @return
+	 */
 	public static int[] getDozIntConstraints (String constraint, int doz_ID){
 		int [] ergebnis = {};
 		
@@ -348,6 +387,11 @@ public class ConstraintService{
 	
 	}
 	
+	/**
+	 * 
+	 * @param constraint
+	 * @return
+	 */
 	public static Date[] getExceptionDates (String constraint){
 		Date[] ergebnis = {};
 		
@@ -382,6 +426,12 @@ public class ConstraintService{
 		return ergebnis;
 	}	
 	
+	/**
+	 * 
+	 * @param constraint
+	 * @param doz_ID
+	 * @return
+	 */
 	public static Date[] getExceptionDatesDoz (String constraint,int doz_ID ){
 		Date[] ergebnis = {};
 		
@@ -420,6 +470,11 @@ public class ConstraintService{
 		return ergebnis;
 	}
 
+	/**
+	 * 
+	 * @param constraint
+	 * @return
+	 */
 	public static int getReservationStatus(String constraint){
 		int[] dozIDs = getDozIDs(constraint);
 		
@@ -466,7 +521,12 @@ public class ConstraintService{
 		
 	}
 	
-	
+	/**
+	 * 
+	 * @param constraint
+	 * @param doz_ID
+	 * @return
+	 */
 	public static int getStatus(String constraint, int doz_ID){
 		
 		if (constraint == null){
