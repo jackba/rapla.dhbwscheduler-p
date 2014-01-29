@@ -1,6 +1,4 @@
 package org.rapla.plugin.dhbwscheduler.server.tests;
-//TODO: Scheduler unter Linux zum Laufen bringen
-
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -78,7 +76,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			RaplaType type = RaplaType.get(Reservation.class);
 			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 20)};
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (ProfessorInnen):<br/><br>Test_ohneDoz1<br/>";
 			assertEquals(erwartet, e.getMessage());
@@ -94,7 +92,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 					new SimpleIdentifier(type, 22),
 					new SimpleIdentifier(type, 23),
 					new SimpleIdentifier(type, 19) };
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (Kurs):<br/><br>Test_ohneKurs1<br/><br>Test_ohneKurs2<br/>";
 			assertEquals(erwartet, e.getMessage());
@@ -107,7 +105,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			RaplaType type = RaplaType.get(Reservation.class);
 			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 22)};
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (Kurs):<br/><br>Test_ohneKurs1<br/>";
 			assertEquals(erwartet, e.getMessage());
@@ -123,7 +121,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 					new SimpleIdentifier(type, 24),
 					new SimpleIdentifier(type, 25),
 					new SimpleIdentifier(type, 19) };
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (ProfessorInnen):<br/><br>Test_ohneDozKurs1<br/><br>Test_ohneDozKurs2<br/><br>Bei folgenden Veranstaltungen fehlen Ressourcen (Kurs):<br/><br>Test_ohneDozKurs1<br/><br>Test_ohneDozKurs2<br/>";
 			assertEquals(erwartet, e.getMessage());
@@ -136,7 +134,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			RaplaType type = RaplaType.get(Reservation.class);
 			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 24)};
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (ProfessorInnen):<br/><br>Test_ohneDozKurs1<br/><br>Bei folgenden Veranstaltungen fehlen Ressourcen (Kurs):<br/><br>Test_ohneDozKurs1<br/>";
 			assertEquals(erwartet, e.getMessage());
@@ -149,7 +147,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			RaplaType type = RaplaType.get(Reservation.class);
 			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 39)};
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "Bei den übergebenen Verantstaltungen fehlt der Planungszyklus.";
 			assertEquals(erwartet, e.getMessage());
@@ -162,7 +160,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			RaplaType type = RaplaType.get(Reservation.class);
 			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 29)};
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "Bei den übergebenen Verantstaltungen ist der Planungszyklus fehlerhaft.";
 			assertEquals(erwartet, e.getMessage());
@@ -178,7 +176,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 				new SimpleIdentifier(type, 30),
 				new SimpleIdentifier(type, 31),
 				new SimpleIdentifier(type, 19) };
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten<br/><br>Test_ConstraintLeer1<br/><br>Test_ConstraintLeer2<br/>";
 			assertEquals(erwartet, e.getMessage());
@@ -191,7 +189,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			RaplaType type = RaplaType.get(Reservation.class);
 			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 30)};
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten<br/><br>Test_ConstraintLeer1<br/>";
 			assertEquals(erwartet, e.getMessage());
@@ -205,7 +203,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 44)};
 		String ergebnis = "";
 		try {
-			ergebnis = service.schedule(reservationIds, facade.getUser().getUsername());
+			ergebnis = service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -241,7 +239,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 45)};
 		String ergebnis = "";
 		try {
-			ergebnis = service.schedule(reservationIds, facade.getUser().getUsername());
+			ergebnis = service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -280,7 +278,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 32)};
 		String ergebnis = "";
 		try {
-			ergebnis = service.schedule(reservationIds, facade.getUser().getUsername());
+			ergebnis = service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
