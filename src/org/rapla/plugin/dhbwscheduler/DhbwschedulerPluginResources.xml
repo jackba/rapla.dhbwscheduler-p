@@ -178,6 +178,10 @@
     	<text lang="en">For the given events, the planningperiod is missing.</text>
     	<text lang="de">Bei den übergebenen Verantstaltungen fehlt der Planungszyklus.</text>
     </entry>
+     <entry key="beyond_planning_peroid">
+    	<text lang="en"> is planned beyond the planning peroid.</text>
+    	<text lang="de"> wurde über den Plaungszyklys hinaus geplant.</text>
+    </entry>
     <entry key="check_planningperiod">
     	<text lang="en">For the given events, the planningperiod is corrupted.</text>
     	<text lang="de">Bei den übergebenen Verantstaltungen ist der Planungszyklus fehlerhaft.</text>
