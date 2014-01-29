@@ -145,10 +145,17 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 
 		Allocatable planning = (Allocatable) reservations.get(0).getClassification().getValue("planungszyklus");
+		if (planning == null) {
+			throw new RaplaException(getString("missing_planningperiod"));
+		}
 		
 		Date startDatum = (Date) planning.getClassification().getValue("startdate");
 		Date endeDatum = (Date) planning.getClassification().getValue("enddate");
-
+		
+		if(startDatum == null || endeDatum == null) {
+			throw new RaplaException(getString("check_planningperiod"));
+		}
+		
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 		Date anfangWoche = startDatum;
 
