@@ -208,23 +208,23 @@
     </entry>
     <entry key="Kontakt_Frage">
     	<text lang="en">If have your contact information (eg e-mail address, telephone number) changed or completely new result (E-Mail!), enter here:</text>
-    	<text lang="de">Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&auml;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:</text>
+    	<text lang="de">Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&amp;#228;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:</text>
     </entry>
     <entry key="Vorlesungsstunden_Frage">
     	<text lang="en">How many hours of lectures on the piece you want to keep per lecture appointment?</text>
-    	<text lang="de">Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</text>
+    	<text lang="de">Wie viele Vorlesungsstunden am St&amp;#252;ck m&amp;#246;chten Sie pro Vorlesungstermin halten?</text>
     </entry>
     <entry key="Zeiten_Frage">
     	<text lang="en">Please specify the times at which we will for the above Lecture (s) to schedule. Please proceed with filling in the hours table as follows:</text>
-    	<text lang="de">Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:</text>
+    	<text lang="de">Bitte nennen Sie die Zeiten, zu denen wir Sie f&amp;#252;r die o.a. Vorlesung(en) einplanen k&amp;#246;nnen. Gehen Sie bitte beim Ausf&amp;#252;llen der Stundentabelle folgenderma&amp;#223;en vor:</text>
     </entry>
     <entry key="SetzenSieEinMinus">
     	<text lang="en">Put a - (minus) in all time fields in which you can not!</text>
-    	<text lang="de">Setzen Sie ein - (Minus) in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</text>
+    	<text lang="de">Setzen Sie ein - (Minus) in alle Zeitfelder, in denen Sie nicht k&amp;#246;nnen!</text>
     </entry>
     <entry key="SetzenSieEinPlus">
     	<text lang="en">Put a + (plus) in all time fields in which you can not!</text>
-    	<text lang="de">Setzen Sie ein + (Plus) in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</text>
+    	<text lang="de">Setzen Sie ein + (Plus) in alle Zeitfelder, in denen Sie nicht k&amp;#246;nnen!</text>
     </entry>
     <entry key="Vorlesungsstunden">
     	<text lang="en">lecture hours</text>
@@ -268,11 +268,11 @@
     </entry>
     <entry key="Ausnahmen_Frage">
     	<text lang="en">Give below all the days in the lecture period, the appointment calendar is already used for another purpose (eg holidays, business meetings):</text>
-    	<text lang="de">Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</text>
+    	<text lang="de">Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&amp;#228;ftstermine):</text>
     </entry>
     <entry key="Aufsicht_Frage">
     	<text lang="en">I want to supervision in the exam if possible even accept new date.</text>
-    	<text lang="de">Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</text>
+    	<text lang="de">Ich m&amp;#246;chte die Aufsicht in der Klausur falls terminlich m&amp;#246;glich selbst &amp;#252;bernehmen.</text>
     </entry>
     <entry key="Ja">
     	<text lang="en">yes</text>
@@ -288,14 +288,14 @@
     </entry>
     <entry key="Bemerkungen">
     	<text lang="en">Space for additional comments:</text>
-    	<text lang="de">Platz f&uuml;r weitere Bemerkungen:</text>
+    	<text lang="de">Platz f&amp;#252;r weitere Bemerkungen:</text>
     </entry>
     <entry key="auswaehlen">
     	<text lang="en">select</text>
-    	<text lang="de">ausw&auml;hlen</text>
+    	<text lang="de">ausw&amp;#228;hlen</text>
     </entry>
     <entry key="loeschen">
     	<text lang="en">delete</text>
-    	<text lang="de">l&ouml;schen</text>
+    	<text lang="de">l&amp;#246;schen</text>
     </entry>
 </resources>

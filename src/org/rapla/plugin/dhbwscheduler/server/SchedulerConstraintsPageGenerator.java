@@ -91,10 +91,8 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		lang = strLang[0];
 		
-		// TODO Umlaute/Sprachen
 		//--------------------------------------------------
-		//D.D. - Sprache habe ich übersetzt -->Sätze einfach in DhbwschedulerPluginResources.xml kopiert
-		//Die Umlaute werden aber jetzt nicht mehr angezeigt...???
+		//D.D. - Sprache übersetzt in DhbwschedulerPluginResources.xml
 		//Default Sprache ist Englisch d.h. falls die Sprache auslesen aus dem Browser nicht richtig funktioniert,
 		//oder eine andere Sprache wie Deutsch oder Englisch übertragen wird.
 		//--------------------------------------------------
