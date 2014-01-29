@@ -44,6 +44,7 @@ import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
+import org.rapla.facade.ClientFacade;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
@@ -600,14 +601,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	}
 	public String getUrl(SimpleIdentifier reservationID, SimpleIdentifier dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
-
 		StorageOperator lookup;
 		Reservation veranstaltung;			
 
 		String veranstaltungsId = String.valueOf(reservationID.getKey());
-
 		String result;
-
 
 		//Dynamische Generierung "Servername:Port"
 		StartupEnvironment env = getService( StartupEnvironment.class );
@@ -615,8 +613,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 		UrlEncryption webservice;
 		String key;
-
-
+		//String strLanguage = this.getRaplaLocale().LANGUAGE_ENTRY;
+		
 		result = codeBase + "rapla?page=scheduler-constraints&id=" + veranstaltungsId + "&dozent=" + String.valueOf(dozentId.getKey());
 		webservice = getService(UrlEncryption.class);
 		String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + veranstaltungsId + "&dozent=" + String.valueOf(dozentId.getKey()));
