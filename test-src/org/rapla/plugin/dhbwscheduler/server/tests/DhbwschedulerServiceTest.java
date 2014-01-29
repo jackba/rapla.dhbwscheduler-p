@@ -64,7 +64,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 					new SimpleIdentifier(type, 17),
 					new SimpleIdentifier(type, 18),
 					new SimpleIdentifier(type, 19) };
-			service.schedule(reservationIds);
+			service.schedule(reservationIds, facade.getUser().getUsername());
 		} catch (RaplaException e) {
 			e.printStackTrace();
 			fail();

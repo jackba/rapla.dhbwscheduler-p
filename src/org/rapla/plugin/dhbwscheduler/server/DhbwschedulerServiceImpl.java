@@ -117,7 +117,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 * org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */
 	@Override
-	public String schedule(SimpleIdentifier[] reservationIds)
+	public String schedule(SimpleIdentifier[] reservationIds, String user)
 			throws RaplaException {
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
 		reservations = new ArrayList<Reservation>();
@@ -188,7 +188,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			endeWoche = new Date(tmp.getTimeInMillis());
 		}
 		
-		// TODO: postProcessingResults += resolveConflicts(startDatum, endeDatum);
+		//postProcessingResults += resolveConflicts(startDatum, endeDatum, user);
 
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
@@ -409,7 +409,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		return result;
 	}
 	
-	private String resolveConflicts(Date startDatum, Date endDatum) throws RaplaException{
+	private String resolveConflicts(Date startDatum, Date endDatum, String user) throws RaplaException{
 		String notResolved = "";
 		for (Reservation veranstaltung : reservationsPlannedByScheduler){
 			//get all conflicts caused by this reservation
@@ -427,7 +427,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 						repeating.addException(dateOfConflict);
 					}
 					// add a new appointment for the date with the conflict
-					newApp = new AppointmentImpl(conflictingAppointment.getStart(), conflictingAppointment.getEnd()); 
+					newApp = getClientFacade().newAppointment(conflictingAppointment.getStart(), conflictingAppointment.getEnd(),getClientFacade().getUser(user)); 
 					//getModification().newAppointment(conflictingAppointment.getStart(), conflictingAppointment.getEnd());
 					veranstaltung.addAppointment(newApp);
 				} else {
