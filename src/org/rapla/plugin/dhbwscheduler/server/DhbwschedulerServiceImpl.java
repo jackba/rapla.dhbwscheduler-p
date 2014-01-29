@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -188,7 +189,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			endeWoche = new Date(tmp.getTimeInMillis());
 		}
 		
-		// TODO: postProcessingResults += resolveConflicts(startDatum, endeDatum);
+		//TODO: postProcessingResults += resolveConflicts(startDatum, endeDatum);
 
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
@@ -427,8 +428,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 						repeating.addException(dateOfConflict);
 					}
 					// add a new appointment for the date with the conflict
-					newApp = new AppointmentImpl(conflictingAppointment.getStart(), conflictingAppointment.getEnd()); 
-					//getModification().newAppointment(conflictingAppointment.getStart(), conflictingAppointment.getEnd());
+					newApp = getModification().newAppointment(conflictingAppointment.getStart(), conflictingAppointment.getEnd());
 					veranstaltung.addAppointment(newApp);
 				} else {
 					newApp = conflictingAppointment;
@@ -542,7 +542,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 		Integer[] excludedDays = getCalendarOptions().getExcludeDays().toArray(new Integer[] {});
 		Integer rowsPerHour = getCalendarOptions().getRowsPerHour();
-
+		
 		HashSet<Reservation> ignoreList = getIgnoreList(allocatables, startDate, endDate);
 
 		return lookup.getNextAllocatableDate(Arrays.asList(allocatables), appointment, ignoreList, worktimeStartMinutes, worktimeEndMinutes, excludedDays, rowsPerHour);
@@ -562,7 +562,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, startDate, endDate, null);
 		for (Reservation vorlesungMitGleicherResource : vorlesungenMitGleichenResourcen) {
 			// for each of these reservations, look if there are in closed
-			if (vorlesungMitGleicherResource.getClassification().getValue("planungsstatus") == null || vorlesungMitGleicherResource.getClassification().getValue("planungsstatus").equals(getString("planning_closed"))) {
+			Object value = vorlesungMitGleicherResource.getClassification().getValue("planungsstatus");
+			if (value.equals(getString("planning_open")) 
+					|| ((value.equals(getString("planning_closed"))) 
+							&& !(reservationsPlannedByScheduler.contains(vorlesungMitGleicherResource)))) {
 				ignoreList.add(vorlesungMitGleicherResource);
 			}
 		}
