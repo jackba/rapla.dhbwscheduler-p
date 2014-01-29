@@ -65,7 +65,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 					new SimpleIdentifier(type, 20),
 					new SimpleIdentifier(type, 21),
 					new SimpleIdentifier(type, 19) };
-			service.schedule(reservationIds, facade.getUser().getUsername());
+			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (ProfessorInnen):<br/><br>Test_ohneDoz1<br/><br>Test_ohneDoz2<br/>";
 			assertEquals(erwartet, e.getMessage());
