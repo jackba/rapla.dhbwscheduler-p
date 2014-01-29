@@ -155,7 +155,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-
+					
 					for (Reservation editableEvent : selectedReservations){
 						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("closed"));
 						}
@@ -188,10 +188,19 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
+					String veranstaltungen = "";
 					for (Reservation editableEvent : selectedReservations){
+						String statusConstraint = (String) editableEvent.getClassification().getValue("planungsconstraints");
+						int status = ConstraintService.getReservationStatus(statusConstraint);
+						if (status != 2){
+							veranstaltungen += "\n" + editableEvent.getClassification().getName(getLocale());
+						}
 						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_closed"));
 					}
 					createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
+					if (veranstaltungen != ""){
+						createMessage("planungsstatus", "Folgende Veranstalungen besitzen keine Dozentenconstrains: "+ veranstaltungen, 200, 100, menuContext, false);
+					}
 				}
 			});
 			menus.add( menu );
