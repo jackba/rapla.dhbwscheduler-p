@@ -75,7 +75,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	public static final String closed = new String("geplant");
 	public static final String planning_open = new String("in Planung");
 	public static final String planning_closed = new String("in Planung geschlossen");
+	public static final String planungsstatus = new String("planungsstatus");
 	DhbwschedulerService service;
+	DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
+	
 	public SchedulerReservationMenuFactory( RaplaContext context, Configuration config, DhbwschedulerService service) throws RaplaException
 	{
 		super( context );
@@ -152,18 +155,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					try 
-					{
-						Entity event = selectedReservations.get( 0);
-						Reservation editableEvent = getClientFacade().edit( event);
 
-						setDesignStatus(editableEvent, getString("closed"));
-						createMessage(getString("design_status"), getString("closed"), 200, 100, menuContext, false);
-					}
-					catch (RaplaException ex )
-					{
-						showException( ex, menuContext.getComponent());
-					}
+					for (Reservation editableEvent : selectedReservations){
+						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("closed"));
+						}
+					createMessage("planungsstatus", getString("closed"), 200, 100, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -176,19 +172,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					try 
-					{
-						Entity event = selectedReservations.get( 0);
-						Reservation editableEvent = getClientFacade().edit( event);
-						// do something with the reservation
-						setDesignStatus(editableEvent, getString("planning_open"));
-						createMessage(getString("design_status"), getString("planning_open"), 200, 100, menuContext, false);
-
+					for (Reservation editableEvent : selectedReservations){
+						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_open"));
 					}
-					catch (RaplaException ex )
-					{
-						showException( ex, menuContext.getComponent());
-					}
+					createMessage("planungsstatus", getString("planning_open"), 200, 100, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -201,19 +188,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					try 
-					{
-						Entity event = selectedReservations.get( 0);
-						Reservation editableEvent = getClientFacade().edit( event);
-						// do something with the reservation
-						setDesignStatus(editableEvent, getString("planning_closed"));
-						createMessage(getString("design_status"), getString("planning_closed"), 200, 100, menuContext, false);
-
+					for (Reservation editableEvent : selectedReservations){
+						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_closed"));
 					}
-					catch (RaplaException ex )
-					{
-						showException( ex, menuContext.getComponent());
-					}
+					createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -239,7 +217,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						}
 
 						SimpleIdentifier[] ids = reservationIds.toArray( new SimpleIdentifier[] {});
-						String result = service.schedule( ids);
+						String result = service.schedule(ids);
+						getClientFacade().refresh();
 						JTextArea content = new JTextArea();
 						content.setText( result);
 						DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
@@ -304,16 +283,16 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									Comparable rSI = ((RefEntity<?>) r).getId();
 									SimpleIdentifier resID = (SimpleIdentifier) rSI;
 
-									String studiengang = "";
-									if (r.getClassification().getValue("studiengang")!=null)
-									{
-										studiengang = r.getClassification().getValue("studiengang").toString();
-										if (studiengang.contains(" "))
-										{
-											int pos = studiengang.indexOf(" ");
-											studiengang = studiengang.substring(0, pos);
-										}
-									}
+									String studiengang = HelperClass.getStudiengang(r);
+//									if (r.getClassification().getValue("studiengang")!=null)
+//									{
+//										studiengang = r.getClassification().getValue("studiengang").toString();
+//										if (studiengang.contains(" "))
+//										{
+//											int pos = studiengang.indexOf(" ");
+//											studiengang = studiengang.substring(0, pos);
+//										}
+//									}
 
 									p1[i] = new JPanel();
 									p2[i] = new JPanel();
@@ -432,7 +411,14 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-
+					
+					//DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
+					try {
+						getClientFacade().refresh();
+					} catch (RaplaException e2) {
+						// TODO mit Kohlhaas abklären. Refresh funktioniert nicht, sodass die Daten vom Server geladen werden.
+						e2.printStackTrace();
+					}
 					String strTitel = getString("Email_Title");
 					String strQuestion = getString("Email_senden_frage");
 
@@ -496,7 +482,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 													//Fehler beim ändern des Constraints
 													//	createMessage(getString("planning_open"), 200, 100, message, menuContext);
 												}else{
-													r = changeReservationAttribute(r,"planungsconstraints",newConstraint );
+													r = HelperClass.changeReservationAttribute(r,"planungsconstraints",newConstraint );
 													
 													getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
 
@@ -524,7 +510,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								//status
 								message += "\t status: " + getErfassungsstatusDoz(r,dozentID.getKey()) + "\n";
 								String statusConstraint = (String) r.getClassification().getValue("planungsconstraints");
-								r = changeReservationAttribute(r,"erfassungsstatus",getStringStatus(ConstraintService.getReservationStatus(statusConstraint)));
+								r = HelperClass.changeReservationAttribute(r,"erfassungsstatus",HelperClass.getStringStatus(ConstraintService.getReservationStatus(statusConstraint)));
 							}
 
 							message += "\n";
@@ -575,29 +561,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			getLogger().info("ERROR:" + e.toString());
 		}
 	}
-
-	private void setDesignStatus(Reservation editableEvent, String zielStatus) throws RaplaException{
-		String istStatus = (String) editableEvent.getClassification().getValue("planungsstatus");
-		if (istStatus != zielStatus) {
-			editableEvent.getClassification().setValue("planungsstatus", zielStatus);
-		}
-		getClientFacade().store( editableEvent ); 
-	}
-
-	private Reservation changeReservationAttribute(Reservation r ,String Attribute, String value){
-		try {
-			Reservation editableEvent = getClientFacade().edit( r);
-			editableEvent = getClientFacade().edit( r);
-			editableEvent.getClassification().setValue(Attribute, value);
-			getClientFacade().store( editableEvent );
-			getClientFacade().refresh();
-			return editableEvent;
-		} catch (RaplaException e1) {
-			e1.printStackTrace();
-			getLogger().info("ERROR:" + e1.toString());
-		}
-		return r;
-	}
+	
 	public String getUrl(SimpleIdentifier reservationID, SimpleIdentifier dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
 
@@ -633,7 +597,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	}
 
 	private Reservation initConstraint(Reservation r) {
-
+		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 
 		int[] dozids = new int[r.getPersons().length];
@@ -647,7 +611,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 		String newConstraint = ConstraintService.initDozConstraint(strConstraint,dozids);
 
-		return changeReservationAttribute(r,"planungsconstraints",newConstraint);
+		return HelperClass.changeReservationAttribute(r,"planungsconstraints",newConstraint);
 
 	}
 
@@ -691,36 +655,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 	
 	private String getErfassungsstatusDoz(Reservation r, int key) {
+		
+		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
+		
 		if (strConstraint ==null){
 			return null;
 		}
-
-		return getStringStatus(ConstraintService.getStatus(strConstraint, key));
+		
+		return HelperClass.getStringStatus(ConstraintService.getStatus(strConstraint, key));
 	}
-
-	private String getStringStatus(int status) {
-		String returnvalue = "";
-		switch(status){
-		case 0:
-			returnvalue = getString("uneingeladen");
-			break;
-		case 1:
-			returnvalue = getString("eingeladen");
-			break;
-		case 2:
-			returnvalue = getString("erfasst");
-			break;
-		case 3:
-			returnvalue = getString("teileingeladen");
-			break;
-		case 4:
-			returnvalue = getString("teilerfasst");
-			break;
-		default:
-			returnvalue = "error";						
-		}
-		return returnvalue;
-	}
-
+	
 }
