@@ -217,7 +217,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						}
 
 						SimpleIdentifier[] ids = reservationIds.toArray( new SimpleIdentifier[] {});
-						String result = service.schedule(ids, getUser().getUsername());
+						String result = service.schedule(ids);
 						getClientFacade().refresh();
 						JTextArea content = new JTextArea();
 						content.setText( result);
