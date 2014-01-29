@@ -267,9 +267,6 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("				</tr>");
 		out.println("		</table>");
 
-		//out.println("		<p>Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&auml;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:</p>");
-		out.println("		<p>" + getI18n().getString("Kontakt_Frage", new Locale(lang)) + "</p>");
-		out.println("		<textarea id='taKontakt' rows='5' col='65'>"+kontaktdaten+"</textarea>");
 		out.println("		<p><b>1. </b>" + getI18n().getString("Vorlesungsstunden_Frage", new Locale(lang)) + "</p>");
 		//out.println("		<p><b>1.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
 		out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' max='10' value='"+stunden+"'/>");
@@ -342,33 +339,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		//}
 		 
 	
-		out.println("		</ul>");
-		out.println("		<p><b>4. </b>" + getI18n().getString("Aufsicht_Frage", new Locale(lang)) + "</p>");
-		//out.println("		<p><b>4. </b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
-		if(aufsicht){
-			out.print("			<input id='cbYes' type='radio' name='cbGroupKlausur' value='1' checked='checked'/>");
-			out.print("			<label for='cbYes'>" + getI18n().getString("Ja", new Locale(lang)) + "</label>");
-			out.print("			<input id='cbNo' type='radio' name='cbGroupKlausur' value='0'/>");
-			out.print("			<label for='cbNo'>" + getI18n().getString("Nein", new Locale(lang)) + "</label>");
-		}
-		else{
-			out.print("			<input id='cbYes' type='radio' name='cbGroupKlausur' value='1'/>");
-			out.print("			<label for='cbYes'>" + getI18n().getString("Ja", new Locale(lang)) + "</label>");
-			out.print("			<input id='cbNo' type='radio' name='cbGroupKlausur' value='0' checked='checked'/>");
-			out.print("			<label for='cbNo'>" + getI18n().getString("Nein", new Locale(lang)) + "</label>");
-		}
-		out.println("		<p>" + getI18n().getString("Bemerkungen", new Locale(lang)) + "</p>");
-		//out.println("		<p>Platz f&uuml;r weitere Bemerkungen :</p>");
-		out.println("		<textarea id='taBemerkungen' rows='5' col='65'>"+bemerkung+"</textarea>");
-		out.println("		<form action=\"rapla\" method=\"get\">");
-					out.println(getHiddenField("key", key));
-		out.println("			<input id='inpChanged' type='hidden' name='changed' value='0'>");
-		out.println("			<input id='inpKontakt' type='hidden' name='contact' value=''>");
-		out.println("			<input id='inpStunden' type='hidden' name='hours' value=''>");
-		out.println("			<input id='inpTimeTable' type='hidden' name='time' value=''>");
-		out.println("			<input id='inpAusnahmen' type='hidden' name='exception' value=''>");		
-		out.println("			<input id='inpAufsicht' type='hidden' name='control' value=''>");
-		out.println("			<input id='inpBemerkungen' type='hidden' name='comment' value=''>");	
+		out.println("		</ul>");	
 		out.print("				<input id='inpSubmit' type ='submit' name='rapla' value='" + getI18n().getString("senden", new Locale(lang)) + "'/>");
 		out.println("		</form>");
 		out.println("	</div>");
