@@ -69,6 +69,10 @@ import org.rapla.server.RemoteMethodFactory;
 import org.rapla.server.RemoteSession;
 import org.rapla.storage.StorageOperator;
 
+
+//TODO: Scheduler unter Linux zum Laufen bringen
+
+
 /**
  * @author DHBW
  *
@@ -403,10 +407,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 		
 		// Dateien aufraeumen
-		new File(model).delete();
+/*		new File(model).delete();
 		new File(data).delete();
 		new File(solution).delete();
-		
+	*/	
 		return result;
 	}
 	
@@ -676,10 +680,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					Date holidayDate = dateFormat.parseDate(holiday, false);
 					Calendar c = Calendar.getInstance();
 					c.setTime(holidayDate);
-					int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
-					for (int j = 0; j < reservations.size(); j++) {
-						vor_res[j][timeSlots[dayOfWeekOfHoliday][0]] = 0;
-						vor_res[j][timeSlots[dayOfWeekOfHoliday][1]] = 0;
+					if (c.after(startCal) && c.before(endeCal)) {
+						int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
+						for (int j = 0; j < reservations.size(); j++) {
+							vor_res[j][timeSlots[dayOfWeekOfHoliday][0]] = 0;
+							vor_res[j][timeSlots[dayOfWeekOfHoliday][1]] = 0;
+						}
 					}
 				} catch (ParseDateException e) {
 					getLogger().warn(e.getLocalizedMessage());
@@ -830,7 +836,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		Set<Allocatable> dozenten = new HashSet<Allocatable>();
 		ArrayList<Reservation> veranstaltungenOhneDozent = new ArrayList<Reservation>();
 		String type = "";
-		for (DynamicType alltype : getClientFacade().getDynamicTypes("resource")) {
+		for (DynamicType alltype : getClientFacade().getDynamicTypes("person")) {
 			if (alltype.getElementKey().equals("professor")) {
 				type = alltype.getName(getLocale());
 			}
