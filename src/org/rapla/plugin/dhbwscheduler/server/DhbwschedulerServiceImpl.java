@@ -93,7 +93,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	private int kurs_vor[][] = { {} };
 	private int doz_cost[][] = { {} };
 	private ArrayList<Reservation> reservations;
-	private ArrayList<Reservation> reservationsPlannedByScheduler = new ArrayList<Reservation>();
+	private ArrayList<Reservation> reservationsPlannedByScheduler;
 
 	private FreetimeService freetimeService = null;
 
@@ -125,6 +125,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	public String schedule(SimpleIdentifier[] reservationIds)
 			throws RaplaException {
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
+		reservationsPlannedByScheduler = new ArrayList<Reservation>();
 		reservations = new ArrayList<Reservation>();
 		for (SimpleIdentifier id : reservationIds) {
 			RefEntity<?> object = lookup.resolve(id);
@@ -157,7 +158,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		Date startDatum = (Date) planning.getClassification().getValue("startdate");
 		Date endeDatum = (Date) planning.getClassification().getValue("enddate");
 		
-		if(startDatum == null || endeDatum == null) {
+		if(startDatum == null || endeDatum == null || endeDatum.before(startDatum)) {
 			throw new RaplaException(getString("check_planningperiod"));
 		}
 		
@@ -407,10 +408,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 		
 		// Dateien aufraeumen
-/*		new File(model).delete();
+		new File(model).delete();
 		new File(data).delete();
 		new File(solution).delete();
-	*/	
+
 		return result;
 	}
 	
@@ -630,7 +631,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			Reservation[] vorlesungenMitGleichenResourcen = getClientFacade().getReservationsForAllocatable(allocatables, start, ende, null);
 			for (Reservation vorlesungMitGleicherResource : vorlesungenMitGleichenResourcen) {
 				// for each of these reservations, look if there are in planning_closed
-				if (vorlesungMitGleicherResource.getClassification().getValue("planungsstatus") == null || vorlesungMitGleicherResource.getClassification().getValue("planungsstatus").equals(getString("closed"))
+				String test = (String) vorlesungMitGleicherResource.getClassification().getValue("planungsstatus");
+				if (test == null 
+						|| test.equals(getString("closed"))
 						|| reservationsPlannedByScheduler.contains(vorlesungMitGleicherResource)) {
 					// nur geplante Veranstaltungen muessen beachtet werden
 					Appointment[] termine = splitIntoSingleAppointments(vorlesungMitGleicherResource);

@@ -5273,6 +5273,14 @@
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
+      <rapla:resource id="resource_2526" owner="user_1" created-at="2014-01-29 15:26:52" last-changed="2014-01-29 15:29:58" last-changed-by="user_1">
+         <dynatt:planungszyklus>
+            <dynatt:name>Planungszyklus 7</dynatt:name>
+            <dynatt:startdate>2014-03-24</dynatt:startdate>
+            <dynatt:enddate>2014-03-24</dynatt:enddate>
+         </dynatt:planungszyklus>
+         <rapla:permission/>
+      </rapla:resource>
       <rapla:person id="resource_356" last-changed="2014-01-29 11:34:32" last-changed-by="user_1">
          <dynatt:professor>
             <dynatt:surname>ProfNachname2</dynatt:surname>
@@ -5549,7 +5557,7 @@
          <rapla:allocate idref="resource_1011"/>
          <rapla:allocate idref="resource_356"/>
       </rapla:reservation>
-      <rapla:reservation id="reservation_32" owner="user_1" created-at="2014-01-09 10:25:21" last-changed="2014-01-29 14:47:30" last-changed-by="user_1">
+      <rapla:reservation id="reservation_32" owner="user_1" created-at="2014-01-09 10:25:21" last-changed="2014-01-29 15:08:20" last-changed-by="user_1">
          <dynatt:reservation2>
             <dynatt:title>Test_Prof1_Montagmorgen_9</dynatt:title>
             <dynatt:a3>category[key='c1']</dynatt:a3>
@@ -5751,6 +5759,25 @@
          </dynatt:defaultReservation>
          <rapla:appointment start-date="2014-03-17" end-date="2014-03-17"/>
          <rapla:allocate idref="resource_2459"/>
+      </rapla:reservation>
+      <rapla:reservation id="reservation_47" owner="user_1" created-at="2014-01-09 10:25:21" last-changed="2014-01-29 15:29:46" last-changed-by="user_1">
+         <dynatt:reservation2>
+            <dynatt:title>Test_Prof1_Planungszyklus</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>resource_2526</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1886_000000000000000000000000000000002222222222000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000__2</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>erfasst</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment start-date="2014-03-24" start-time="07:00:00" end-date="2014-03-24" end-time="09:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="resource_1571"/>
+         <rapla:allocate idref="resource_1011"/>
+         <rapla:allocate idref="resource_1886"/>
       </rapla:reservation>
    </rapla:reservations>
 

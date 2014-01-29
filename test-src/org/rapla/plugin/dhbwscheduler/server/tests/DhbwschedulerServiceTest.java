@@ -1,6 +1,5 @@
 package org.rapla.plugin.dhbwscheduler.server.tests;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -10,22 +9,19 @@ import junit.framework.TestSuite;
 
 import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
-import org.rapla.entities.EntityNotFoundException;
-import org.rapla.entities.RaplaObject;
 import org.rapla.entities.RaplaType;
-import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
 import org.rapla.framework.RaplaContext;
-import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.storage.StorageOperator;
 
+@SuppressWarnings("restriction")
 public class DhbwschedulerServiceTest extends RaplaTestCase {
 	ClientFacade facade;
 	Locale locale;
@@ -58,7 +54,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = {
 					new SimpleIdentifier(type, 20),
 					new SimpleIdentifier(type, 21),
@@ -74,7 +69,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 20)};
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
@@ -87,7 +81,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = {
 					new SimpleIdentifier(type, 22),
 					new SimpleIdentifier(type, 23),
@@ -103,7 +96,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 22)};
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
@@ -116,7 +108,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = {
 					new SimpleIdentifier(type, 24),
 					new SimpleIdentifier(type, 25),
@@ -132,7 +123,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 24)};
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
@@ -145,7 +135,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 39)};
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
@@ -158,7 +147,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 29)};
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
@@ -171,7 +159,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = {
 				new SimpleIdentifier(type, 30),
 				new SimpleIdentifier(type, 31),
@@ -187,7 +174,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		try {
 			@SuppressWarnings("rawtypes")
 			RaplaType type = RaplaType.get(Reservation.class);
-			@SuppressWarnings("restriction")
 			SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 30)};
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
@@ -196,7 +182,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		}
 	}
 
-	@SuppressWarnings("restriction")
 	public void testFeiertagPlanungswoche() {
 		@SuppressWarnings("rawtypes")
 		RaplaType type = RaplaType.get(Reservation.class);
@@ -232,7 +217,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(new Date(cal.getTimeInMillis()), app[0].getStart());
 	}
 
-	@SuppressWarnings("restriction")
 	public void testFeiertagFolgewoche() {
 		@SuppressWarnings("rawtypes")
 		RaplaType type = RaplaType.get(Reservation.class);
@@ -271,7 +255,6 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(new Date(cal.getTimeInMillis()), app[1].getStart());
 	}
 	
-	@SuppressWarnings("restriction")
 	public void testPriorisierungDoz() {
 		@SuppressWarnings("rawtypes")
 		RaplaType type = RaplaType.get(Reservation.class);
@@ -303,6 +286,40 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 		cal.set(2014, Calendar.FEBRUARY, 10, 10, 0); //Uhrzeit + 1 Stunde
+		assertEquals(new Date(cal.getTimeInMillis()), app[0].getStart());
+	}
+	
+	public void testPlanungszyklus_beachten() {
+		@SuppressWarnings("rawtypes")
+		RaplaType type = RaplaType.get(Reservation.class);
+		SimpleIdentifier[] reservationIds = { new SimpleIdentifier(type, 47)};
+		String ergebnis = "";
+		try {
+			ergebnis = service.schedule(reservationIds);
+		} catch (RaplaException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+
+		String erwartet = "Test_Prof1_Planungszyklus: 1";
+		assertEquals(erwartet, ergebnis);
+
+		StorageOperator lookup;
+		RefEntity<?> object = null;
+		try {
+			lookup = getContext().lookup(StorageOperator.class);
+			object = lookup.resolve(reservationIds[0]);
+		} catch (RaplaException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		Reservation reservation = (Reservation) object;
+
+		Appointment[] app = reservation.getAppointments();
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(2014, Calendar.MARCH, 24, 9, 0); //Uhrzeit + 1 Stunde
 		assertEquals(new Date(cal.getTimeInMillis()), app[0].getStart());
 	}
 }
