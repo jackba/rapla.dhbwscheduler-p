@@ -387,6 +387,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 
 		Date newStart = new Date(tmp.getTimeInMillis());
+		Date startWeek = startDatum;
+		tmp.setTimeInMillis(startWeek.getTime());
 
 		int[][] solRes = splitSolution(solutionString);
 
@@ -394,12 +396,16 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			Reservation reservation = reservations.get((solRes[i][0]) - 1);
 			result += reservation.getClassification().getName(getLocale()) + ": " + solRes[i][1] + "\n";
 			reservation = getClientFacade().edit(reservation);
-			Appointment appointment = reservation.getAppointments()[0];
-			Allocatable[] allocatables = reservation.getAllocatablesFor(appointment);
+			for(Appointment appointment : reservation.getAppointments()){
+				newStart = setStartDate(solRes[i][1], startWeek, reservation);
+				appointment.move(newStart);
+				tmp.add(Calendar.WEEK_OF_YEAR, 1);
+				startWeek = tmp.getTime();
+			}
+			//Allocatable[] allocatables = reservation.getAllocatablesFor(appointment);
 
 			// Slot-Datum einstellen
-			newStart = setStartDate(solRes[i][1], startDatum, reservation);
-			appointment.move(newStart);
+			
 
 			getClientFacade().store(reservation);
 			reservations.remove((solRes[i][0]) - 1);
@@ -477,10 +483,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		int[] dozConstr = ConstraintService.getDozConstraints(getDozentenConstraint(veranstaltung));
 		int stelleConstraint = 0;
 		boolean breakLoop = false;
-		Calendar calInst = Calendar.getInstance();
+		Calendar calInst = Calendar.getInstance(DateTools.getTimeZone());
 		while(dozConstr[stelleConstraint] <= 0){
 			newStart = getNextFreeTime(veranstaltung.getAllocatables(), newAppointment, nextStartDate, endDatum);
-			calInst.setTime(newStart);
+			calInst.setTimeInMillis(newStart.getTime());
 			int dayOfWeek = calInst.get(Calendar.DAY_OF_WEEK);
 			int slot = 0;
 			int hour = calInst.get(Calendar.HOUR_OF_DAY);
@@ -678,7 +684,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				SerializableDateTimeFormat dateFormat = new SerializableDateTimeFormat();
 				try {
 					Date holidayDate = dateFormat.parseDate(holiday, false);
-					Calendar c = Calendar.getInstance();
+					Calendar c = Calendar.getInstance(DateTools.getTimeZone());
 					c.setTime(holidayDate);
 					if (c.after(startCal) && c.before(endeCal)) {
 						int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
@@ -708,7 +714,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					Appointment[] termine = splitIntoSingleAppointments(vorlesungMitGleicherResource);
 					for (Appointment termin : termine) {
 						Date beginn = termin.getStart();
-						Calendar cal = Calendar.getInstance();
+						Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
 						cal.setTime(beginn);
 
 						if (termin.isWholeDaysSet()) {
