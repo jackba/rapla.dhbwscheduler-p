@@ -38,6 +38,7 @@ import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
+import org.rapla.facade.Conflict;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
@@ -81,7 +82,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	/**
 	 * @param context
 	 */
-	public DhbwschedulerServiceImpl(RaplaContext context,User user) {
+	public DhbwschedulerServiceImpl(RaplaContext context, User user) {
 		super(context);
 		this.user = user;
 		setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
@@ -403,7 +404,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	private String resolveConflicts(Date startDatum, Date endDatum) throws RaplaException {
 		String notResolved = "";
 		for (Reservation veranstaltung : reservationsPlannedByScheduler){
-			/*TODO: to test /get all conflicts caused by this reservation
+			//TODO: to test / get all conflicts caused by this reservation
 			while (getClientFacade().getConflicts(veranstaltung).length > 0) {
 				// if there are conflicts, move the appointment
 				Conflict[] conflicts = getClientFacade().getConflicts(veranstaltung);
@@ -434,7 +435,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 						notResolved += (veranstaltung.getName(getLocale()) + "beyond_planning_peroid" + "\n");
 					}
 				}
-			}*/
+			}
 		}
 		return notResolved;
 		
@@ -500,7 +501,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			repeating.addException(dateOfConflict);
 		}
 		// add a new appointment for the date with the conflict
-		Appointment newApp = getModification().newAppointment(start, end);
+		Appointment newApp = getModification().newAppointment(start, end, user);
 		veranstaltung.addAppointment(newApp);
 		return newApp;
 	}
