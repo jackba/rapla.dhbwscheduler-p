@@ -44,6 +44,7 @@ import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
+import org.rapla.facade.ClientFacade;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
@@ -155,7 +156,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-
+					
 					for (Reservation editableEvent : selectedReservations){
 						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("closed"));
 						}
@@ -188,10 +189,19 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
+					String veranstaltungen = "";
 					for (Reservation editableEvent : selectedReservations){
+						String statusConstraint = (String) editableEvent.getClassification().getValue("planungsconstraints");
+						int status = ConstraintService.getReservationStatus(statusConstraint);
+						if (status != 2){
+							veranstaltungen += "\n" + editableEvent.getClassification().getName(getLocale());
+						}
 						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_closed"));
 					}
 					createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
+					if (veranstaltungen != ""){
+						createMessage("planungsstatus", "Folgende Veranstalungen besitzen keine Dozentenconstrains: "+ veranstaltungen, 200, 100, menuContext, false);
+					}
 				}
 			});
 			menus.add( menu );
@@ -564,14 +574,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	
 	public String getUrl(SimpleIdentifier reservationID, SimpleIdentifier dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
-
 		StorageOperator lookup;
 		Reservation veranstaltung;			
 
 		String veranstaltungsId = String.valueOf(reservationID.getKey());
-
 		String result;
-
 
 		//Dynamische Generierung "Servername:Port"
 		StartupEnvironment env = getService( StartupEnvironment.class );
@@ -579,8 +586,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 		UrlEncryption webservice;
 		String key;
-
-
+		//String strLanguage = this.getRaplaLocale().LANGUAGE_ENTRY;
+		
 		result = codeBase + "rapla?page=scheduler-constraints&id=" + veranstaltungsId + "&dozent=" + String.valueOf(dozentId.getKey());
 		webservice = getService(UrlEncryption.class);
 		String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + veranstaltungsId + "&dozent=" + String.valueOf(dozentId.getKey()));

@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -15,9 +16,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.rapla.client.internal.LanguageChooser;
 import org.rapla.components.util.DateTools;
 import org.rapla.components.util.ParseDateException;
+import org.rapla.components.xmlbundle.I18nBundle;
 import org.rapla.entities.EntityNotFoundException;
+import org.rapla.entities.MultiLanguageName;
+import org.rapla.entities.configuration.Preferences;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
 import org.rapla.entities.storage.internal.SimpleIdentifier;
@@ -25,6 +30,8 @@ import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
+import org.rapla.framework.RaplaException;
+import org.rapla.framework.RaplaLocale;
 import org.rapla.plugin.dhbwscheduler.*;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
@@ -71,15 +78,34 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 		java.io.PrintWriter out = response.getWriter();
 
-		String dozent = "Unbekannt";			//Name Dozent
-		String semester ="?";					//Zahl des Semesters (Beispiel: 2.)
+		//Eingestellte Sprache des Clients/Browsers
+		//Format sollte "de-de" sein
+		String strLanguage = request.getHeader("accept-language");
+		String lang = "";
+		String[] strLang = strLanguage.split(",");
+		String[] test2;
+		if (strLang[0].contains("-"))
+		{
+			test2 = strLang[0].split("-");
+			strLang[0] = test2[0];
+		}
+		lang = strLang[0];
+		
+		//--------------------------------------------------
+		//D.D. - Sprache übersetzt in DhbwschedulerPluginResources.xml
+		//Default Sprache ist Englisch d.h. falls die Sprache auslesen aus dem Browser nicht richtig funktioniert,
+		//oder eine andere Sprache wie Deutsch oder Englisch übertragen wird.
+		//--------------------------------------------------
+		
+		String semester = getI18n().getString("Sprache",new Locale(lang));			//Zahl des Semesters (Beispiel: 2.)
+		String dozent = "?";					//Name Dozent
 		String studiengang = "Unbekannt";		//Studiengang
 		String kursName="Unbekannt";			//Kursname
 		String beginZeit="dd.mm.jjjj";			//Beginn der Veranstaltung
 		String endZeit="dd.mm.jjjj";			//Ende der Veranstaltung
 		String vorlesungsZeit ="dd.mm.jj";		//Ende der Vorlesungszeit
 		String veranst="Unbekannt";				//Veranstaltungsname
-		String kontaktdaten="";				//Liste mit geänderten Kontaktdaten 
+		String kontaktdaten="";					//Liste mit geänderten Kontaktdaten 
 		String time = "";							//Inhalt der StundenTabelle
 		String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
 		Date[] dateArr;
@@ -162,7 +188,8 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 				}
 			}
-			
+			//TODO 
+			//Auf der HTML GUI soll der Vorlesungszeitraum aus dem Planungszyklus verwendet werden. (Attribut an "Veranstaltung")
 			beginZeit = veranstaltung.getFirstDate().toLocaleString();
 			endZeit = veranstaltung.getMaxEnd().toLocaleString();
 			beginZeit = beginZeit.substring(0,beginZeit.indexOf(" "));
@@ -178,7 +205,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		out.println("<!DOCTYPE html>"); // we have HTML5 
 		out.println("<html>");
-		
+
 		//gesendete Daten werden hier ausgelesen, wenn eine Änderung vorgenommen wurde (changed = 1)
 		if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
 			time = request.getParameter("time");	
@@ -212,8 +239,8 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		out.println("<head>");
 		
-		out.println("  <title>Semesterplanung</title>");
-
+		out.println("  <title>" + getI18n().getString("Semesterplanung",new Locale(lang)) + "</title>");
+		
 		//out.println(" <link REL=\"stylesheet\" href=\""+linkPrefix + "calendar.css\" type=\"text/css\">");
 		out.println("	<link REL=\"stylesheet\" type=\"text/css\" href=\""+linkPrefix+"dhbw-scheduler/AnfrageformularStylesheet.css\">");
 		out.println("	<script type=\"text/javascript\" src=\""+linkPrefix+"dhbw-scheduler/jquery-2.0.3.min.js\"></script>");
@@ -225,35 +252,38 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("		<input id='hiddenUrl' type='hidden' name='' value='"+linkPrefix+"rapla\'>");
 		out.print("		<div id='wrapper'>");
 		out.println("		<h3>");
-		out.print("				Planung des "+semester+". Semesters " + studiengang +  ";</br>");
-		out.print("				Kurs " + kursName + ", "+beginZeit+" bis "+endZeit+" (Ende der Vorlesungszeit: "+vorlesungsZeit+")");
+		out.print("				" + getI18n().getString("Planung_des", new Locale(lang)) + " "+semester+". " + getI18n().getString("Semesters", new Locale(lang)) + " " + studiengang +  ";</br>");
+		out.print("				" + getI18n().getString("Kurs", new Locale(lang)) + " " + kursName + ", "+beginZeit+" " + getI18n().getString("bis", new Locale(lang)) + " "+endZeit+" (" + getI18n().getString("Ende_der_Vorlesungszeit", new Locale(lang)) + " "+vorlesungsZeit+")");
 		out.println("		</h3>");
 
 		out.println("		<table id='tableForm1'>");
 		out.print("				<tr>");
-		out.print("					<th>Dozent/in:</td>");
+		out.print("					<th>" + getI18n().getString("Dozent_in", new Locale(lang)) + "</td>");
 		out.print("					<td><input disabled='disabled' type='text' value='" + dozent + "'/></td>");
 		out.print("				</tr>");
 		out.print("				<tr>");
-		out.print("					<th>Lehrveranst.:</td>");
+		out.print("					<th>" + getI18n().getString("Lehrveranstaltung", new Locale(lang)) + "</td>");
 		out.print("					<td><input disabled='disabled' type='text' value='" + veranst + "'/></td>");
 		out.print("				</tr>");
 		out.println("		</table>");
 
-		out.println("		<p>Wenn sich Ihre Kontaktdaten (bspw. E-Mail-Adresse, Telefonnummern) ge&auml;ndert oder ganz neu ergeben haben (E-Mail!), bitte hier eintragen:</p>");
-		out.println("		<textarea id='taKontakt' rows='5' col='65'>"+kontaktdaten+"</textarea>");
-		out.println("		<p><b>1.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
+		out.println("		<p><b>1. </b>" + getI18n().getString("Vorlesungsstunden_Frage", new Locale(lang)) + "</p>");
+		//out.println("		<p><b>1.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
 		out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' max='10' value='"+stunden+"'/>");
-		out.println("		<label for='inpVorlesungsstunden'>Vorlesungsstunden</label>");
+		out.println("		<label for='inpVorlesungsstunden'>" + getI18n().getString("Vorlesungsstunden", new Locale(lang)) + "</label>");
+		//out.println("		<label for='inpVorlesungsstunden'>Vorlesungsstunden</label>");
 
-		out.println("		<p><b>2.</b> Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:</p>");
+		out.println("		<p><b>2. </b>" + getI18n().getString("Zeiten_Frage", new Locale(lang)) + "</p>");
+		//out.println("		<p><b>2.</b> Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:</p>");
 
-		out.println("		<p> Setzen Sie ein <b>- (Minus)</b> in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</p>");
-		out.println("		<p> Setzen Sie ein <b>+ (Plus)</b> in alle Zeitfelder, die f&uuml;r Sie besonders angenehm sind!</p>");
+		out.println("		<p>" + getI18n().getString("SetzenSieEinMinus", new Locale(lang)) + "</p>");
+		//out.println("		<p> Setzen Sie ein <b>- (Minus)</b> in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</p>");
+		out.println("		<p>" + getI18n().getString("SetzenSieEinPlus", new Locale(lang)) + "</p>");
+		//out.println("		<p> Setzen Sie ein <b>+ (Plus)</b> in alle Zeitfelder, die f&uuml;r Sie besonders angenehm sind!</p>");
 		out.println("		<table id='timeTable'>");
 		out.println("			<thead>");
 		out.print("					<tr>");
-		out.print(" 					<th colspan='6' style='font-size:large;text-align:left;vertical-align:center;height:50px;'>Stundentabelle</th>");
+		out.print(" 					<th colspan='6' style='font-size:large;text-align:left;vertical-align:center;height:50px;'>" + getI18n().getString("Stundentabelle", new Locale(lang)) + "</th>");
 		out.print(" 					<td>");
 		out.print(" 						<input id='btnPlus' class='timeTableButtons' type='button' value='+'/>");
 		out.print(" 						<input id='btnMinus' class='timeTableButtons' type='button' value='-'/>");
@@ -261,13 +291,13 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print(" 					</td>");
 		out.print(" 				</tr>");
 		out.print("				 	<tr>");
-		out.print("						<th id='firstCell'>Zeit</th>");
-		out.print("						<th>Montag</th>");
-		out.print("						<th>Dienstag</th>");
-		out.print("						<th>Mittwoch</th>");
-		out.print("						<th>Donnerstag</th>");
-		out.print("						<th>Freitag</th>");
-		out.print("						<th>Samstag</th>");
+		out.print("						<th id='firstCell'>" + getI18n().getString("Zeit", new Locale(lang)) + "</th>");
+		out.print("						<th>" + getI18n().getString("Montag", new Locale(lang)) + "</th>");
+		out.print("						<th>" + getI18n().getString("Dienstag", new Locale(lang)) + "</th>");
+		out.print("						<th>" + getI18n().getString("Mittwoch", new Locale(lang)) + "</th>");
+		out.print("						<th>" + getI18n().getString("Donnerstag", new Locale(lang)) + "</th>");
+		out.print("						<th>" + getI18n().getString("Freitag", new Locale(lang)) + "</th>");
+		out.print("						<th>" + getI18n().getString("Samstag", new Locale(lang)) + "</th>");
 		out.print("					</tr>");
 		out.println("			</thead>");
 		out.println(" 			<tbody id='timeTableBody'>");
@@ -296,11 +326,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		out.println(" 			</tbody>");
 		out.println("		</table>");
-		out.println("		<p><b>3.</b>Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
+		out.println("		<p><b>3. </b>" + getI18n().getString("Ausnahmen_Frage", new Locale(lang)) + "</p>");
+		//out.println("		<p><b>3. </b>Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
 
 		out.print("			<input id='inpDatepicker' type='date' min='"+formatDateForDatepicker(beginZeit)+"' max='"+formatDateForDatepicker(endZeit)+"' value='"+formatDateForDatepicker(beginZeit)+"'/>");
-		out.println("		<input id='btnSetDate' type='button' value='ausw&auml;hlen'/>");
-		out.println("		<input id='btnDeleteDate' type='button' value='l&ouml;schen'/>");
+		out.println("		<input id='btnSetDate' type='button' value='" + getI18n().getString("auswaehlen", new Locale(lang)) + "'/>");
+		out.println("		<input id='btnDeleteDate' type='button' value='" + getI18n().getString("loeschen", new Locale(lang)) + "'/>");
 		out.println("		<ul id='ulDateList'>");
 		
 		//for(int i=0;i<ausnahmenArray.length;i++){
@@ -308,32 +339,8 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		//}
 		 
 	
-		out.println("		</ul>");
-		out.println("		<p><b>4.</b>Ich m&ouml;chte die Aufsicht in der Klausur falls terminlich m&ouml;glich selbst &uuml;bernehmen.</p>");
-		if(aufsicht){
-			out.print("			<input id='cbYes' type='radio' name='cbGroupKlausur' value='1' checked='checked'/>");
-			out.print("			<label for='cbYes'>Ja</label>");
-			out.print("			<input id='cbNo' type='radio' name='cbGroupKlausur' value='0'/>");
-			out.print("			<label for='cbNo'>Nein</label>");
-		}
-		else{
-			out.print("			<input id='cbYes' type='radio' name='cbGroupKlausur' value='1'/>");
-			out.print("			<label for='cbYes'>Ja</label>");
-			out.print("			<input id='cbNo' type='radio' name='cbGroupKlausur' value='0' checked='checked'/>");
-			out.print("			<label for='cbNo'>Nein</label>");
-		}
-		out.println("		<p>Platz f&uuml;r weitere Bemerkungen :</p>");
-		out.println("		<textarea id='taBemerkungen' rows='5' col='65'>"+bemerkung+"</textarea>");
-		out.println("		<form action=\"rapla\" method=\"get\">");
-					out.println(getHiddenField("key", key));
-		out.println("			<input id='inpChanged' type='hidden' name='changed' value='0'>");
-		out.println("			<input id='inpKontakt' type='hidden' name='contact' value=''>");
-		out.println("			<input id='inpStunden' type='hidden' name='hours' value=''>");
-		out.println("			<input id='inpTimeTable' type='hidden' name='time' value=''>");
-		out.println("			<input id='inpAusnahmen' type='hidden' name='exception' value=''>");		
-		out.println("			<input id='inpAufsicht' type='hidden' name='control' value=''>");
-		out.println("			<input id='inpBemerkungen' type='hidden' name='comment' value=''>");	
-		out.print("				<input id='inpSubmit' type ='submit' name='rapla' value='Senden'/>");
+		out.println("		</ul>");	
+		out.print("				<input id='inpSubmit' type ='submit' name='rapla' value='" + getI18n().getString("senden", new Locale(lang)) + "'/>");
 		out.println("		</form>");
 		out.println("	</div>");
 		out.println("</body>");
