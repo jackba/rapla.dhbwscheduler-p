@@ -36,7 +36,6 @@ import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.domain.internal.AppointmentImpl;
 import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.entities.storage.RefEntity;
-import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
 import org.rapla.facade.Conflict;
 import org.rapla.facade.RaplaComponent;
@@ -95,12 +94,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 * org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */
 	@Override
-	public String schedule(SimpleIdentifier[] reservationIds)
+	public String schedule(String[] reservationIds)
 			throws RaplaException {
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
 		reservationsPlannedByScheduler = new ArrayList<Reservation>();
 		reservations = new ArrayList<Reservation>();
-		for (SimpleIdentifier id : reservationIds) {
+		for (String id : reservationIds) {
 			RefEntity<?> object = lookup.resolve(id);
 			Reservation reservation = (Reservation) object;
 			
@@ -1140,7 +1139,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 
 	@Override
-	public boolean sendMail(SimpleIdentifier reservationID, SimpleIdentifier dozentId, String login, String url) throws RaplaException {
+	public boolean sendMail(String reservationID, String dozentId, String login, String url) throws RaplaException {
 
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
 		final MailInterface mailClient = getContext().lookup(MailInterface.class);
@@ -1185,7 +1184,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			final String defaultSender = prefs.getEntryAsString(MailPlugin.DEFAULT_SENDER_ENTRY, "");
 
 			String constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints");
-			int status = ConstraintService.getStatus(constraint, dozentId.getKey());
+			int status = ConstraintService.getStatus(constraint, Allocatable.TYPE.getKey(dozentId));
 
 			// 1 = eingeladen das bedeutet er hat shcon eine Mail bekommen und muss erinnert werden.
 			if (status == 1) {

@@ -2,37 +2,25 @@ package org.rapla.plugin.dhbwscheduler.server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.rapla.client.internal.LanguageChooser;
-import org.rapla.components.util.DateTools;
-import org.rapla.components.util.ParseDateException;
-import org.rapla.components.xmlbundle.I18nBundle;
 import org.rapla.entities.EntityNotFoundException;
-import org.rapla.entities.MultiLanguageName;
-import org.rapla.entities.configuration.Preferences;
+import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
-import org.rapla.entities.storage.RefEntity;
-import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
-import org.rapla.framework.RaplaException;
-import org.rapla.framework.RaplaLocale;
-import org.rapla.plugin.dhbwscheduler.*;
+import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
+import org.rapla.plugin.dhbwscheduler.DhbwschedulerReservationHelper;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
 
@@ -123,19 +111,20 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		StorageOperator lookup;
 		try {
 			lookup = getContext().lookup( StorageOperator.class);
-			SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
-			Reservation veranstaltung = (Reservation) lookup.resolve(idtype);
+			//String idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
+			Reservation veranstaltung = (Reservation) lookup.resolve(eventId);
 			
 			String vs = (String) veranstaltung.getClassification().getValue("planungsconstraints");
-			dateArr=ConstraintService.getExceptionDatesDoz(vs, Integer.parseInt(dozentId));
-			time = ConstraintService.getDozStringConstraint(vs, Integer.parseInt(dozentId));
+			int dozentKey = Allocatable.TYPE.getKey(dozentId);
+			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
+			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
 			
 			veranst = veranstaltung.getName(getLocale());
 			for (int i = 0; i < veranstaltung.getPersons().length; i++)
 			{
-				Comparable pTest = ((RefEntity<?>) veranstaltung.getPersons()[i]).getId();
-				SimpleIdentifier pID = (SimpleIdentifier) pTest;
-				if (pID.getKey()==Integer.parseInt(dozentId))
+				String pTest =  veranstaltung.getPersons()[i].getId();
+				String pID =  pTest;
+				if (pID.equals(dozentId))
 				{
 					if (veranstaltung.getPersons()[i].getClassification().getValue("firstname")!=null)
 					{
@@ -387,8 +376,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String constraint = "";
 		String newConstraint="";
 		int status = 2;
-		int verId = Integer.parseInt(eventId);
-		int dozId = Integer.parseInt(dozentId);
+		//int verId = Integer.parseInt(eventId);
 		Date[] ausnahmenDateArray = new Date[ausnahmenArray.length];
 		SimpleDateFormat strToDate = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -396,8 +384,8 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		Reservation veranstaltung;
 		try {
 			lookup = getContext().lookup( StorageOperator.class);
-			SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, verId);
-			veranstaltung = (Reservation) lookup.resolve(idtype);
+			//SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, verId);
+			veranstaltung = (Reservation) lookup.resolve(eventId);
 			
 		} catch (RaplaContextException e1) {
 			// TODO Auto-generated catch block
@@ -425,6 +413,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		
 		constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints"); 
+		int dozId = Allocatable.TYPE.getKey(dozentId);
 		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozId, time, ausnahmenDateArray, status);
 		DhbwschedulerReservationHelper helperClass = new DhbwschedulerReservationHelper( getContext());
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
