@@ -199,7 +199,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 						for ( Reservation obj: selectedReservations)
 						{
-							String id = ((RefEntity<?>) obj).getId();
+							String id = obj.getId();
 							reservationIds.add(id);
 						}
 

@@ -34,8 +34,8 @@ import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Repeating;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.domain.internal.AppointmentImpl;
+import org.rapla.entities.domain.internal.ReservationImpl;
 import org.rapla.entities.dynamictype.DynamicType;
-import org.rapla.entities.storage.RefEntity;
 import org.rapla.facade.ClientFacade;
 import org.rapla.facade.Conflict;
 import org.rapla.facade.RaplaComponent;
@@ -100,8 +100,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		reservationsPlannedByScheduler = new ArrayList<Reservation>();
 		reservations = new ArrayList<Reservation>();
 		for (String id : reservationIds) {
-			RefEntity<?> object = lookup.resolve(id);
-			Reservation reservation = (Reservation) object;
+			Reservation reservation = (Reservation) lookup.resolve(id);
 			
 			String string = getString("planning_closed");
 			String value = (String) reservation.getClassification().getValue("planungsstatus");
@@ -409,9 +408,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				Conflict[] conflicts = getClientFacade().getConflicts(veranstaltung);
 				Conflict conflict = conflicts[0];
 				Appointment newApp = null;
+				String appointmentId = conflict.getAppointment1();
 				// add an exception to the conflicting appointment for the conflicting date
-				Appointment conflictingAppointment = conflict.getAppointment1();
-				Date dateOfConflict = conflict.getFirstConflictDate(startDatum, endDatum);
+				Appointment conflictingAppointment = (Appointment)((ReservationImpl)veranstaltung).findEntityForId(appointmentId);
+				Date dateOfConflict = conflict.getStartDate();
 				Repeating repeating = conflictingAppointment.getRepeating();
 				if (repeating != null) {
 					newApp = createNewAppointment(veranstaltung, repeating, conflictingAppointment.getStart(), conflictingAppointment.getEnd(), dateOfConflict);

@@ -9,6 +9,7 @@ import junit.framework.TestSuite;
 
 import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
+import org.rapla.entities.Entity;
 import org.rapla.entities.RaplaType;
 import org.rapla.entities.User;
 import org.rapla.entities.domain.Appointment;
@@ -199,7 +200,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
-		RefEntity<?> object = null;
+		Entity object = null;
 		try {
 			lookup = getContext().lookup(StorageOperator.class);
 			object = lookup.resolve(reservationIds[0]);
@@ -234,7 +235,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
-		RefEntity<?> object = null;
+		Entity object = null;
 		try {
 			lookup = getContext().lookup(StorageOperator.class);
 			object = lookup.resolve(reservationIds[0]);
@@ -272,7 +273,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
-		RefEntity<?> object = null;
+		Entity object = null;
 		try {
 			lookup = getContext().lookup(StorageOperator.class);
 			object = lookup.resolve(reservationIds[0]);
@@ -306,7 +307,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
-		RefEntity<?> object = null;
+		Entity object = null;
 		try {
 			lookup = getContext().lookup(StorageOperator.class);
 			object = lookup.resolve(reservationIds[0]);
