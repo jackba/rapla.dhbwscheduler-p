@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.gnu.glpk.GLPK;
@@ -24,8 +25,6 @@ import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_tran;
 import org.gnu.glpk.glp_tree;
 import org.rapla.components.util.DateTools;
-import org.rapla.components.util.ParseDateException;
-import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.User;
 import org.rapla.entities.configuration.Preferences;
 import org.rapla.entities.domain.Allocatable;
@@ -651,23 +650,16 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		// beachten von Feiertagen, nur wenn das holiday-plugin aktiviert ist
 		if (freetimeService != null) {
 			// alle Freiertage im Plaungszeitraum
-			String[][] holidays = freetimeService.getHolidays(start, ende);
-			for (int i = 0; i < holidays.length; i++) {
-				String holiday = holidays[i][0];
-				SerializableDateTimeFormat dateFormat = new SerializableDateTimeFormat();
-				try {
-					Date holidayDate = dateFormat.parseDate(holiday, false);
-					Calendar c = Calendar.getInstance(DateTools.getTimeZone());
-					c.setTime(holidayDate);
-					if (c.after(startCal) && c.before(endeCal)) {
-						int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
-						for (int j = 0; j < reservations.size(); j++) {
-							vor_res[j][timeSlots[dayOfWeekOfHoliday][0]] = 0;
-							vor_res[j][timeSlots[dayOfWeekOfHoliday][1]] = 0;
-						}
+			Map<Date,String> holidays = freetimeService.getHolidays(start, ende).get();
+			for ( Date holidayDate: holidays.keySet()) {
+				Calendar c = Calendar.getInstance(DateTools.getTimeZone());
+				c.setTime(holidayDate);
+				if (c.after(startCal) && c.before(endeCal)) {
+					int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
+					for (int j = 0; j < reservations.size(); j++) {
+						vor_res[j][timeSlots[dayOfWeekOfHoliday][0]] = 0;
+						vor_res[j][timeSlots[dayOfWeekOfHoliday][1]] = 0;
 					}
-				} catch (ParseDateException e) {
-					getLogger().warn(e.getLocalizedMessage());
 				}
 			}
 		}
