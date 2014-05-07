@@ -115,7 +115,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			Reservation veranstaltung = (Reservation) lookup.resolve(eventId);
 			
 			String vs = (String) veranstaltung.getClassification().getValue("planungsconstraints");
-			int dozentKey = Allocatable.TYPE.getKey(dozentId);
+			String dozentKey = lookup.resolve(dozentId).getId();
 			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
 			
@@ -140,7 +140,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			}
 			for (int i = 0; i < veranstaltung.getResources().length; i++)
 			{
-				if (veranstaltung.getResources()[i].getClassification().getType().getElementKey().equals("kurs"))
+				if (veranstaltung.getResources()[i].getClassification().getType().getKey().equals("kurs"))
 				{
 					if (i==0)
 					{
@@ -407,8 +407,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		
 		constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints"); 
-		int dozId = Allocatable.TYPE.getKey(dozentId);
-		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozId, time, ausnahmenDateArray, status);
+		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozentId, time, ausnahmenDateArray, status);
 		DhbwschedulerReservationHelper helperClass = new DhbwschedulerReservationHelper( getContext());
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"erfassungsstatus",helperClass.getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
