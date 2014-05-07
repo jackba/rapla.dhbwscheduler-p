@@ -360,8 +360,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	private String[][] formatTimeString(String str){
 		//Überprüfen ob TimeString leer ist, ggf. füllen
 		if(str.equals("") || str == null){
+			//24*7 =168
 			for(int i=0;i<168;i++){
-				str+="1";
+				str+="0";
 			}
 		}
 		char[] charArray = str.toCharArray();
