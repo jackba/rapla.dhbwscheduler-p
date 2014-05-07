@@ -119,6 +119,10 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
 			
+			
+			dayTimeStart = getCalendarOptions().getWorktimeStartMinutes()/60;
+			dayTimeEnd = getCalendarOptions().getWorktimeEndMinutes()/60;
+			
 			veranst = veranstaltung.getName(getLocale());
 			for (int i = 0; i < veranstaltung.getPersons().length; i++)
 			{
@@ -286,7 +290,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("			</thead>");
 		out.println(" 			<tbody id='timeTableBody'>");
 
-		String[][] timeArray = formatTimeString(time);
+		String[][] timeArray = formatTimeString(time,dayTimeStart,dayTimeEnd);
 		String tempVal="";
 		for(int i=dayTimeStart;i<dayTimeEnd;i++){
 
@@ -322,7 +326,16 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		//}
 		 
 	
-		out.println("		</ul>");	
+		out.println("		</ul>");
+		out.println("		<form action=\"rapla\" method=\"get\">");
+		out.println(getHiddenField("key", key));
+		out.println("			<input id='inpChanged' type='hidden' name='changed' value='0'>");
+		out.println("			<input id='inpKontakt' type='hidden' name='contact' value=''>");
+		out.println("			<input id='inpStunden' type='hidden' name='hours' value=''>");
+		out.println("			<input id='inpTimeTable' type='hidden' name='time' value=''>");
+		out.println("			<input id='inpAusnahmen' type='hidden' name='exception' value=''>");		
+		out.println("			<input id='inpAufsicht' type='hidden' name='control' value=''>");
+		out.println("			<input id='inpBemerkungen' type='hidden' name='comment' value=''>");	
 		out.print("				<input id='inpSubmit' type ='submit' name='rapla' value='" + getI18n().getString("senden", new Locale(lang)) + "'/>");
 		out.println("		</form>");
 		out.println("	</div>");
@@ -342,12 +355,22 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		return strArr[2]+"-"+strArr[1]+"-"+strArr[0];		
 	}
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
-	private String[][] formatTimeString(String str){
+	private String[][] formatTimeString(String str,int dayTimeStart, int dayTimeEnd){
 		//Überprüfen ob TimeString leer ist, ggf. füllen
 		if(str.equals("") || str == null){
-			for(int i=0;i<168;i++){
-				str+="1";
+			//24*7 =168
+			
+			for (int j = 0; j<7 ; j++)
+			{
+				for (int i = 0; i<24 ; i++){
+					if (i< dayTimeStart || i> dayTimeEnd){
+						str+="0";
+					}else{
+						str+="1";
+					}
+				}
 			}
+			
 		}
 		char[] charArray = str.toCharArray();
 		int counter=0;		//Zähler um Wochentage durch zu zählen
