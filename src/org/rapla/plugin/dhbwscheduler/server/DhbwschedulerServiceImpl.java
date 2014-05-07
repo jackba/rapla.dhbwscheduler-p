@@ -322,7 +322,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			for (Reservation r : veranstaltungenOhnePlanungsconstraints) {
 				veranstaltungenOhnePlanungsconstraintsListe = veranstaltungenOhnePlanungsconstraintsListe + "<br>" + r.getName(getLocale()) + "<br/>";
 			}
-			throw (new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
+			// Keinen Text für die Exception mehr werfen, da in Methode buildAllocatableVerfuegbarkeit schon geworfen
+			//throw (new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
+			throw (new RaplaException(""));
 		}
 		return doz_cost;
 	}
