@@ -11,12 +11,12 @@ import javax.swing.MenuElement;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
-import org.rapla.gui.internal.common.InternMenus;
+//import org.rapla.gui.internal.common.InternMenus;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.IdentifiableMenuEntry;
-import org.rapla.gui.toolkit.RaplaMenu;
+//import org.rapla.gui.toolkit.RaplaMenu;
 import org.rapla.gui.toolkit.RaplaWidget;
-import org.rapla.plugin.dhbwscheduler.SchedulerHelpMenuExtension.MyDialog;
+//import org.rapla.plugin.dhbwscheduler.SchedulerHelpMenuExtension.MyDialog;
 
 public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements ActionListener, IdentifiableMenuEntry 
 {

@@ -1,6 +1,6 @@
 package org.rapla.plugin.dhbwscheduler.test;
 
-import java.util.Date;
+//import java.util.Date;
 import java.util.Locale;
 
 import junit.framework.Test;
@@ -8,16 +8,16 @@ import junit.framework.TestSuite;
 
 import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
-import org.rapla.entities.Entity;
-import org.rapla.entities.domain.Allocatable;
+//import org.rapla.entities.Entity;
+//import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
-import org.rapla.facade.AllocationChangeEvent;
+//import org.rapla.facade.AllocationChangeEvent;
 import org.rapla.facade.ClientFacade;
-import org.rapla.framework.RaplaContext;
+//import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerReservationHelper;
-import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
+//import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 
 
 public class DhbwschedulerReservationHelperTest extends RaplaTestCase {

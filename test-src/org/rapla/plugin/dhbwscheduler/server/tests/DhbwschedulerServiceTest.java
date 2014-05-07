@@ -10,11 +10,11 @@ import junit.framework.TestSuite;
 import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
 import org.rapla.entities.Entity;
-import org.rapla.entities.RaplaType;
+//import org.rapla.entities.RaplaType;
 import org.rapla.entities.User;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.Reservation;
-import org.rapla.entities.storage.RefEntity;
+//import org.rapla.entities.storage.RefEntity;
 import org.rapla.facade.ClientFacade;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
@@ -54,12 +54,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 	
 	public void testMehrereVeranstOhneDoz() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = {
-					type.getId( 20),
-					type.getId( 21),
-					type.getId( 19) };
+			String[] reservationIds = {"20","21","19" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (ProfessorInnen):<br/><br>Test_ohneDoz1<br/><br>Test_ohneDoz2<br/>";
@@ -69,9 +64,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testEineVeranstOhneDoz() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = { type.getId( 20)};
+			String[] reservationIds = {"20" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (ProfessorInnen):<br/><br>Test_ohneDoz1<br/>";
@@ -81,12 +74,13 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testMehrereVeranstOhneKurs() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = {
-					type.getId( 22),
-					type.getId( 23),
-					type.getId( 19) };
+//			@SuppressWarnings("rawtypes")
+//			RaplaType type = RaplaType.get(Reservation.class);
+//			String[] reservationIds = {
+//					type.getId( 22),
+//					type.getId( 23),
+//					type.getId( 19) };
+			String[] reservationIds = {"22","23","19" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (Kurs):<br/><br>Test_ohneKurs1<br/><br>Test_ohneKurs2<br/>";
@@ -96,9 +90,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testEineVeranstOhneKurs() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = { type.getId( 22)};
+			String[] reservationIds = {"22" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (Kurs):<br/><br>Test_ohneKurs1<br/>";
@@ -108,12 +100,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testMehrereVeranstOhneDozKurs() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = {
-					type.getId( 24),
-					type.getId( 25),
-					type.getId( 19) };
+			String[] reservationIds = {"24","25","19" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (ProfessorInnen):<br/><br>Test_ohneDozKurs1<br/><br>Test_ohneDozKurs2<br/><br>Bei folgenden Veranstaltungen fehlen Ressourcen (Kurs):<br/><br>Test_ohneDozKurs1<br/><br>Test_ohneDozKurs2<br/>";
@@ -123,9 +110,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testEineVeranstOhneDozKurs() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = { type.getId( 24)};
+			String[] reservationIds = {"24" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Veranstaltungen fehlen Ressourcen (ProfessorInnen):<br/><br>Test_ohneDozKurs1<br/><br>Bei folgenden Veranstaltungen fehlen Ressourcen (Kurs):<br/><br>Test_ohneDozKurs1<br/>";
@@ -135,9 +120,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testOhnePlanungszyklus() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = { type.getId( 39)};
+			String[] reservationIds = {"39" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "Bei den übergebenen Verantstaltungen fehlt der Planungszyklus.";
@@ -147,9 +130,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testFehlerhafterPlanungszyklus() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = { type.getId( 29)};
+			String[] reservationIds = {"29" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "Bei den übergebenen Verantstaltungen ist der Planungszyklus fehlerhaft.";
@@ -159,12 +140,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testMehrereLeerePlanungsconstraint() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = {
-				type.getId( 30),
-				type.getId( 31),
-				type.getId( 19) };
+			String[] reservationIds = {"30","31","19" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten<br/><br>Test_ConstraintLeer1<br/><br>Test_ConstraintLeer2<br/>";
@@ -174,9 +150,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 
 	public void testEineLeerePlanungsconstraint() {
 		try {
-			@SuppressWarnings("rawtypes")
-			RaplaType type = RaplaType.get(Reservation.class);
-			String[] reservationIds = { type.getId( 30)};
+			String[] reservationIds = {"30" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
 			String erwartet = "<br>Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten<br/><br>Test_ConstraintLeer1<br/>";
@@ -185,9 +159,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 	}
 
 	public void testFeiertagPlanungswoche() {
-		@SuppressWarnings("rawtypes")
-		RaplaType type = RaplaType.get(Reservation.class);
-		String[] reservationIds = { type.getId( 44)};
+		String[] reservationIds = {"44" };
 		String ergebnis = "";
 		try {
 			ergebnis = service.schedule(reservationIds);
@@ -200,6 +172,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
+		@SuppressWarnings("rawtypes")
 		Entity object = null;
 		try {
 			lookup = getContext().lookup(StorageOperator.class);
@@ -220,9 +193,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 	}
 
 	public void testFeiertagFolgewoche() {
-		@SuppressWarnings("rawtypes")
-		RaplaType type = RaplaType.get(Reservation.class);
-		String[] reservationIds = { type.getId( 45)};
+		String[] reservationIds = {"45" };
 		String ergebnis = "";
 		try {
 			ergebnis = service.schedule(reservationIds);
@@ -235,6 +206,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
+		@SuppressWarnings("rawtypes")
 		Entity object = null;
 		try {
 			lookup = getContext().lookup(StorageOperator.class);
@@ -258,9 +230,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 	}
 	
 	public void testPriorisierungDoz() {
-		@SuppressWarnings("rawtypes")
-		RaplaType type = RaplaType.get(Reservation.class);
-		String[] reservationIds = { type.getId( 32)};
+		String[] reservationIds = {"32" };
 		String ergebnis = "";
 		try {
 			ergebnis = service.schedule(reservationIds);
@@ -273,6 +243,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
+		@SuppressWarnings("rawtypes")
 		Entity object = null;
 		try {
 			lookup = getContext().lookup(StorageOperator.class);
@@ -292,9 +263,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 	}
 	
 	public void testPlanungszyklus_beachten() {
-		@SuppressWarnings("rawtypes")
-		RaplaType type = RaplaType.get(Reservation.class);
-		String[] reservationIds = { type.getId( 47)};
+		String[] reservationIds = {"47" };
 		String ergebnis = "";
 		try {
 			ergebnis = service.schedule(reservationIds);
@@ -307,6 +276,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
+		@SuppressWarnings("rawtypes")
 		Entity object = null;
 		try {
 			lookup = getContext().lookup(StorageOperator.class);

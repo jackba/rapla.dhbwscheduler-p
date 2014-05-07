@@ -64,6 +64,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public RaplaMenuItem[] create( final MenuContext menuContext, final RaplaObject focusedObject )
 	{
 		Collection selectedObjects = menuContext.getSelectedObjects();
@@ -552,10 +553,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	
 	public String getUrl(String reservationID, String dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
-		StorageOperator lookup;
-		Reservation veranstaltung;			
+//		StorageOperator lookup;
+//		Reservation veranstaltung;			
 
-		String result;
+		String result = "";
 
 		//Dynamische Generierung "Servername:Port"
 		StartupEnvironment env = getService( StartupEnvironment.class );

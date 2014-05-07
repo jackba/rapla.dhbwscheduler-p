@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerService;
+import org.rapla.plugin.freetime.FreetimeServiceRemote.Holiday;
 import org.rapla.plugin.freetime.server.FreetimeService;
 import org.rapla.plugin.mail.MailException;
 import org.rapla.plugin.mail.MailPlugin;
@@ -650,7 +652,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		// beachten von Feiertagen, nur wenn das holiday-plugin aktiviert ist
 		if (freetimeService != null) {
 			// alle Freiertage im Plaungszeitraum
-			Map<Date,String> holidays = freetimeService.getHolidays(start, ende).get();
+//			Map<Date,String> holidays = freetimeService.getHolidays(start, ende).get();
+			// TODO: Testen ob die Map so sauber gefüllt wird !!! 
+			Map<Date,String> holidays = new HashMap<Date, String>();
+			List<Holiday> holidayList = freetimeService.getHolidays(start, ende);
+			for ( Holiday singleHoliday : holidayList) {
+				holidays.put(singleHoliday.date, singleHoliday.name);
+			}
 			for ( Date holidayDate: holidays.keySet()) {
 				Calendar c = Calendar.getInstance(DateTools.getTimeZone());
 				c.setTime(holidayDate);
@@ -810,7 +818,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		ArrayList<Reservation> veranstaltungenOhneDozent = new ArrayList<Reservation>();
 		String type = "";
 		for (DynamicType alltype : getClientFacade().getDynamicTypes("person")) {
-			if (alltype.getElementKey().equals("professor")) {
+//			if (alltype.getElementKey().equals("professor")) {
+			// TODO: Testen ob getKey das selbe liefert wie getElementKey??????? -> Dann an den anderen Stellen auch einbauen
+			if (alltype.getKey().equals("professor")) {
 				type = alltype.getName(getLocale());
 			}
 		}
@@ -822,7 +832,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				// if the resource is a professor, add it to the set (no
 				// duplicate elements allowed)
 				DynamicType allocatableType = a.getClassification().getType();
-				if (allocatableType.getElementKey().equals("professor")) {
+				if (allocatableType.getKey().equals("professor")) {
 					dozenten.add(a);
 					hasProfessor = true;
 				}
@@ -869,7 +879,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		ArrayList<Reservation> veranstaltungenOhneKurse = new ArrayList<Reservation>();
 		String type = "";
 		for (DynamicType alltype : getClientFacade().getDynamicTypes("resource")) {
-			if (alltype.getElementKey().equals("kurs")) {
+			if (alltype.getKey().equals("kurs")) {
 				type = alltype.getName(getLocale());
 			}
 		}
@@ -878,7 +888,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			Allocatable[] ressourcen = veranstaltung.getAllocatables();
 			boolean hasKurs = false;
 			for (Allocatable a : ressourcen) {
-				if (a.getClassification().getType().getElementKey().equals("kurs")) {
+				if (a.getClassification().getType().getKey().equals("kurs")) {
 					// if the resource is a kurs, add it to the set (no duplicate elements allowed)
 					kurse.add(a);
 					hasKurs = true;
