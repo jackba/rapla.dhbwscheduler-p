@@ -377,10 +377,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				tmp.add(Calendar.WEEK_OF_YEAR, 1);
 				startWeek = tmp.getTime();
 			}
-			//Allocatable[] allocatables = reservation.getAllocatablesFor(appointment);
-
-			// Slot-Datum einstellen
-			
 
 			getClientFacade().store(reservation);
 			reservations.remove((solRes[i][0]) - 1);
@@ -639,8 +635,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 * @throws RaplaException
 	 */
 	private int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende) throws RaplaException {
-
-		//TODO: pruefen ob diese Methode sauber arbeitet. Ich bin mir nicht sicher
 		Calendar startCal = Calendar.getInstance(DateTools.getTimeZone());
 		Calendar endeCal = Calendar.getInstance(DateTools.getTimeZone());
 		startCal.setTime(start);
@@ -656,16 +650,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		// beachten von Feiertagen, nur wenn das holiday-plugin aktiviert ist
 		if (freetimeService != null) {
 			// alle Freiertage im Plaungszeitraum
-//			Map<Date,String> holidays = freetimeService.getHolidays(start, ende).get();
-			// TODO: Testen ob die Map so sauber gefüllt wird !!! 
-			Map<Date,String> holidays = new HashMap<Date, String>();
 			List<Holiday> holidayList = freetimeService.getHolidays(start, ende);
 			for ( Holiday singleHoliday : holidayList) {
-				holidays.put(singleHoliday.date, singleHoliday.name);
-			}
-			for ( Date holidayDate: holidays.keySet()) {
 				Calendar c = Calendar.getInstance(DateTools.getTimeZone());
-				c.setTime(holidayDate);
+				c.setTime(singleHoliday.date);
 				if (c.after(startCal) && c.before(endeCal)) {
 					int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
 					for (int j = 0; j < reservations.size(); j++) {
@@ -739,7 +727,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			}
 			throw (new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
 		}
-		// TODO: ExeptionDates vom Dozenten beachten
+		// TODO: ExceptionDates vom Dozenten beachten
 
 		return vor_res;
 	}
