@@ -119,6 +119,17 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
 			
+			if (veranstaltung.getClassification().getValue("planungszyklus")!=null){
+				//String irgendwas = (String) veranstaltung.getClassification().getValue("planungszyklus");
+				Allocatable xy = (Allocatable) veranstaltung.getClassification().getValue("planungszyklus");
+				semester = (String) xy.getClassification().getValue("semester");
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				
+				beginZeit =  dateFormat.format(xy.getClassification().getValue("startdate"));
+				endZeit = dateFormat.format(xy.getClassification().getValue("enddate"));
+				vorlesungsZeit = endZeit;
+			}
 			
 			dayTimeStart = getCalendarOptions().getWorktimeStartMinutes()/60;
 			dayTimeEnd = getCalendarOptions().getWorktimeEndMinutes()/60;
@@ -181,12 +192,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 				}
 			}
-			//TODO 
-			//Auf der HTML GUI soll der Vorlesungszeitraum aus dem Planungszyklus verwendet werden. (Attribut an "Veranstaltung")
-			beginZeit = veranstaltung.getFirstDate().toLocaleString();
-			endZeit = veranstaltung.getMaxEnd().toLocaleString();
-			beginZeit = beginZeit.substring(0,beginZeit.indexOf(" "));
-			endZeit = endZeit.substring(0,endZeit.indexOf(" "));
+			
 		} catch (RaplaContextException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
