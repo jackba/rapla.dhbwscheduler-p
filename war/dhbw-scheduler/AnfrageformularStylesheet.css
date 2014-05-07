@@ -73,6 +73,9 @@
 	background-color:red;
 	border:1px solid;
 }
+#tableForm1 th{
+	text-align:left;
+}
 /***************************************/
 
 

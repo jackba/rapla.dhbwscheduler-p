@@ -120,7 +120,6 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
 			
 			if (veranstaltung.getClassification().getValue("planungszyklus")!=null){
-				//String irgendwas = (String) veranstaltung.getClassification().getValue("planungszyklus");
 				Allocatable xy = (Allocatable) veranstaltung.getClassification().getValue("planungszyklus");
 				semester = (String) xy.getClassification().getValue("semester");
 				
@@ -251,17 +250,19 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.print("		<input id='hiddenUrl' type='hidden' name='' value='"+linkPrefix+"rapla\'>");
 		out.print("		<div id='wrapper'>");
 		out.println("		<h3>");
-		out.print("				" + getI18n().getString("Planung_des", new Locale(lang)) + " "+semester+". " + getI18n().getString("Semesters", new Locale(lang)) + " " + studiengang +  ";</br>");
+		out.print("				" + getI18n().getString("Planung_des", new Locale(lang)) + " "+semester+". " + getI18n().getString("Semesters", new Locale(lang)) + " " + studiengang +  "</br>");
 		out.print("				" + getI18n().getString("Kurs", new Locale(lang)) + " " + kursName + ", "+beginZeit+" " + getI18n().getString("bis", new Locale(lang)) + " "+endZeit+" (" + getI18n().getString("Ende_der_Vorlesungszeit", new Locale(lang)) + " "+vorlesungsZeit+")");
 		out.println("		</h3>");
 
 		out.println("		<table id='tableForm1'>");
 		out.print("				<tr>");
-		out.print("					<th>" + getI18n().getString("Dozent_in", new Locale(lang)) + "</td>");
+		out.print("					<th>" + getI18n().getString("Dozent_in", new Locale(lang)) + "</th>");
+		out.print("					<td></td>");
 		out.print("					<td><input disabled='disabled' type='text' value='" + dozent + "'/></td>");
 		out.print("				</tr>");
 		out.print("				<tr>");
-		out.print("					<th>" + getI18n().getString("Lehrveranstaltung", new Locale(lang)) + "</td>");
+		out.print("					<th>" + getI18n().getString("Lehrveranstaltung", new Locale(lang)) + "</th>");
+		out.print("					<td></td>");
 		out.print("					<td><input disabled='disabled' type='text' value='" + veranst + "'/></td>");
 		out.print("				</tr>");
 		out.println("		</table>");
