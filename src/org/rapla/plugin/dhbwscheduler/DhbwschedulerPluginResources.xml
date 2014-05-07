@@ -187,7 +187,7 @@
     	<text lang="de">Planung des </text>
     </entry>
     <entry key="Semesters">
-    	<text lang="en">semesters </text>
+    	<text lang="en">semester </text>
     	<text lang="de">Semesters </text>
     </entry>
     <entry key="Kurs">
@@ -195,7 +195,7 @@
     	<text lang="de">Kurs </text>
     </entry>
     <entry key="Ende_der_Vorlesungszeit">
-    	<text lang="en">End of the semester: </text>
+    	<text lang="en">End of semester: </text>
     	<text lang="de">Ende der Vorlesungszeit: </text>
     </entry>
     <entry key="bis">
@@ -223,19 +223,19 @@
     	<text lang="de">Bitte nennen Sie die Zeiten, zu denen wir Sie f&amp;#252;r die o.a. Vorlesung(en) einplanen k&amp;#246;nnen. Gehen Sie bitte beim Ausf&amp;#252;llen der Stundentabelle folgenderma&amp;#223;en vor:</text>
     </entry>
     <entry key="SetzenSieEinMinus">
-    	<text lang="en">Put a - (minus) in all time fields in which you can not!</text>
+    	<text lang="en">Put - (minus) in all time the fields in which you are not able!</text>
     	<text lang="de">Setzen Sie ein - (Minus) in alle Zeitfelder, in denen Sie nicht k&amp;#246;nnen!</text>
     </entry>
     <entry key="SetzenSieEinPlus">
-    	<text lang="en">Put a + (plus) in all time fields in which you can not!</text>
-    	<text lang="de">Setzen Sie ein + (Plus) in alle Zeitfelder, in denen Sie nicht k&amp;#246;nnen!</text>
+    	<text lang="en">Put + (plus) in all time the fields in which you are able!</text>
+    	<text lang="de">Setzen Sie ein + (Plus) in alle Zeitfelder, in denen Sie k&amp;#246;nnen!</text>
     </entry>
     <entry key="Vorlesungsstunden">
     	<text lang="en">lecture hours</text>
     	<text lang="de">Vorlesungsstunden</text>
     </entry>
     <entry key="Stundentabelle">
-    	<text lang="en">hours table</text>
+    	<text lang="en">Hours table</text>
     	<text lang="de">Stundentabelle</text>
     </entry>
     <entry key="Montag">
@@ -267,7 +267,7 @@
     	<text lang="de">Sonntag</text>
     </entry>
     <entry key="Zeit">
-    	<text lang="en">time</text>
+    	<text lang="en">Time</text>
     	<text lang="de">Zeit</text>
     </entry>
     <entry key="Ausnahmen_Frage">
