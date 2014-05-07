@@ -111,7 +111,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 
 		if (reservations.size() == 0) {
-			return "keine Veranstaltungen zu planen";
+			return "Keine Veranstaltungen zu planen";
 		}
 
 		String postProcessingResults = "";
@@ -497,7 +497,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 */
 	private Appointment createNewAppointment(Reservation veranstaltung, Repeating repeating, Date start, Date end, Date dateOfConflict) throws RaplaException {
 		//TODO: waiting for Kohlhaas
-		if (!(repeating.isException(dateOfConflict.getTime()))) {
+		if ((repeating != null)
+				&& (!(repeating.isException(dateOfConflict.getTime())))) {
 			repeating.addException(dateOfConflict);
 		}
 		// add a new appointment for the date with the conflict
