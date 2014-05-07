@@ -435,15 +435,13 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 								boolean isSend = false;
 
-								String compDoz =  r.getPersons()[t].getId();
-								String dozentID = compDoz;
-
+								String dozentID =  r.getPersons()[t].getId();
+								
 								String pTest = r.getId();
 								String reservationID = pTest;
 
 								//Überprüfung ob es nötig ist eine E-Mail zu versenden.
-								int dozentKey = Allocatable.TYPE.getKey(dozentID);
-								if(EmailVersendeBerechtigung(r,dozentKey)){
+								if(EmailVersendeBerechtigung(r,dozentID)){
 
 									try {
 										String url = getUrl(reservationID,dozentID);
@@ -463,9 +461,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 											String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 
 											//nur Ändern wenn der Status nich schon 1 ist 1 = eingeladen
-											if(ConstraintService.getStatus(strConstraint, dozentKey) != 1){
+											if(ConstraintService.getStatus(strConstraint, dozentID) != 1){
 
-												String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentKey, ConstraintService.CHANGE_SINGLESTATUS, 1);
+												String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID, ConstraintService.CHANGE_SINGLESTATUS, 1);
 												//Status auf eingeladen setzen;
 												if (newConstraint == null){
 													//Fehler beim ändern des Constraints
@@ -497,7 +495,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								}
 
 								//status
-								message += "\t status: " + getErfassungsstatusDoz(r,dozentKey) + "\n";
+								message += "\t status: " + getErfassungsstatusDoz(r,dozentID) + "\n";
 								String statusConstraint = (String) r.getClassification().getValue("planungsconstraints");
 								r = HelperClass.changeReservationAttribute(r,"erfassungsstatus",HelperClass.getStringStatus(ConstraintService.getReservationStatus(statusConstraint)));
 							}
@@ -585,12 +583,10 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 
-		int[] dozids = new int[r.getPersons().length];
+		String[] dozids = new String[r.getPersons().length];
 
 		for (int x = 0; x < r.getPersons().length; x++){
-			String pDozi = r.getPersons()[x].getId();
-			String pID =  pDozi;
-			dozids[x] = Allocatable.TYPE.getKey(pID);
+			dozids[x] = r.getPersons()[x].getId();
 		}
 
 		String newConstraint = ConstraintService.initDozConstraint(strConstraint,dozids);
@@ -603,7 +599,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	/*
 	 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
 	 */
-	private boolean EmailVersendeBerechtigung(Reservation r, int dozentenID) {
+	private boolean EmailVersendeBerechtigung(Reservation r, String dozentenID) {
 
 		final int intUneingeladen = 0;
 		final int intEingeladen = 1;
@@ -638,7 +634,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	}
 
 	
-	private String getErfassungsstatusDoz(Reservation r, int key) {
+	private String getErfassungsstatusDoz(Reservation r, String key) {
 		
 		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");

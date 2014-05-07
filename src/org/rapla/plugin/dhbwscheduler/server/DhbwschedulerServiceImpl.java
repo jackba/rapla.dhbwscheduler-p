@@ -818,8 +818,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		ArrayList<Reservation> veranstaltungenOhneDozent = new ArrayList<Reservation>();
 		String type = "";
 		for (DynamicType alltype : getClientFacade().getDynamicTypes("person")) {
-//			if (alltype.getElementKey().equals("professor")) {
-			// TODO: Testen ob getKey das selbe liefert wie getElementKey??????? -> Dann an den anderen Stellen auch einbauen
 			if (alltype.getKey().equals("professor")) {
 				type = alltype.getName(getLocale());
 			}
@@ -1184,9 +1182,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			ClientFacade facade = getContext().lookup(ClientFacade.class);
 			Preferences prefs = facade.getPreferences(null);
 			final String defaultSender = prefs.getEntryAsString(MailPlugin.DEFAULT_SENDER_ENTRY, "");
-
+			
 			String constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints");
-			int status = ConstraintService.getStatus(constraint, Allocatable.TYPE.getKey(dozentId));
+			int status = ConstraintService.getStatus(constraint, dozentId);
 
 			// 1 = eingeladen das bedeutet er hat shcon eine Mail bekommen und muss erinnert werden.
 			if (status == 1) {

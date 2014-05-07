@@ -25,7 +25,7 @@ public class ConstraintService{
 	 * @param value
 	 * @return
 	 */
-	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object value){
+	public static String changeDozConstraint(String constraint, String doz_ID, int changevalue,Object value){
 		Object[] obj = new Object[1];
 		obj[0] = value;
 		return changeDozConstraint(constraint, doz_ID, changevalue, obj );
@@ -39,7 +39,7 @@ public class ConstraintService{
 	 * @param value
 	 * @return
 	 */
-	public static String changeDozConstraint(String constraint, int doz_ID, int changevalue,Object[] value){
+	public static String changeDozConstraint(String constraint, String doz_ID, int changevalue,Object[] value){
 		String result = "";
 		
 		if (constraint == null){
@@ -51,7 +51,7 @@ public class ConstraintService{
 //			return constraint;
 //		}
 		
-		int[] dozentIds = getDozIDs(constraint);
+		String[] dozentIds = getDozIDs(constraint);
 		String[] dozentConstraints = new String[dozentIds.length];
 		
 		Date[][] execptions = new Date[dozentIds.length][];
@@ -63,7 +63,7 @@ public class ConstraintService{
 			int dozstatus = getStatus(constraint,dozentIds[i]);
 			dozentConstraints[i] = getDozStringConstraint(constraint, dozentIds[i]);
 			
-			if (dozentIds[i] == doz_ID){
+			if (dozentIds[i].equals(doz_ID)){
 				try{
 					switch(changevalue){
 					case CHANGE_SINGLEDATES:
@@ -96,12 +96,12 @@ public class ConstraintService{
 	 * @param dozID
 	 * @return
 	 */
-	public static String initDozConstraint(String constraint, int[] dozID){
+	public static String initDozConstraint(String constraint, String[] dozID){
 		
 		String newConstraint ="";
 		
 		if (constraint == null){
-			int[] dozentid = new int[dozID.length];
+			String[] dozentid = new String[dozID.length];
 			int[] newStatus = new int[dozID.length];
 
 			for (int x = 0; x < dozID.length; x++){
@@ -120,9 +120,9 @@ public class ConstraintService{
 				//ist der Dozent schon vorhanden, wird der Constraint beibehalten, bei einem neuen Dozenten wird dieser hinzugefügt. 
 				for(int i = 0; i< ConstraintService.getDozIDs(constraint).length ; i++){
 					
-					int key = ConstraintService.getDozIDs(constraint)[i];
+					String key = ConstraintService.getDozIDs(constraint)[i];
 					
-					if (key == dozID[x]){
+					if (key.equals(dozID[x])){
 						
 						
 						newConstraint += buildDozConstraint(key, 
@@ -157,14 +157,14 @@ public class ConstraintService{
 	 * @param status
 	 * @return
 	 */
-	public static String addorchangeSingleDozConstraint(String constraint, int dozID, String dozConst, Date[] exceptDate, int status){
+	public static String addorchangeSingleDozConstraint(String constraint, String dozID, String dozConst, Date[] exceptDate, int status){
 		String newConstraint = constraint;
 		boolean newdoz = false;
 		if (newConstraint == null){
 			return buildDozConstraint(dozID,dozConst,exceptDate,status);
 		}
-		for(int dozkey : ConstraintService.getDozIDs(newConstraint)){
-			if(dozkey == dozID){
+		for(String dozkey : ConstraintService.getDozIDs(newConstraint)){
+			if(dozkey.equals(dozID)){
 				//Dozent gibt es schon da drin muss also nicht neu hinzugefügt werden
 				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLEDATES,exceptDate);
 				newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLECONSTRAINT,dozConst);
@@ -195,8 +195,8 @@ public class ConstraintService{
 	 * @param status
 	 * @return
 	 */
-	public static String buildDozConstraint(int dozID, String dozConst, Date[] exceptDate, int status){
-		int[] dozIDs = new int[1];
+	public static String buildDozConstraint(String dozID, String dozConst, Date[] exceptDate, int status){
+		String[] dozIDs = new String[1];
 		dozIDs[0] = dozID;
 		
 		String[] dozConsts= new String[1];
@@ -227,7 +227,7 @@ public class ConstraintService{
 	 * @param status
 	 * @return
 	 */
-	public static String buildDozConstraint(int[] dozIDs, String[] dozConsts, Date[][] exceptDates, int[] status){
+	public static String buildDozConstraint(String[] dozIDs, String[] dozConsts, Date[][] exceptDates, int[] status){
  		String result = "";
 		
 		for(int i = 0; i<dozIDs.length; i++) {
@@ -271,18 +271,18 @@ public class ConstraintService{
 	 * @param constraint
 	 * @return
 	 */
-	public static int[] getDozIDs(String constraint){
-		int[] result = {};
+	public static String[] getDozIDs(String constraint){
+		String[] result = {};
 		if (constraint == null || constraint.equals("")) {
 			return result;
 		}
 		String dozCount[] = constraint.split("\n");
-		result = new int[dozCount.length];
+		result = new String[dozCount.length];
 		
 		
 		for(int i = 0; i < dozCount.length; i++){
 			String[] split = dozCount[i].split("_");
-			result[i] = Integer.valueOf(split[0]);
+			result[i] = split[0];
 		}
 		return result;
 	}
@@ -293,7 +293,7 @@ public class ConstraintService{
 	 * @param dozID
 	 * @return
 	 */
-	public static String getDozStringConstraint (String constraint, int dozID){
+	public static String getDozStringConstraint (String constraint, String dozID){
 		String dozConstraints = "";
 		
 		if (constraint == null){
@@ -305,7 +305,7 @@ public class ConstraintService{
 		for(String dozConst:dozCount){
 			
 			String[] split = dozConst.split("_");
-			if (Integer.valueOf(split[0]) == dozID){
+			if (split[0].equals(dozID)){
 				dozConstraints = split[1];
 				break;
 			}
@@ -361,7 +361,7 @@ public class ConstraintService{
 	 * @param doz_ID
 	 * @return
 	 */
-	public static int[] getDozIntConstraints (String constraint, int doz_ID){
+	public static int[] getDozIntConstraints (String constraint, String doz_ID){
 		int [] ergebnis = {};
 		
 		if (constraint == null){
@@ -373,7 +373,7 @@ public class ConstraintService{
 		for(String dozConst:dozCount){
 			
 			String[] split = dozConst.split("_");
-			if (Integer.valueOf(split[0]) == doz_ID){
+			if (split[0].equals(doz_ID)){
 				ergebnis = new int[168];
 				int index = dozConst.indexOf('_')+1;
 
@@ -432,7 +432,7 @@ public class ConstraintService{
 	 * @param doz_ID
 	 * @return
 	 */
-	public static Date[] getExceptionDatesDoz (String constraint,int doz_ID ){
+	public static Date[] getExceptionDatesDoz (String constraint,String doz_ID ){
 		Date[] ergebnis = {};
 		
 		if (constraint == null){
@@ -445,7 +445,7 @@ public class ConstraintService{
 		for(int i = 0; i< dozCount.length;i++){
 			String[] split = dozCount[i].split("_");
 		
-			if (Integer.valueOf(split[0]) == doz_ID){
+			if (split[0].equals(doz_ID)){
 				if(!split[2].split(",").equals("")){
 					exceptionDates = split[2].split(",");
 				}
@@ -476,7 +476,7 @@ public class ConstraintService{
 	 * @return
 	 */
 	public static int getReservationStatus(String constraint){
-		int[] dozIDs = getDozIDs(constraint);
+		String[] dozIDs = getDozIDs(constraint);
 		
 		int returnvalue = -1;
 		
@@ -527,7 +527,7 @@ public class ConstraintService{
 	 * @param doz_ID
 	 * @return
 	 */
-	public static int getStatus(String constraint, int doz_ID){
+	public static int getStatus(String constraint, String doz_ID){
 		
 		if (constraint == null){
 			return -1;
@@ -538,7 +538,7 @@ public class ConstraintService{
 		for(String DozConst:DozCount){
 			
 			String[] split = DozConst.split("_");
-			if (Integer.valueOf(split[0]) == doz_ID){
+			if (split[0].equals(doz_ID)){
 				return Integer.valueOf(split[3]);
 			}
 		}
