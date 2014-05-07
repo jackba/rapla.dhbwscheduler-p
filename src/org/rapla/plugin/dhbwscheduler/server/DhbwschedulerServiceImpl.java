@@ -495,7 +495,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 * @throws RaplaException
 	 */
 	private Appointment createNewAppointment(Reservation veranstaltung, Repeating repeating, Date start, Date end, Date dateOfConflict) throws RaplaException {
-		//TODO: waiting for Kohlhaas
 		if ((repeating != null)
 				&& (!(repeating.isException(dateOfConflict.getTime())))) {
 			repeating.addException(dateOfConflict);
