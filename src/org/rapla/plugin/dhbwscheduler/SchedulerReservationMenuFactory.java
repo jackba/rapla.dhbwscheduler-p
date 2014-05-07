@@ -2,40 +2,31 @@ package org.rapla.plugin.dhbwscheduler;
 
 import java.awt.Component;
 import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
-import org.rapla.entities.Entity;
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.RaplaObject;
 import org.rapla.entities.domain.Allocatable;
@@ -43,33 +34,19 @@ import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.storage.RefEntity;
-import org.rapla.entities.storage.internal.SimpleIdentifier;
-import org.rapla.facade.ClientFacade;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
-import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
 import org.rapla.framework.StartupEnvironment;
-import org.rapla.framework.TypedComponentRole;
 import org.rapla.gui.MenuContext;
 import org.rapla.gui.ObjectMenuFactory;
-import org.rapla.gui.PublishExtension;
-import org.rapla.gui.PublishExtensionFactory;
 import org.rapla.gui.RaplaGUIComponent;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.RaplaButton;
 import org.rapla.gui.toolkit.RaplaMenuItem;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
-import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
-import org.rapla.servletpages.RaplaPageGenerator;
+import org.rapla.plugin.urlencryption.UrlEncryption;
 import org.rapla.storage.StorageOperator;
-import org.rapla.plugin.mail.MailException;
-import org.rapla.plugin.mail.MailToUserInterface;
-import org.rapla.plugin.mail.server.MailapiClient;
-import org.rapla.plugin.urlencryption.*;
-import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
-
-import com.sun.xml.internal.ws.api.server.Container;
 
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
@@ -218,15 +195,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					{
 
 
-						List<SimpleIdentifier> reservationIds = new ArrayList<SimpleIdentifier>();
+						List<String> reservationIds = new ArrayList<String>();
 
 						for ( Reservation obj: selectedReservations)
 						{
-							Comparable id = ((RefEntity<?>) obj).getId();
-							reservationIds.add((SimpleIdentifier)id);
+							String id = obj.getId();
+							reservationIds.add(id);
 						}
 
-						SimpleIdentifier[] ids = reservationIds.toArray( new SimpleIdentifier[] {});
+						String[] ids = reservationIds.toArray( new String[] {});
 						String result = service.schedule(ids);
 						getClientFacade().refresh();
 						JTextArea content = new JTextArea();
@@ -287,11 +264,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								for (int t = 0; t < r.getPersons().length; t++)
 								{
 
-									Comparable pTest = ((RefEntity<?>) r.getPersons()[t]).getId();
-									SimpleIdentifier pID = (SimpleIdentifier) pTest;
+									String pTest =  r.getPersons()[t].getId();
+									String pID =  pTest;
 
-									Comparable rSI = ((RefEntity<?>) r).getId();
-									SimpleIdentifier resID = (SimpleIdentifier) rSI;
+									String rSI =  r.getId();
+									String resID =  rSI;
 
 									String studiengang = HelperClass.getStudiengang(r);
 //									if (r.getClassification().getValue("studiengang")!=null)
@@ -457,14 +434,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 								boolean isSend = false;
 
-								Comparable compDoz = ((RefEntity<?>) r.getPersons()[t]).getId();
-								SimpleIdentifier dozentID = (SimpleIdentifier) compDoz;
+								String compDoz =  r.getPersons()[t].getId();
+								String dozentID = compDoz;
 
-								Comparable pTest = ((RefEntity<?>) r).getId();
-								SimpleIdentifier reservationID = (SimpleIdentifier) pTest;
+								String pTest = r.getId();
+								String reservationID = pTest;
 
 								//Überprüfung ob es nötig ist eine E-Mail zu versenden.
-								if(EmailVersendeBerechtigung(r,dozentID.getKey())){
+								int dozentKey = Allocatable.TYPE.getKey(dozentID);
+								if(EmailVersendeBerechtigung(r,dozentKey)){
 
 									try {
 										String url = getUrl(reservationID,dozentID);
@@ -484,9 +462,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 											String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 
 											//nur Ändern wenn der Status nich schon 1 ist 1 = eingeladen
-											if(ConstraintService.getStatus(strConstraint, dozentID.getKey()) != 1){
+											if(ConstraintService.getStatus(strConstraint, dozentKey) != 1){
 
-												String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID.getKey(), ConstraintService.CHANGE_SINGLESTATUS, 1);
+												String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentKey, ConstraintService.CHANGE_SINGLESTATUS, 1);
 												//Status auf eingeladen setzen;
 												if (newConstraint == null){
 													//Fehler beim ändern des Constraints
@@ -518,7 +496,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								}
 
 								//status
-								message += "\t status: " + getErfassungsstatusDoz(r,dozentID.getKey()) + "\n";
+								message += "\t status: " + getErfassungsstatusDoz(r,dozentKey) + "\n";
 								String statusConstraint = (String) r.getClassification().getValue("planungsconstraints");
 								r = HelperClass.changeReservationAttribute(r,"erfassungsstatus",HelperClass.getStringStatus(ConstraintService.getReservationStatus(statusConstraint)));
 							}
@@ -572,12 +550,11 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 	}
 	
-	public String getUrl(SimpleIdentifier reservationID, SimpleIdentifier dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
+	public String getUrl(String reservationID, String dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
 		StorageOperator lookup;
 		Reservation veranstaltung;			
 
-		String veranstaltungsId = String.valueOf(reservationID.getKey());
 		String result;
 
 		//Dynamische Generierung "Servername:Port"
@@ -588,9 +565,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		String key;
 		//String strLanguage = this.getRaplaLocale().LANGUAGE_ENTRY;
 		
-		result = codeBase + "rapla?page=scheduler-constraints&id=" + veranstaltungsId + "&dozent=" + String.valueOf(dozentId.getKey());
+		result = codeBase + "rapla?page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
 		webservice = getService(UrlEncryption.class);
-		String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + veranstaltungsId + "&dozent=" + String.valueOf(dozentId.getKey()));
+		String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId);
 		key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
 
 		try{
@@ -610,10 +587,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		int[] dozids = new int[r.getPersons().length];
 
 		for (int x = 0; x < r.getPersons().length; x++){
-			Comparable pDozi = ((RefEntity<?>) r.getPersons()[x]).getId();
-			SimpleIdentifier pID = (SimpleIdentifier) pDozi;
-
-			dozids[x] = pID.getKey();
+			String pDozi = r.getPersons()[x].getId();
+			String pID =  pDozi;
+			dozids[x] = Allocatable.TYPE.getKey(pID);
 		}
 
 		String newConstraint = ConstraintService.initDozConstraint(strConstraint,dozids);

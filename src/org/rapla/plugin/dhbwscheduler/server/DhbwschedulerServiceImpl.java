@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.gnu.glpk.GLPK;
@@ -24,8 +25,6 @@ import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_tran;
 import org.gnu.glpk.glp_tree;
 import org.rapla.components.util.DateTools;
-import org.rapla.components.util.ParseDateException;
-import org.rapla.components.util.SerializableDateTimeFormat;
 import org.rapla.entities.User;
 import org.rapla.entities.configuration.Preferences;
 import org.rapla.entities.domain.Allocatable;
@@ -34,10 +33,10 @@ import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Repeating;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.domain.internal.AppointmentImpl;
+import org.rapla.entities.domain.internal.ReservationImpl;
 import org.rapla.entities.dynamictype.DynamicType;
-import org.rapla.entities.storage.RefEntity;
-import org.rapla.entities.storage.internal.SimpleIdentifier;
 import org.rapla.facade.ClientFacade;
+import org.rapla.facade.Conflict;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
@@ -81,7 +80,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	/**
 	 * @param context
 	 */
-	public DhbwschedulerServiceImpl(RaplaContext context,User user) {
+	public DhbwschedulerServiceImpl(RaplaContext context, User user) {
 		super(context);
 		this.user = user;
 		setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
@@ -94,14 +93,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 * org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
 	 */
 	@Override
-	public String schedule(SimpleIdentifier[] reservationIds)
+	public String schedule(String[] reservationIds)
 			throws RaplaException {
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
 		reservationsPlannedByScheduler = new ArrayList<Reservation>();
 		reservations = new ArrayList<Reservation>();
-		for (SimpleIdentifier id : reservationIds) {
-			RefEntity<?> object = lookup.resolve(id);
-			Reservation reservation = (Reservation) object;
+		for (String id : reservationIds) {
+			Reservation reservation = (Reservation) lookup.resolve(id);
 			
 			String string = getString("planning_closed");
 			String value = (String) reservation.getClassification().getValue("planungsstatus");
@@ -360,6 +358,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 
 		Date newStart = new Date(tmp.getTimeInMillis());
+		Date startWeek = startDatum;
+		tmp.setTimeInMillis(startWeek.getTime());
 
 		int[][] solRes = splitSolution(solutionString);
 
@@ -367,12 +367,16 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			Reservation reservation = reservations.get((solRes[i][0]) - 1);
 			result += reservation.getClassification().getName(getLocale()) + ": " + solRes[i][1] + "\n";
 			reservation = getClientFacade().edit(reservation);
-			Appointment appointment = reservation.getAppointments()[0];
-			Allocatable[] allocatables = reservation.getAllocatablesFor(appointment);
+			for(Appointment appointment : reservation.getAppointments()){
+				newStart = setStartDate(solRes[i][1], startWeek, reservation);
+				appointment.move(newStart);
+				tmp.add(Calendar.WEEK_OF_YEAR, 1);
+				startWeek = tmp.getTime();
+			}
+			//Allocatable[] allocatables = reservation.getAllocatablesFor(appointment);
 
 			// Slot-Datum einstellen
-			newStart = setStartDate(solRes[i][1], startDatum, reservation);
-			appointment.move(newStart);
+			
 
 			getClientFacade().store(reservation);
 			reservations.remove((solRes[i][0]) - 1);
@@ -397,15 +401,16 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	private String resolveConflicts(Date startDatum, Date endDatum) throws RaplaException {
 		String notResolved = "";
 		for (Reservation veranstaltung : reservationsPlannedByScheduler){
-			/*TODO: to test /get all conflicts caused by this reservation
+			//TODO: to test / get all conflicts caused by this reservation
 			while (getClientFacade().getConflicts(veranstaltung).length > 0) {
 				// if there are conflicts, move the appointment
 				Conflict[] conflicts = getClientFacade().getConflicts(veranstaltung);
 				Conflict conflict = conflicts[0];
 				Appointment newApp = null;
+				String appointmentId = conflict.getAppointment1();
 				// add an exception to the conflicting appointment for the conflicting date
-				Appointment conflictingAppointment = conflict.getAppointment1();
-				Date dateOfConflict = conflict.getFirstConflictDate(startDatum, endDatum);
+				Appointment conflictingAppointment = (Appointment)((ReservationImpl)veranstaltung).findEntityForId(appointmentId);
+				Date dateOfConflict = conflict.getStartDate();
 				Repeating repeating = conflictingAppointment.getRepeating();
 				if (repeating != null) {
 					newApp = createNewAppointment(veranstaltung, repeating, conflictingAppointment.getStart(), conflictingAppointment.getEnd(), dateOfConflict);
@@ -428,7 +433,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 						notResolved += (veranstaltung.getName(getLocale()) + "beyond_planning_peroid" + "\n");
 					}
 				}
-			}*/
+			}
 		}
 		return notResolved;
 		
@@ -450,10 +455,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		int[] dozConstr = ConstraintService.getDozConstraints(getDozentenConstraint(veranstaltung));
 		int stelleConstraint = 0;
 		boolean breakLoop = false;
-		Calendar calInst = Calendar.getInstance();
+		Calendar calInst = Calendar.getInstance(DateTools.getTimeZone());
 		while(dozConstr[stelleConstraint] <= 0){
 			newStart = getNextFreeTime(veranstaltung.getAllocatables(), newAppointment, nextStartDate, endDatum);
-			calInst.setTime(newStart);
+			calInst.setTimeInMillis(newStart.getTime());
 			int dayOfWeek = calInst.get(Calendar.DAY_OF_WEEK);
 			int slot = 0;
 			int hour = calInst.get(Calendar.HOUR_OF_DAY);
@@ -494,7 +499,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			repeating.addException(dateOfConflict);
 		}
 		// add a new appointment for the date with the conflict
-		Appointment newApp = getModification().newAppointment(start, end);
+		Appointment newApp = getModification().newAppointment(start, end, user);
 		veranstaltung.addAppointment(newApp);
 		return newApp;
 	}
@@ -645,23 +650,16 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		// beachten von Feiertagen, nur wenn das holiday-plugin aktiviert ist
 		if (freetimeService != null) {
 			// alle Freiertage im Plaungszeitraum
-			String[][] holidays = freetimeService.getHolidays(start, ende);
-			for (int i = 0; i < holidays.length; i++) {
-				String holiday = holidays[i][0];
-				SerializableDateTimeFormat dateFormat = new SerializableDateTimeFormat();
-				try {
-					Date holidayDate = dateFormat.parseDate(holiday, false);
-					Calendar c = Calendar.getInstance();
-					c.setTime(holidayDate);
-					if (c.after(startCal) && c.before(endeCal)) {
-						int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
-						for (int j = 0; j < reservations.size(); j++) {
-							vor_res[j][timeSlots[dayOfWeekOfHoliday][0]] = 0;
-							vor_res[j][timeSlots[dayOfWeekOfHoliday][1]] = 0;
-						}
+			Map<Date,String> holidays = freetimeService.getHolidays(start, ende).get();
+			for ( Date holidayDate: holidays.keySet()) {
+				Calendar c = Calendar.getInstance(DateTools.getTimeZone());
+				c.setTime(holidayDate);
+				if (c.after(startCal) && c.before(endeCal)) {
+					int dayOfWeekOfHoliday = c.get(Calendar.DAY_OF_WEEK);
+					for (int j = 0; j < reservations.size(); j++) {
+						vor_res[j][timeSlots[dayOfWeekOfHoliday][0]] = 0;
+						vor_res[j][timeSlots[dayOfWeekOfHoliday][1]] = 0;
 					}
-				} catch (ParseDateException e) {
-					getLogger().warn(e.getLocalizedMessage());
 				}
 			}
 		}
@@ -683,7 +681,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					Appointment[] termine = splitIntoSingleAppointments(vorlesungMitGleicherResource);
 					for (Appointment termin : termine) {
 						Date beginn = termin.getStart();
-						Calendar cal = Calendar.getInstance();
+						Calendar cal = Calendar.getInstance(DateTools.getTimeZone());
 						cal.setTime(beginn);
 
 						if (termin.isWholeDaysSet()) {
@@ -1133,7 +1131,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 
 	@Override
-	public boolean sendMail(SimpleIdentifier reservationID, SimpleIdentifier dozentId, String login, String url) throws RaplaException {
+	public boolean sendMail(String reservationID, String dozentId, String login, String url) throws RaplaException {
 
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
 		final MailInterface mailClient = getContext().lookup(MailInterface.class);
@@ -1178,7 +1176,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			final String defaultSender = prefs.getEntryAsString(MailPlugin.DEFAULT_SENDER_ENTRY, "");
 
 			String constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints");
-			int status = ConstraintService.getStatus(constraint, dozentId.getKey());
+			int status = ConstraintService.getStatus(constraint, Allocatable.TYPE.getKey(dozentId));
 
 			// 1 = eingeladen das bedeutet er hat shcon eine Mail bekommen und muss erinnert werden.
 			if (status == 1) {
