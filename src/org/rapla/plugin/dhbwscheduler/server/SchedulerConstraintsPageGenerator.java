@@ -119,6 +119,10 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
 			
+			
+			dayTimeStart = getCalendarOptions().getWorktimeStartMinutes()/60;
+			dayTimeEnd = getCalendarOptions().getWorktimeEndMinutes()/60;
+			
 			veranst = veranstaltung.getName(getLocale());
 			for (int i = 0; i < veranstaltung.getPersons().length; i++)
 			{
@@ -291,7 +295,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("			</thead>");
 		out.println(" 			<tbody id='timeTableBody'>");
 
-		String[][] timeArray = formatTimeString(time);
+		String[][] timeArray = formatTimeString(time,dayTimeStart,dayTimeEnd);
 		String tempVal="";
 		for(int i=dayTimeStart;i<dayTimeEnd;i++){
 
@@ -357,13 +361,22 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		return strArr[2]+"-"+strArr[1]+"-"+strArr[0];		
 	}
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
-	private String[][] formatTimeString(String str){
+	private String[][] formatTimeString(String str,int dayTimeStart, int dayTimeEnd){
 		//Überprüfen ob TimeString leer ist, ggf. füllen
 		if(str.equals("") || str == null){
 			//24*7 =168
-			for(int i=0;i<168;i++){
-				str+="0";
+			
+			for (int j = 0; j<7 ; j++)
+			{
+				for (int i = 0; i<24 ; i++){
+					if (i< dayTimeStart || i> dayTimeEnd){
+						str+="0";
+					}else{
+						str+="1";
+					}
+				}
 			}
+			
 		}
 		char[] charArray = str.toCharArray();
 		int counter=0;		//Zähler um Wochentage durch zu zählen
