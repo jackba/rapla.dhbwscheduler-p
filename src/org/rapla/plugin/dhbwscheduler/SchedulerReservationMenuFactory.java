@@ -56,11 +56,13 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	public static final String planungsstatus = new String("planungsstatus");
 	DhbwschedulerService service;
 	DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
+	UrlEncryption urlEncryption;
 	
-	public SchedulerReservationMenuFactory( RaplaContext context, Configuration config, DhbwschedulerService service) throws RaplaException
+	public SchedulerReservationMenuFactory( RaplaContext context, Configuration config, DhbwschedulerService service, UrlEncryption urlEncryption) throws RaplaException
 	{
 		super( context );
 		this.service = service;
+		this.urlEncryption = urlEncryption;
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 
@@ -551,23 +553,18 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	
 	public String getUrl(String reservationID, String dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
-//		StorageOperator lookup;
-//		Reservation veranstaltung;			
-
 		String result = "";
 
 		//Dynamische Generierung "Servername:Port"
 		StartupEnvironment env = getService( StartupEnvironment.class );
 		URL codeBase = env.getDownloadURL();
 
-		UrlEncryption webservice;
 		String key;
 		//String strLanguage = this.getRaplaLocale().LANGUAGE_ENTRY;
 		
 		result = codeBase + "rapla?page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
 		try {
-			webservice = getService(UrlEncryption.class);
-			String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId);
+			String encryptedParamters = urlEncryption.encrypt("page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId);
 			key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
 		} catch( UnsupportedOperationException e) {
 			//URLEncryption funktioniert nicht
