@@ -565,9 +565,14 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		//String strLanguage = this.getRaplaLocale().LANGUAGE_ENTRY;
 		
 		result = codeBase + "rapla?page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
-		webservice = getService(UrlEncryption.class);
-		String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId);
-		key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
+		try {
+			webservice = getService(UrlEncryption.class);
+			String encryptedParamters = webservice.encrypt("page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId);
+			key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
+		} catch( UnsupportedOperationException e) {
+			//URLEncryption funktioniert nicht
+			key = "page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
+		}
 
 		try{
 			return new URL( codeBase,"rapla?" + key).toExternalForm();
