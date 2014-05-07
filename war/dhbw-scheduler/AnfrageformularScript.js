@@ -167,7 +167,7 @@ function getTimeTableToString(){
 		//Schleife zählt von 0.00 Uhr bis Start der Stundentabelle (z.B. 8.00 Uhr)
 		//und füllt 
 		for(var j=0;j<startTime;j++){
-			str+='1';
+			str+='0';
 		}
 		$('#timeTableBody').find('tr').find('td:nth-child('+i+')').each(function(){				
 			if($(this).html() == '+'){
@@ -184,7 +184,7 @@ function getTimeTableToString(){
 		});
 		counter+=startTime;
 		for(var l=counter;l<24;l++){
-			str+='1';
+			str+='0';
 		}
 	}
 	return str;
