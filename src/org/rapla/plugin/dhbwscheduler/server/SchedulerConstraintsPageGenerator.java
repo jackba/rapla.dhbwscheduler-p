@@ -328,7 +328,16 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		//}
 		 
 	
-		out.println("		</ul>");	
+		out.println("		</ul>");
+		out.println("		<form action=\"rapla\" method=\"get\">");
+		out.println(getHiddenField("key", key));
+		out.println("			<input id='inpChanged' type='hidden' name='changed' value='0'>");
+		out.println("			<input id='inpKontakt' type='hidden' name='contact' value=''>");
+		out.println("			<input id='inpStunden' type='hidden' name='hours' value=''>");
+		out.println("			<input id='inpTimeTable' type='hidden' name='time' value=''>");
+		out.println("			<input id='inpAusnahmen' type='hidden' name='exception' value=''>");		
+		out.println("			<input id='inpAufsicht' type='hidden' name='control' value=''>");
+		out.println("			<input id='inpBemerkungen' type='hidden' name='comment' value=''>");	
 		out.print("				<input id='inpSubmit' type ='submit' name='rapla' value='" + getI18n().getString("senden", new Locale(lang)) + "'/>");
 		out.println("		</form>");
 		out.println("	</div>");
