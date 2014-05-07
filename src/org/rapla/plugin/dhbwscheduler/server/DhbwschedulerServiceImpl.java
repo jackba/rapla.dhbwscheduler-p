@@ -428,6 +428,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					break;
 				}
 			}
+			veranstaltung = getClientFacade().edit(veranstaltung);
 			for(Appointment a : splitIntoSingleAppointments(veranstaltung)){
 				Date appointStart = a.getStart();
 				if(appointStart.after(endDatum)){
