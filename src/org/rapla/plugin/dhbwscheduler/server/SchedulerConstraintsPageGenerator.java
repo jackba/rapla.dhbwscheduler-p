@@ -97,7 +97,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		//oder eine andere Sprache wie Deutsch oder Englisch übertragen wird.
 		//--------------------------------------------------
 		
-		String semester = getI18n().getString("Sprache",new Locale(lang));			//Zahl des Semesters (Beispiel: 2.)
+		String semester = "?";			//Zahl des Semesters (Beispiel: 2.)
 		String dozent = "?";					//Name Dozent
 		String studiengang = "Unbekannt";		//Studiengang
 		String kursName="Unbekannt";			//Kursname
@@ -268,18 +268,13 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println("		</table>");
 
 		out.println("		<p><b>1. </b>" + getI18n().getString("Vorlesungsstunden_Frage", new Locale(lang)) + "</p>");
-		//out.println("		<p><b>1.</b>Wie viele Vorlesungsstunden am St&uuml;ck m&ouml;chten Sie pro Vorlesungstermin halten?</p>");
 		out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' max='10' value='"+stunden+"'/>");
 		out.println("		<label for='inpVorlesungsstunden'>" + getI18n().getString("Vorlesungsstunden", new Locale(lang)) + "</label>");
-		//out.println("		<label for='inpVorlesungsstunden'>Vorlesungsstunden</label>");
 
 		out.println("		<p><b>2. </b>" + getI18n().getString("Zeiten_Frage", new Locale(lang)) + "</p>");
-		//out.println("		<p><b>2.</b> Bitte nennen Sie die Zeiten, zu denen wir Sie f&uuml;r die o.a. Vorlesung(en) einplanen k&ouml;nnen. Gehen Sie bitte beim Ausf&uuml;llen der Stundentabelle folgenderma&szlig;en vor:</p>");
 
 		out.println("		<p>" + getI18n().getString("SetzenSieEinMinus", new Locale(lang)) + "</p>");
-		//out.println("		<p> Setzen Sie ein <b>- (Minus)</b> in alle Zeitfelder, in denen Sie nicht k&ouml;nnen!</p>");
 		out.println("		<p>" + getI18n().getString("SetzenSieEinPlus", new Locale(lang)) + "</p>");
-		//out.println("		<p> Setzen Sie ein <b>+ (Plus)</b> in alle Zeitfelder, die f&uuml;r Sie besonders angenehm sind!</p>");
 		out.println("		<table id='timeTable'>");
 		out.println("			<thead>");
 		out.print("					<tr>");
@@ -327,7 +322,6 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		out.println(" 			</tbody>");
 		out.println("		</table>");
 		out.println("		<p><b>3. </b>" + getI18n().getString("Ausnahmen_Frage", new Locale(lang)) + "</p>");
-		//out.println("		<p><b>3. </b>Nennen Sie im Folgenden alle Tage in dem Vorlesungszeitraum, die terminlich anderweitig schon belegt sind (z.B. Urlaub, Gesch&auml;ftstermine):</p>");
 
 		out.print("			<input id='inpDatepicker' type='date' min='"+formatDateForDatepicker(beginZeit)+"' max='"+formatDateForDatepicker(endZeit)+"' value='"+formatDateForDatepicker(beginZeit)+"'/>");
 		out.println("		<input id='btnSetDate' type='button' value='" + getI18n().getString("auswaehlen", new Locale(lang)) + "'/>");
