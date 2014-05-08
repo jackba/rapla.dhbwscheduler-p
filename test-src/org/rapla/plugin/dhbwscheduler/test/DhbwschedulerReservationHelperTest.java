@@ -51,13 +51,14 @@ public class DhbwschedulerReservationHelperTest extends RaplaTestCase {
 	    	Reservation[] reservations = facade.getReservations(null, null, null, null);
 	    	Reservation r = reservations[reservations.length-1];
 	    	
-	    	helper.changeReservationAttribute(r, "planungsstatus", "geplant");
-	    	String istStatus = (String) r.getClassification().getValue("planungsstatus");
+	    	Reservation newr = helper.changeReservationAttribute(r, "planungsstatus", "geplant");
+	    	String istStatus = (String) newr.getClassification().getValue("planungsstatus");
 	    	assertEquals("geplant", istStatus);
 	    	
-	    	helper.changeReservationAttribute(r, "planungsstatus", "in Planung");
-	    	istStatus = (String) r.getClassification().getValue("planungsstatus");
+	    	newr = helper.changeReservationAttribute(r, "planungsstatus", "in Planung");
+	    	istStatus = (String) newr.getClassification().getValue("planungsstatus");
 	    	assertEquals("in Planung", istStatus);
+	    	
 	    }
 	    
 	    public void testGetStringStatus() throws RaplaException{
