@@ -474,7 +474,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 													r = HelperClass.changeReservationAttribute(r,"planungsconstraints",newConstraint );
 													
 													getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
-
+													
 												}
 											}
 
