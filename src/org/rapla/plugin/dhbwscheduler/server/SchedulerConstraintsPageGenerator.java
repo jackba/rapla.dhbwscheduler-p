@@ -108,6 +108,8 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String dozentId = request.getParameter("dozent");	//ID des Dozenten
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
 
+		getLogger().info("Logger Testen");
+		
 		StorageOperator lookup;
 		try {
 			lookup = getContext().lookup( StorageOperator.class);
@@ -193,10 +195,10 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			}
 			
 		} catch (RaplaContextException e) {
-			// TODO Auto-generated catch block
+			getLogger().error(e.toString());
 			e.printStackTrace();
 		} catch (EntityNotFoundException e) {
-			// TODO Auto-generated catch block
+			getLogger().error(e.toString());
 			e.printStackTrace();
 		}
 		
@@ -412,11 +414,11 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			veranstaltung = (Reservation) lookup.resolve(eventId);
 			
 		} catch (RaplaContextException e1) {
-			// TODO Auto-generated catch block
+			getLogger().error(e1.toString());
 			e1.printStackTrace();
 			return false;
 		} catch (EntityNotFoundException e) {
-			// TODO Auto-generated catch block
+			getLogger().error(e.toString());
 			e.printStackTrace();
 			return false;
 		}
