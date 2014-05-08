@@ -1,5 +1,7 @@
 package org.rapla.plugin.dhbwscheduler.server.tests;
 
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.util.Locale;
 
@@ -70,14 +72,12 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
     }
     
     public void testegeneratePage(){
-    	String ergebnis = "";
-    	String test = "";
     	DefaultConfiguration config = new DefaultConfiguration("locale"); 
     	SchedulerConstraintsPageGenerator pg = new SchedulerConstraintsPageGenerator(getContext(),config);
     	try {	
-    		HttpServletRequest request;
-    		HttpServletResponse response;
-    		ServletContext context;
+    		HttpServletRequest request = mock(HttpServletRequest.class);
+    		HttpServletResponse response = mock(HttpServletResponse.class);
+    		ServletContext context = mock(ServletContext.class);
 			pg.generatePage(context, request, response);
 		} catch (IOException | ServletException e) {
 			e.printStackTrace();
