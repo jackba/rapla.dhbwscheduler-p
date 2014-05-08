@@ -44,7 +44,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
        // response.sendRedirect("pasoServlet.jsp");
     }
 	
-	public String getInformation(String[] feld, String suche)
+	public static String getInformation(String[] feld, String suche)
 	{
 		String ergebnis = "";
 		for (int i = 0; i < feld.length; i++)
@@ -222,11 +222,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			boolean constraintIsSend = sendConstrainttoReservation(eventId,dozentId,time,ausnahmenArray);
 			
 			if(!constraintIsSend){
-				//TODO christian hier könnte dann ein alert Feld erscheinen
-				//error konnte nicht gesendet werden! alter an den Dozenten
-				//out.print("alert('konnte nicht gespeichert werden');");
+				getLogger().info("Daten wurden nicht gesendet");
 				out.println("<script type='text/javascript'>");
-				out.print("alert('Daten gesendet!');");
+				out.print("alert('Daten wurden nicht gesendet!');");
 				out.println("</script>");
 			}else{
 				out.println("<script type='text/javascript'>");
@@ -356,10 +354,10 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	}
 
 
-	String getHiddenField( String fieldname, String value) {
+	public String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
-	private String formatDateForDatepicker(String str){
+	public String formatDateForDatepicker(String str){
 		String[] strArr= str.split("\\.");
 		return strArr[2]+"-"+strArr[1]+"-"+strArr[0];		
 	}
