@@ -406,7 +406,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					try {
 						getClientFacade().refresh();
 					} catch (RaplaException e2) {
-						// TODO mit Kohlhaas abklären. Refresh funktioniert nicht, sodass die Daten vom Server geladen werden.
 						e2.printStackTrace();
 					}
 					String strTitel = getString("Email_Title");
@@ -474,7 +473,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 													r = HelperClass.changeReservationAttribute(r,"planungsconstraints",newConstraint );
 													
 													getLogger().info("Change for " + veranstaltungsTitel + " sucessfull");
-
+													
 												}
 											}
 
