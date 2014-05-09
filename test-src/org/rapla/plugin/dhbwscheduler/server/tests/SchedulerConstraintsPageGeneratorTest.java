@@ -84,49 +84,51 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
     public void testegeneratePage() throws Exception{
     	DefaultConfiguration config = new DefaultConfiguration("locale"); 
     	SchedulerConstraintsPageGenerator pg = new SchedulerConstraintsPageGenerator(getContext(),config);
-    	try {	
-    		HttpServletRequest request = mock(HttpServletRequest.class);
-    		HttpServletResponse response = mock(HttpServletResponse.class);
-    		ServletContext context = mock(ServletContext.class);
-    		
-    		Reservation r = facade.newReservation();
-    		String id = r.getId();
-    		
-    		Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
-	        Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
-	        Appointment appointment = facade.newAppointment(startDate, endDate);
-	        r.addAppointment(appointment);
 
-	        r.getClassification().setValue("title", "test");
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		ServletContext context = mock(ServletContext.class);
+		
+		PrintWriter writer = new PrintWriter("servlettest.txt");
+        when(response.getWriter()).thenReturn(writer);
+        
+        pg.generatePage(context, request, response);
+		
+		Reservation r = facade.newReservation();
+		String id = r.getId();
+		
+		Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
+        Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
+        Appointment appointment = facade.newAppointment(startDate, endDate);
+        r.addAppointment(appointment);
 
-			Allocatable pers1 = facade.newPerson();
-			Allocatable pers2 = facade.newPerson();
-			
-			
-			pers1.getClassification().setValue("surname", "Wurst");
-			pers1.getClassification().setValue("firstname", "Hans");
-			pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
-			
-			pers2.getClassification().setValue("surname", "Pan");
-			pers2.getClassification().setValue("firstname", "Peter");
-			
-			facade.store(pers1);
-			facade.store(pers2);
-			r.addAllocatable(pers1);
-			r.addAllocatable(pers2);
-    		
-    		facade.store(r);
-    		
-    		when(request.getParameter("id")).thenReturn(r.getId());
-    		when(request.getParameter("dozent")).thenReturn(pers1.getId());
-    		PrintWriter writer = new PrintWriter("servlettest.txt");
-            when(response.getWriter()).thenReturn(writer);
-    		
-    		
-			pg.generatePage(context, request, response);
-		} catch (IOException | ServletException e) {
-			e.printStackTrace();
-		}
+        r.getClassification().setValue("title", "test");
+
+		Allocatable pers1 = facade.newPerson();
+		Allocatable pers2 = facade.newPerson();
+		
+		
+		pers1.getClassification().setValue("surname", "Wurst");
+		pers1.getClassification().setValue("firstname", "Hans");
+		pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
+		
+		pers2.getClassification().setValue("surname", "Pan");
+		pers2.getClassification().setValue("firstname", "Peter");
+		
+		facade.store(pers1);
+		facade.store(pers2);
+		r.addAllocatable(pers1);
+		r.addAllocatable(pers2);
+		
+		facade.store(r);
+		
+		when(request.getParameter("id")).thenReturn(r.getId());
+		when(request.getParameter("dozent")).thenReturn(pers1.getId());
+		
+		pg.generatePage(context, request, response);
+		
+		when(request.getParameter("changed")).thenReturn("1");
+		pg.generatePage(context, request, response);
     }
     
 }

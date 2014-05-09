@@ -33,18 +33,18 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 	
-	protected void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {         
-
-        PrintWriter out = response.getWriter();            
-        out.println();
-  //      String descr = request.getParameter("comment");            
-    //    String[] myJsonData = request.getParameterValues("json[]");
-
-        String test = "test";
-
-       // response.sendRedirect("pasoServlet.jsp");
-    }
+//	protected void service(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {         
+//
+//        PrintWriter out = response.getWriter();            
+//        out.println();
+//  //      String descr = request.getParameter("comment");            
+//    //    String[] myJsonData = request.getParameterValues("json[]");
+//
+//        String test = "test";
+//
+//       // response.sendRedirect("pasoServlet.jsp");
+//    }
 	
 	public static String getInformation(String[] feld, String suche)
 	{
@@ -99,7 +99,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String veranst="Unbekannt";				//Veranstaltungsname
 		String kontaktdaten="";					//Liste mit geänderten Kontaktdaten 
 		String time = "";							//Inhalt der StundenTabelle
-		String[] ausnahmenArray;				//Liste mit Daten der Ausnahmen
+		String[] ausnahmenArray = null;				//Liste mit Daten der Ausnahmen
 		Date[] dateArr;
 		int stunden = 4;						//Vorlesungsstunden am Stück
 		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
@@ -223,13 +223,21 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 				kontaktdaten= request.getParameter("contact");
 				try{stunden = Integer.parseInt(request.getParameter("hours"));}
 				catch(Exception e){}
-				ausnahmenArray = request.getParameter("exception").split(",");		
-				if(request.getParameter("control").equals("1")){
-					aufsicht= true;
-				}else if(request.getParameter("control").equals("0")){
-					aufsicht = false;
+				if (request.getParameter("exception")!=null && request.getParameter("exception").contains(","))
+				{
+					ausnahmenArray = request.getParameter("exception").split(",");	
 				}
-				bemerkung=request.getParameter("comment");
+				else
+				{
+					ausnahmenArray = new String[1];
+					ausnahmenArray[0] = request.getParameter("exception");
+				}
+//				if(request.getParameter("control").equals("1")){
+//					aufsicht= true;
+//				}else if(request.getParameter("control").equals("0")){
+//					aufsicht = false;
+//				}
+//				bemerkung=request.getParameter("comment");
 				boolean constraintIsSend = sendConstrainttoReservation(eventId,dozentId,time,ausnahmenArray);
 				
 				if(!constraintIsSend){
@@ -343,7 +351,6 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			//	out.print("<li>"+ausnahmenArray[i]+"</li>");
 			//}
 			 
-		
 			out.println("		</ul>");
 			out.println("		<form action=\"rapla\" method=\"get\">");
 			out.println(getHiddenField("key", key));
@@ -385,7 +392,11 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
 	private String[][] formatTimeString(String str,int dayTimeStart, int dayTimeEnd){
 		//Überprüfen ob TimeString leer ist, ggf. füllen
-		if(str.equals("") || str == null){
+		if (str == null)
+		{
+			str = "";
+		}
+		if(str.equals("")){
 			//24*7 =168
 			
 			for (int j = 0; j<7 ; j++)
@@ -444,7 +455,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		if (ausnahmenArray != null ){
 			for(int i = 0 ; i< ausnahmenArray.length; i++){
-				if(!ausnahmenArray[i].equals("") && ausnahmenArray[i] != null){
+				if(ausnahmenArray[i] != null &&!ausnahmenArray[i].equals("")){
 					try {
 						ausnahmenDateArray[i] = strToDate.parse(ausnahmenArray[i]);
 					} catch (ParseException e) {
