@@ -72,9 +72,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		//Format sollte "de-de" sein
 		String lang = "";
 		String strLanguage = request.getHeader("accept-language");
-		if (strLanguage != null && strLanguage.contains("-"))
+		if (strLanguage != null)
 		{
-			lang = strLanguage.substring(0,strLanguage.indexOf("-"));
+			lang = strLanguage.substring(0,2);
 		}
 		else
 		{
