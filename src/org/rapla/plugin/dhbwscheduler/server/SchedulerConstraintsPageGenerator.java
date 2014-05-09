@@ -78,6 +78,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		else
 		{
+			//Default ist Englisch
 			lang = "en";
 		}
 		

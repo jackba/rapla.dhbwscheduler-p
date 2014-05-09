@@ -129,6 +129,13 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		
 		when(request.getParameter("changed")).thenReturn("1");
 		pg.generatePage(context, request, response);
+		
+		when(request.getParameter("hours")).thenReturn("10");
+		pg.generatePage(context, request, response);
+		
+		when(request.getParameter("exception")).thenReturn("exception,exception");
+		pg.generatePage(context, request, response);
+		
     }
     
 }
