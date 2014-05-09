@@ -89,7 +89,6 @@ public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
 		ClientFacade facade = getFacade();
 
 		Reservation reservation = facade.newReservation();
-		Reservation reservation2 = facade.newReservation();
 
         Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
         Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
@@ -104,7 +103,7 @@ public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
 		
 		pers1.getClassification().setValue("surname", "Wurst");
 		pers1.getClassification().setValue("firstname", "Hans");
-		pers1.getClassification().setValue("email", "flickinger@gmx.de");
+		pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
 		
 		pers2.getClassification().setValue("surname", "Pan");
 		pers2.getClassification().setValue("firstname", "Peter");
