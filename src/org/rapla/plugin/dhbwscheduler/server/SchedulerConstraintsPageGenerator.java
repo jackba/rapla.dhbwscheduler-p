@@ -89,6 +89,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		//Boolean Peng ist als Flag gedacht
 		boolean peng = false;
+		String strdisabled= "";
 		String semester = "?";			//Zahl des Semesters (Beispiel: 2.)
 		String dozent = "?";					//Name Dozent
 		String studiengang = "Unbekannt";		//Studiengang
@@ -111,8 +112,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String eventId = request.getParameter("id");	//ID der Veranstaltung
 		String dozentId = request.getParameter("dozent");	//ID des Dozenten
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
-
-		getLogger().info("Logger Testen");
+		
 		
 		StorageOperator lookup;
 		if (eventId != null || dozentId != null)
@@ -122,6 +122,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			//String idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
 			Reservation veranstaltung = (Reservation) lookup.resolve(eventId);
 			String vs = (String) veranstaltung.getClassification().getValue("planungsconstraints");
+			String planungsstatus = (String) veranstaltung.getClassification().getValue("planungsstatus");
+			if (!planungsstatus.equals(getString("planning_open"))){
+				strdisabled = "disabled='disabled'";
+			}
+			
+			
 			String dozentKey = lookup.resolve(dozentId).getId();
 			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
@@ -202,9 +208,11 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		} catch (RaplaContextException e) {
 			getLogger().error(e.toString());
 			e.printStackTrace();
+			peng = true;
 		} catch (EntityNotFoundException e) {
 			getLogger().error(e.toString());
 			e.printStackTrace();
+			peng = true;
 		}
 		}
 		else
@@ -213,7 +221,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		
 		if (!peng) 
-		{
+		{	
+			
+							
 			out.println("<!DOCTYPE html>"); // we have HTML5 
 			out.println("<html>");
 
@@ -287,21 +297,21 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.println("		</table>");
 
 			out.println("		<p><b>1. </b>" + getI18n().getString("Vorlesungsstunden_Frage", new Locale(lang)) + "</p>");
-			out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' max='10' value='"+stunden+"'/>");
+			out.println("		<input id='numberVorlesungsstunden' type='number' step='1' min='1' "+ strdisabled +" max='10' value='"+stunden+"'/>");
 			out.println("		<label for='inpVorlesungsstunden'>" + getI18n().getString("Vorlesungsstunden", new Locale(lang)) + "</label>");
 
 			out.println("		<p><b>2. </b>" + getI18n().getString("Zeiten_Frage", new Locale(lang)) + "</p>");
 
 			out.println("		<p>" + getI18n().getString("SetzenSieEinMinus", new Locale(lang)) + "</p>");
 			out.println("		<p>" + getI18n().getString("SetzenSieEinPlus", new Locale(lang)) + "</p>");
-			out.println("		<table id='timeTable'>");
+			out.println("		<table id='timeTable' >");
 			out.println("			<thead>");
 			out.print("					<tr>");
 			out.print(" 					<th colspan='6' style='font-size:large;text-align:left;vertical-align:center;height:50px;'>" + getI18n().getString("Stundentabelle", new Locale(lang)) + "</th>");
 			out.print(" 					<td>");
-			out.print(" 						<input id='btnPlus' class='timeTableButtons' type='button' value='+'/>");
-			out.print(" 						<input id='btnMinus' class='timeTableButtons' type='button' value='-'/>");
-			out.print("				 			<input id='btnClear' class='timeTableButtons' type='button' value='X'/>");
+			out.print(" 						<input id='btnPlus' class='timeTableButtons' "+ strdisabled +" type='button' value='+'/>");
+			out.print(" 						<input id='btnMinus' class='timeTableButtons' "+ strdisabled +" type='button' value='-'/>");
+			out.print("				 			<input id='btnClear' class='timeTableButtons' "+ strdisabled +" type='button' value='X'/>");
 			out.print(" 					</td>");
 			out.print(" 				</tr>");
 			out.print("				 	<tr>");
@@ -342,9 +352,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.println("		</table>");
 			out.println("		<p><b>3. </b>" + getI18n().getString("Ausnahmen_Frage", new Locale(lang)) + "</p>");
 
-			out.print("			<input id='inpDatepicker' type='date' min='"+formatDateForDatepicker(beginZeit)+"' max='"+formatDateForDatepicker(endZeit)+"' value='"+formatDateForDatepicker(beginZeit)+"'/>");
-			out.println("		<input id='btnSetDate' type='button' value='" + getI18n().getString("auswaehlen", new Locale(lang)) + "'/>");
-			out.println("		<input id='btnDeleteDate' type='button' value='" + getI18n().getString("loeschen", new Locale(lang)) + "'/>");
+			out.print("			<input id='inpDatepicker' type='date' "+ strdisabled +" min='"+formatDateForDatepicker(beginZeit)+"' max='"+formatDateForDatepicker(endZeit)+"' value='"+formatDateForDatepicker(beginZeit)+"'/>");
+			out.println("		<input id='btnSetDate' type='button' "+ strdisabled +" value='" + getI18n().getString("auswaehlen", new Locale(lang)) + "'/>");
+			out.println("		<input id='btnDeleteDate' type='button' "+ strdisabled +" value='" + getI18n().getString("loeschen", new Locale(lang)) + "'/>");
 			out.println("		<ul id='ulDateList'>");
 			
 			//for(int i=0;i<ausnahmenArray.length;i++){
@@ -361,7 +371,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.println("			<input id='inpAusnahmen' type='hidden' name='exception' value=''>");		
 			out.println("			<input id='inpAufsicht' type='hidden' name='control' value=''>");
 			out.println("			<input id='inpBemerkungen' type='hidden' name='comment' value=''>");	
-			out.print("				<input id='inpSubmit' type ='submit' name='rapla' value='" + getI18n().getString("senden", new Locale(lang)) + "'/>");
+			out.print("				<input id='inpSubmit' type ='submit' "+ strdisabled +" name='rapla' value='" + getI18n().getString("senden", new Locale(lang)) + "'/>");
 			out.println("		</form>");
 			out.println("	</div>");
 			out.println("</body>");
