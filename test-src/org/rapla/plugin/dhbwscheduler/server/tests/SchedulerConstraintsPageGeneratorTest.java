@@ -103,22 +103,26 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
         r.addAppointment(appointment);
 
         r.getClassification().setValue("title", "test");
-
+        
 		Allocatable pers1 = facade.newPerson();
 		Allocatable pers2 = facade.newPerson();
-		
+		Allocatable kurs = facade.newResource();
 		
 		pers1.getClassification().setValue("surname", "Wurst");
 		pers1.getClassification().setValue("firstname", "Hans");
 		pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
+		kurs.getClassification().setValue("name", "WWI11B3");
 		
 		pers2.getClassification().setValue("surname", "Pan");
 		pers2.getClassification().setValue("firstname", "Peter");
 		
 		facade.store(pers1);
 		facade.store(pers2);
+		facade.store(kurs);
+		
 		r.addAllocatable(pers1);
 		r.addAllocatable(pers2);
+		r.addAllocatable(kurs);
 		
 		facade.store(r);
 		
@@ -136,6 +140,8 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		when(request.getParameter("exception")).thenReturn("exception,exception");
 		pg.generatePage(context, request, response);
 		
+		when(request.getHeader("accept-language")).thenReturn("de-de");
+		pg.generatePage(context, request, response);
     }
     
 }
