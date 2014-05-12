@@ -18,9 +18,11 @@ import junit.framework.TestSuite;
 import org.omg.CORBA.Request;
 import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
+import org.rapla.entities.Category;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.Reservation;
+import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.facade.ClientFacade;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.DefaultConfiguration;
@@ -107,6 +109,12 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		Allocatable pers1 = facade.newPerson();
 		Allocatable pers2 = facade.newPerson();
 		Allocatable kurs = facade.newResource();
+		//DynamicType type = facade.getDynamicType("studiengang");
+		//Category stuga = facade.newCategory();
+		
+		//stuga.setKey("BK");
+		//stuga.setClassification(type.newClassification());
+		//stuga.getClassification().setValue("name", "Wirtschaft");
 		
 		pers1.getClassification().setValue("surname", "Wurst");
 		pers1.getClassification().setValue("firstname", "Hans");
@@ -123,6 +131,7 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		r.addAllocatable(pers1);
 		r.addAllocatable(pers2);
 		r.addAllocatable(kurs);
+		//r.getClassification().setValue("studiengang", stuga);
 		
 		facade.store(r);
 		
