@@ -96,42 +96,51 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
         when(response.getWriter()).thenReturn(writer);
         
         pg.generatePage(context, request, response);
-		
-		Reservation r = facade.newReservation();
-		String id = r.getId();
-		//Test
-		
-		Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
-        Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
-        Appointment appointment = facade.newAppointment(startDate, endDate);
-        r.addAppointment(appointment);
 
-        r.getClassification().setValue("title", "test");
-        
-		Allocatable pers1 = facade.newPerson();
-		Allocatable pers2 = facade.newPerson();
-		Allocatable kurs = facade.newResource();
-		
-		pers1.getClassification().setValue("surname", "Wurst");
-		pers1.getClassification().setValue("firstname", "Hans");
-		pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
-		kurs.getClassification().setValue("name", "WWI11B3");
-		
-		pers2.getClassification().setValue("surname", "Pan");
-		pers2.getClassification().setValue("firstname", "Peter");
-		
-		facade.store(pers1);
-		facade.store(pers2);
-		facade.store(kurs);
-		
-		r.addAllocatable(pers1);
-		r.addAllocatable(pers2);
-		r.addAllocatable(kurs);
-		
-		facade.store(r);
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		//String idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
+		Reservation r = (Reservation) lookup.resolve("5ffcba0d-cd5f-43d7-a10c-a55e5f3e5e53");
+
+//		Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
+//        Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
+//        Appointment appointment = facade.newAppointment(startDate, endDate);
+//        r.addAppointment(appointment);
+//
+//        r.getClassification().setValue("title", "test");
+//        
+//		Allocatable pers1 = facade.newPerson();
+//		Allocatable pers2 = facade.newPerson();
+//		Allocatable kurs = facade.newResource();
+//
+////		DynamicType type = facade.getDynamicType("studiengang");
+//		//Category stuga = facade.newCat
+//		
+//		
+//		//stuga.setClassification(type.newClassification());
+//		//stuga.getClassification().setValue("name", "Wirtschaft");
+//		
+//		pers1.getClassification().setValue("surname", "Wurst");
+//		pers1.getClassification().setValue("firstname", "Hans");
+//		pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
+//		
+//		kurs.getClassification().setValue("name", "WWI11B3");
+//		
+//		pers2.getClassification().setValue("surname", "Pan");
+//		pers2.getClassification().setValue("firstname", "Peter");
+//		
+//		facade.store(pers1);
+//		facade.store(pers2);
+//		facade.store(kurs);
+//		
+//		r.addAllocatable(pers1);
+//		r.addAllocatable(pers2);
+//		r.addAllocatable(kurs);
+//		//r.getClassification().setValue("studiengang", stuga);
+//		
+//		facade.store(r);
 		
 		when(request.getParameter("id")).thenReturn(r.getId());
-		when(request.getParameter("dozent")).thenReturn(pers1.getId());
+		when(request.getParameter("dozent")).thenReturn(r.getPersons()[0].getId());
 		
 		pg.generatePage(context, request, response);
 		
