@@ -1,8 +1,10 @@
 package org.rapla.plugin.dhbwscheduler.test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.swing.JPanel;
@@ -31,6 +33,7 @@ import org.rapla.plugin.dhbwscheduler.SchedulerReservationMenuFactory;
 import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.plugin.urlencryption.UrlEncryption;
 import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
+import org.rapla.storage.StorageOperator;
 
 public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
 	
@@ -66,65 +69,59 @@ public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
 	        super.tearDown();
 	    }
 	    
-//	    public void testinitConstraint() throws Exception{
-//	    	
-//	    	
-//	    	 ClientFacade facade = getFacade();
-//	         Reservation reservation = facade.newReservation();
-//	         //start is 13/4  original end = 28/4
-//	         Date startDate = getRaplaLocale().toRaplaDate(2013, 4, 13);
-//	         Date endDate = getRaplaLocale().toRaplaDate(2013, 4, 28);
-//	         Appointment appointment = facade.newAppointment(startDate, endDate);
-//	         reservation.addAppointment(appointment);
-//	         reservation.getClassification().setValue("name", "test");
-//	         facade.store( reservation);
-//	         
-//	         Reservation modifiableReservation = facade.edit(reservation);
-//	    }
 	    
 		public void testcreate() throws Exception{
 		
 		RaplaMenuItem[] rawmenI = null;
 
 		ClientFacade facade = getFacade();
-
-		Reservation reservation = facade.newReservation();
-
-        Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
-        Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
-        Appointment appointment = facade.newAppointment(startDate, endDate);
-        reservation.addAppointment(appointment);
-
-        reservation.getClassification().setValue("title", "test");
-
-		Allocatable pers1 = facade.newPerson();
-		Allocatable pers2 = facade.newPerson();
 		
 		
-		pers1.getClassification().setValue("surname", "Wurst");
-		pers1.getClassification().setValue("firstname", "Hans");
-		pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
 		
-		pers2.getClassification().setValue("surname", "Pan");
-		pers2.getClassification().setValue("firstname", "Peter");
 		
-		facade.store(pers1);
-		facade.store(pers2);
-		reservation.addAllocatable(pers1);
-		reservation.addAllocatable(pers2);
+
+//		//Reservation reservation = facade.newReservation();
+//
+//        Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
+//        Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
+//        Appointment appointment = facade.newAppointment(startDate, endDate);
+//        reservation.addAppointment(appointment);
+//
+//        reservation.getClassification().setValue("title", "test");
+//
+//		Allocatable pers1 = facade.newPerson();
+//		Allocatable pers2 = facade.newPerson();
+//		
+//		
+//		pers1.getClassification().setValue("surname", "Wurst");
+//		pers1.getClassification().setValue("firstname", "Hans");
+//		pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
+//		
+//		pers2.getClassification().setValue("surname", "Pan");
+//		pers2.getClassification().setValue("firstname", "Peter");
+//		
+//		facade.store(pers1);
+//		facade.store(pers2);
+//		reservation.addAllocatable(pers1);
+//		reservation.addAllocatable(pers2);
 		
 		//DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		//HelperClass.changeReservationAttribute(reservation, "studiengang", (Allocatable) reservation.getClassification().getValue("studiengang"));
-		reservation.getClassification().setValue("planungsstatus", "in Planung");
 		
-		facade.store(reservation);
+		StorageOperator lookup = getContext().lookup( StorageOperator.class);
+		
+		Reservation reservation = (Reservation) lookup.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
+		
 		MenuContext menu = new MenuContext(getContext(), reservation);
 		SchedulerReservationMenuFactory menFac = new SchedulerReservationMenuFactory(
 				getContext(), config, service, urlcrypt); 
 
-		Collection<Reservation> rcs = Collections.singletonList(reservation);
-
-		// menu.setSelectedObjects(rcs);
+		List<Reservation> rcs = new ArrayList<Reservation>();
+		Reservation res2 =  (Reservation) lookup.resolve("72860f35-7f63-4d69-bd66-4c27bb6204ac");
+		rcs.add(res2);
+		rcs.add(reservation);
+		
+		menu.setSelectedObjects(rcs);
 
 		rawmenI = menFac.create(menu, reservation);
 
