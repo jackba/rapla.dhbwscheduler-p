@@ -35,6 +35,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/rapla.holiday-p"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Mockito"/>
+	<classpathentry kind="lib" path="mockito-all-1.9.5.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>
