@@ -30,6 +30,7 @@ import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 import org.rapla.plugin.dhbwscheduler.server.SchedulerConstraintsPageGenerator;
+import org.rapla.storage.StorageOperator;
 
 public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 	ClientFacade facade;
@@ -98,6 +99,7 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		
 		Reservation r = facade.newReservation();
 		String id = r.getId();
+		//Test
 		
 		Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
         Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
@@ -109,12 +111,6 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		Allocatable pers1 = facade.newPerson();
 		Allocatable pers2 = facade.newPerson();
 		Allocatable kurs = facade.newResource();
-		//DynamicType type = facade.getDynamicType("studiengang");
-		//Category stuga = facade.newCategory();
-		
-		//stuga.setKey("BK");
-		//stuga.setClassification(type.newClassification());
-		//stuga.getClassification().setValue("name", "Wirtschaft");
 		
 		pers1.getClassification().setValue("surname", "Wurst");
 		pers1.getClassification().setValue("firstname", "Hans");
@@ -131,7 +127,6 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		r.addAllocatable(pers1);
 		r.addAllocatable(pers2);
 		r.addAllocatable(kurs);
-		//r.getClassification().setValue("studiengang", stuga);
 		
 		facade.store(r);
 		
