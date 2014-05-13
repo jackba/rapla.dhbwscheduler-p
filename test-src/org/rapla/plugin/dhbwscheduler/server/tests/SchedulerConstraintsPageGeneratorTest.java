@@ -95,57 +95,78 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		PrintWriter writer = new PrintWriter("servlettest.txt");
         when(response.getWriter()).thenReturn(writer);
         
+        //Null Werte Testen
         pg.generatePage(context, request, response);
 
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
 		//String idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
-		Reservation r = (Reservation) lookup.resolve("5ffcba0d-cd5f-43d7-a10c-a55e5f3e5e53");
-
-//		Date startDate = getRaplaLocale().toRaplaDate(2014, 5, 11);
-//        Date endDate = getRaplaLocale().toRaplaDate(2014, 5, 12);
-//        Appointment appointment = facade.newAppointment(startDate, endDate);
-//        r.addAppointment(appointment);
-//
-//        r.getClassification().setValue("title", "test");
-//        
-//		Allocatable pers1 = facade.newPerson();
-//		Allocatable pers2 = facade.newPerson();
-//		Allocatable kurs = facade.newResource();
-//
-////		DynamicType type = facade.getDynamicType("studiengang");
-//		//Category stuga = facade.newCat
-//		
-//		
-//		//stuga.setClassification(type.newClassification());
-//		//stuga.getClassification().setValue("name", "Wirtschaft");
-//		
-//		pers1.getClassification().setValue("surname", "Wurst");
-//		pers1.getClassification().setValue("firstname", "Hans");
-//		pers1.getClassification().setValue("email", "test@test.avdfdfefdgt");
-//		
-//		kurs.getClassification().setValue("name", "WWI11B3");
-//		
-//		pers2.getClassification().setValue("surname", "Pan");
-//		pers2.getClassification().setValue("firstname", "Peter");
-//		
-//		facade.store(pers1);
-//		facade.store(pers2);
-//		facade.store(kurs);
-//		
-//		r.addAllocatable(pers1);
-//		r.addAllocatable(pers2);
-//		r.addAllocatable(kurs);
-//		//r.getClassification().setValue("studiengang", stuga);
-//		
-//		facade.store(r);
+		Reservation r = (Reservation) lookup.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
+		
+		//c6b8bce9-a173-4960-b760-a8840e07beeb mit allem (Studiengang, Kurs, Prof, Planungszyklus)
+		//11993379-6c87-438b-b0ff-07a58461de1a ohne alles ??
+		//1880c994-cb67-4ecf-bee5-0160c909e209 ohne alles
+		//72860f35-7f63-4d69-bd66-4c27bb6204ac ohne Studiengang
 		
 		when(request.getParameter("id")).thenReturn(r.getId());
 		when(request.getParameter("dozent")).thenReturn(r.getPersons()[0].getId());
 		
 		pg.generatePage(context, request, response);
 		
-		when(request.getParameter("changed")).thenReturn("1");
+		when(request.getParameter("id")).thenReturn(r.getId());
+		when(request.getParameter("dozent")).thenReturn(r.getPersons()[1].getId());
+		
 		pg.generatePage(context, request, response);
+		
+		Reservation r2 = (Reservation) lookup.resolve("11993379-6c87-438b-b0ff-07a58461de1a");
+		
+		when(request.getParameter("id")).thenReturn(r2.getId());
+		when(request.getParameter("dozent")).thenReturn(r2.getPersons()[0].getId());
+		pg.generatePage(context, request, response);
+		
+		//FAIL ID Test
+		//Reservation r3 = (Reservation) lookup.resolve("00000000-6c87-438b-b0ff-07a58461de1a");
+		
+		when(request.getParameter("id")).thenReturn("00000000-6c87-438b-b0ff-07a58461de1a");
+		when(request.getParameter("dozent")).thenReturn(r2.getPersons()[0].getId());
+		pg.generatePage(context, request, response);
+		
+		//a64520f7-69ae-4a76-9e4d-1513a1d7e363
+		Reservation r3 = (Reservation) lookup.resolve("a64520f7-69ae-4a76-9e4d-1513a1d7e363");
+		
+		when(request.getParameter("id")).thenReturn(r3.getId());
+		when(request.getParameter("dozent")).thenReturn(r3.getPersons()[0].getId());
+		pg.generatePage(context, request, response);
+		
+		//72860f35-7f63-4d69-bd66-4c27bb6204ac
+		Reservation r4 = (Reservation) lookup.resolve("72860f35-7f63-4d69-bd66-4c27bb6204ac");
+		
+		when(request.getParameter("id")).thenReturn(r4.getId());
+		when(request.getParameter("dozent")).thenReturn(r4.getPersons()[0].getId());
+		pg.generatePage(context, request, response);
+		
+		//changed
+		when(request.getParameter("changed")).thenReturn("1");
+		
+		//alles
+		when(request.getParameter("id")).thenReturn(r.getId());
+		when(request.getParameter("dozent")).thenReturn(r.getPersons()[0].getId());
+		pg.generatePage(context, request, response);
+		
+		//ohne Stuga
+		when(request.getParameter("id")).thenReturn(r.getId());
+		when(request.getParameter("dozent")).thenReturn(r.getPersons()[1].getId());
+		pg.generatePage(context, request, response);
+		
+		//ohne
+		when(request.getParameter("id")).thenReturn(r2.getId());
+		when(request.getParameter("dozent")).thenReturn(r2.getPersons()[0].getId());
+		pg.generatePage(context, request, response);
+
+		
+		
+		
+		
+		
 		
 		when(request.getParameter("hours")).thenReturn("10");
 		pg.generatePage(context, request, response);
