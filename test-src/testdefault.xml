@@ -6098,6 +6098,475 @@
          <rapla:allocate idref="fcac4af1-83e8-4547-b611-05d3eb186f97"/>
          <rapla:allocate idref="82529566-e106-481f-946f-9cf371e05ead"/>
       </rapla:reservation>
+      <rapla:reservation id="b44f10ee-a5c1-403f-b26f-fca25f9d0846" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2013-12-11T10:21:53.0000Z" last-changed="2013-12-30T14:46:27.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>test</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungsstatus>true</dynatt:planungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="5aa6a6cf-9694-4573-be6c-786f30b5458e" start-date="2013-12-09" start-time="09:15:00" end-date="2013-12-09" end-time="09:30:00"/>
+      </rapla:reservation>
+      <rapla:reservation id="ae459332-521c-494f-89dc-0709bc316951" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T12:21:56.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test1</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>2f9998d7-fbf3-466f-9c49-f79af1e39111</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1886_000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111112222111111111111111111111111111111111111111111111111111111__2</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="872902e4-cbab-4b05-a7f2-ceff704c06ae" start-date="2014-01-27" start-time="09:00:00" end-date="2014-01-27" end-time="11:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="f07e6bdd-782c-4573-b2a8-a82433b9dc5d" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:40:41.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ohneDoz1</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="57146e0a-7d72-4d3b-a7ae-e13ef9e8a4fe" start-date="2014-01-06" start-time="11:00:00" end-date="2014-01-06" end-time="13:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+      </rapla:reservation>
+      <rapla:reservation id="2afd7fd2-838c-4b89-9b06-cc39efe417a2" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:40:45.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ohneDoz2</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="faa02620-2fbb-4a9f-ae6c-661698978635" start-date="2014-01-06" start-time="13:00:00" end-date="2014-01-06" end-time="15:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="82529566-e106-481f-946f-9cf371e05ead"/>
+      </rapla:reservation>
+      <rapla:reservation id="67fc4421-b11b-40cc-8bee-b8f838796789" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:40:48.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ohneKurs1</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="f05e7d03-69a1-437a-ae0f-3c3053048517" start-date="2014-01-07" start-time="11:00:00" end-date="2014-01-07" end-time="13:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="a2c4e617-b7a8-4f93-8706-33e52dd6de28" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:40:51.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ohneKurs2</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="60695570-973f-451e-b877-2820410a3449" start-date="2014-01-07" start-time="13:00:00" end-date="2014-01-07" end-time="15:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="fcac4af1-83e8-4547-b611-05d3eb186f97"/>
+      </rapla:reservation>
+      <rapla:reservation id="78c8f394-d81c-4630-a26f-895e1517c755" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:40:53.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ohneDozKurs1</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="651c001d-cf0d-41dc-ad9c-c255f1b2ce52" start-date="2014-01-08" start-time="11:00:00" end-date="2014-01-08" end-time="13:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+      </rapla:reservation>
+      <rapla:reservation id="a8a16136-9b4f-40ce-903c-47a114a54663" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:40:55.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ohneDozKurs2</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="5b1da4cf-dd3e-4820-aa01-f8469f42844b" start-date="2014-01-08" start-time="13:00:00" end-date="2014-01-08" end-time="15:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="82529566-e106-481f-946f-9cf371e05ead"/>
+      </rapla:reservation>
+      <rapla:reservation id="111f02d6-95fd-4046-a5e6-7ff630b17328" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:44:05.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_inPlanung</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="552d8ddd-016a-4bbd-a1ec-407861a1d234" start-date="2014-01-28" start-time="13:00:00" end-date="2014-01-28" end-time="15:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="6d45469e-e8e3-4681-a1c1-dcbe6d5b7624" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:44:03.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_geplant</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>geplant</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="5d0133ca-0d23-40a7-ba8a-fe8f9ba45741" start-date="2014-01-28" start-time="11:00:00" end-date="2014-01-28" end-time="13:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="813ac56d-bc68-4eef-9ca1-89882c90dc79" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:41:14.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_PlanungsstatusLeer</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="e3635a5c-e782-41e7-a80f-8a1e5f933877" start-date="2014-01-28" start-time="09:00:00" end-date="2014-01-28" end-time="11:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="e8eb0576-fe31-4a62-9df9-281a1633d2cd" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:43:24.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_mitFehlerhaftemPlanungszyklus</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>0485bac5-318f-42ed-970e-b7eff77c0c55</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="c5ea5cfe-6804-4a41-96a0-7f8b59d2523a" start-date="2014-01-10" start-time="11:00:00" end-date="2014-01-10" end-time="13:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="28ba686c-3613-46cd-a5cf-79b325ba812a" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T14:38:27.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ConstraintLeer1</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="62d5377e-45c9-4f15-9027-04fbcbd47796" start-date="2014-01-09" start-time="13:00:00" end-date="2014-01-09" end-time="15:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="3a8b2511-ef26-47d5-a960-a2754a3cb644" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T14:38:30.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ConstraintLeer2</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="675214bd-5e28-4101-8a77-975b9ec2236b" start-date="2014-01-09" start-time="15:00:00" end-date="2014-01-09" end-time="17:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="fcac4af1-83e8-4547-b611-05d3eb186f97"/>
+      </rapla:reservation>
+      <rapla:reservation id="9cb1e542-ff75-4255-b582-e207cc020d64" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T15:08:20.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_Prof1_Montagmorgen_9</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>fb9645bc-52c7-4b2e-9a92-6b325e3018f9</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1886_000000000000000000000000000000001220000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="7689bd8a-7e79-47b7-850f-2fc22b5dd75f" start-date="2014-02-10" start-time="07:00:00" end-date="2014-02-10" end-time="09:00:00"/>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="18deac8e-4d98-4daa-bd39-d199dc7ebd53" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:53:49.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_Prof1_ConstraintWoche1</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1886_000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111112222111111111111111111111111111111111111111111111111111111__2</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>erfasst</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="bce0bb0d-eb68-4ea1-8039-2c0d7c8fa4a3" start-date="2014-01-27" start-time="07:00:00" end-date="2014-01-27" end-time="09:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="9b40fca3-7fff-42c0-b29f-59bfcc005e66" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T12:02:16.0000Z" last-changed="2014-01-29T12:04:24.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>FIX_Kurs1_Ganztag</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungsstatus>in Planung</dynatt:planungsstatus>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="df658c11-b961-4c04-99da-d65af0061024" start-date="2014-02-01" end-date="2014-02-01"/>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+      </rapla:reservation>
+      <rapla:reservation id="1c460baf-3a5d-4c5d-9785-5ed47af92f79" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T12:02:45.0000Z" last-changed="2014-01-29T12:02:45.0000Z">
+         <dynatt:reservation2>
+            <dynatt:title>FIX_Raum051</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungsstatus>in Planung</dynatt:planungsstatus>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="01315355-bc69-4cc3-9c16-4c9ce250da99" start-date="2014-02-02" start-time="09:00:00" end-date="2014-02-02" end-time="09:30:00"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+      </rapla:reservation>
+      <rapla:reservation id="3b95e426-c235-4633-9fee-7b95b61b081b" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T12:03:22.0000Z" last-changed="2014-01-29T12:03:43.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>FIX_Prof1</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungsstatus>in Planung</dynatt:planungsstatus>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="6cc67824-ce12-48fc-9d69-e12b68a3dc62" start-date="2014-02-02" start-time="09:30:00" end-date="2014-02-02" end-time="10:00:00"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="ad4417f7-593e-4f48-bd0c-e39585fed75c" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T12:03:49.0000Z" last-changed="2014-01-29T12:03:58.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>FIX_Prof2</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungsstatus>in Planung</dynatt:planungsstatus>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="b8bdabc3-0c1c-48a5-b8db-faad2d398e58" start-date="2014-02-02" start-time="10:00:00" end-date="2014-02-02" end-time="10:30:00"/>
+         <rapla:allocate idref="fcac4af1-83e8-4547-b611-05d3eb186f97"/>
+      </rapla:reservation>
+      <rapla:reservation id="3f5fa16c-d027-4522-ad6c-fe1ecf76d65d" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:54:05.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_Prof1_ConstraintWoche2</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>442e46c0-13c4-4164-81f4-f427b571c5f2</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1886_000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111__2</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>erfasst</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="83601e51-e39d-4143-9fd4-60b281606771" start-date="2014-01-30" start-time="09:00:00" end-date="2014-01-30" end-time="11:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="a2905e50-660b-4e41-8700-373c7b91be84" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T13:43:47.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_ohnePlanungszyklus</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1108_000000000000000000000000000000000111111000000000000000000011111111100000000000000111000000000000000000000000011111100000000000000000011111100000000000000000000000000000__1</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="559c1c17-1d3a-4667-bef0-86c6608affc4" start-date="2014-01-10" start-time="09:00:00" end-date="2014-01-10" end-time="11:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="5ba9c0d1-dc2f-4a8d-9010-c24351db3681" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T13:55:18.0000Z" last-changed="2014-01-29T13:55:18.0000Z">
+         <dynatt:defaultReservation>
+            <dynatt:title>Feiertag Montag</dynatt:title>
+            <dynatt:color>category[key='c4']</dynatt:color>
+         </dynatt:defaultReservation>
+         <rapla:appointment id="3db9099e-15b8-498e-8bb1-ff22514389e6" start-date="2014-02-24" end-date="2014-02-24"/>
+         <rapla:allocate idref="1bbb14b0-2b51-4a48-b7c4-ede296ab3ba4"/>
+      </rapla:reservation>
+      <rapla:reservation id="5e4c0986-b928-4635-89f2-90da4d899bf5" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T13:55:37.0000Z" last-changed="2014-01-29T13:55:48.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:defaultReservation>
+            <dynatt:title>Feiertag Dienstag</dynatt:title>
+            <dynatt:color>category[key='c4']</dynatt:color>
+         </dynatt:defaultReservation>
+         <rapla:appointment id="6d7e48d6-4971-491b-b1e6-8d9abb569a44" start-date="2014-02-25" end-date="2014-02-25"/>
+         <rapla:allocate idref="1bbb14b0-2b51-4a48-b7c4-ede296ab3ba4"/>
+      </rapla:reservation>
+      <rapla:reservation id="26eae2b6-3696-452e-b33f-8e17a9d04c59" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T13:55:54.0000Z" last-changed="2014-01-29T13:55:54.0000Z">
+         <dynatt:defaultReservation>
+            <dynatt:title>Feiertag Mittwoch</dynatt:title>
+            <dynatt:color>category[key='c4']</dynatt:color>
+         </dynatt:defaultReservation>
+         <rapla:appointment id="8e97d7f9-886c-41d4-8a8d-d3f3d6bf775a" start-date="2014-02-26" end-date="2014-02-26"/>
+         <rapla:allocate idref="1bbb14b0-2b51-4a48-b7c4-ede296ab3ba4"/>
+      </rapla:reservation>
+      <rapla:reservation id="726589d1-b02c-410b-a5b9-8b673bca249f" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T13:56:07.0000Z" last-changed="2014-01-29T13:56:07.0000Z">
+         <dynatt:defaultReservation>
+            <dynatt:title>Feiertag Freitag</dynatt:title>
+            <dynatt:color>category[key='c4']</dynatt:color>
+         </dynatt:defaultReservation>
+         <rapla:appointment id="05cc9eb6-fa2b-4da5-89a8-3436ccc0ec4d" start-date="2014-02-28" end-date="2014-02-28"/>
+         <rapla:allocate idref="1bbb14b0-2b51-4a48-b7c4-ede296ab3ba4"/>
+      </rapla:reservation>
+      <rapla:reservation id="a46b604a-f559-4bec-820f-aeab023a3b65" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T14:17:59.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test2</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>b0531f85-9fe4-4ce3-a17e-ba9f94063de5</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1886_000000000000000000000011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111__2</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="e2b6d252-99a4-42f2-a57a-a598bd8c67e1" start-date="2014-02-24" start-time="06:45:00" end-date="2014-02-24" end-time="08:45:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="ff40d509-8c8e-477c-8891-4fc17e676843" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T14:24:01.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test3</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>6eff9e5d-f953-4e5b-8725-22a1f637396d</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1886_000000000000000000000000000000000000022222000000000000000000000000000000000000000000000000000000000000001111000000000000000000000000000000000000000000000000000000000000__2</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>erfasst</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="662342c3-05f2-4540-ba43-63555c94f876" start-date="2014-03-10" start-time="07:00:00" end-date="2014-03-10" end-time="09:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
+      <rapla:reservation id="f458ef57-0180-486a-ac87-19f7780cc49b" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T14:22:05.0000Z" last-changed="2014-01-29T14:22:05.0000Z">
+         <dynatt:defaultReservation>
+            <dynatt:title>Feiertag Test</dynatt:title>
+            <dynatt:color>category[key='c4']</dynatt:color>
+         </dynatt:defaultReservation>
+         <rapla:appointment id="7ed1a826-e988-4bcb-8413-bd7daf9341f7" start-date="2014-03-17" end-date="2014-03-17"/>
+         <rapla:allocate idref="1bbb14b0-2b51-4a48-b7c4-ede296ab3ba4"/>
+      </rapla:reservation>
+      <rapla:reservation id="c8a98d16-76b5-409a-ac71-3d90f9c441e9" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-09T10:25:21.0000Z" last-changed="2014-01-29T15:29:46.0000Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>Test_Prof1_Planungszyklus</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>0</dynatt:a4>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:planungszyklus>91a487a8-76d0-40d5-8872-e8dc1c13b014</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung geschlossen</dynatt:planungsstatus>
+            <dynatt:planungsconstraints>1886_000000000000000000000000000000002222222222000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000__2</dynatt:planungsconstraints>
+            <dynatt:erfassungsstatus>erfasst</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="1fc3d72e-1e42-4f66-acc9-9d1b8d846603" start-date="2014-03-24" start-time="07:00:00" end-date="2014-03-24" end-time="09:00:00">
+            <rapla:repeating type="weekly" number="2"/>
+         </rapla:appointment>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
+         <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
+         <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
+      </rapla:reservation>
    </rapla:reservations>
 
 </rapla:data>
