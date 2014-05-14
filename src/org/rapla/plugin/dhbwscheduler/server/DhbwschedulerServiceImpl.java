@@ -715,6 +715,24 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					}
 				}
 			}
+			// Exceptiondates beachten - get Constraints
+			String dozentenConstraint = getDozentenConstraint(vorlesung);
+			if (planungsconstraint.isEmpty()) {
+				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
+			} else {
+				// get Exception dates
+				Date[] exceptionsDates = ConstraintService.getExceptionDates(dozentenConstraint);
+				for (Date exceptionDate : exceptionsDates) {
+					if (exceptionDate != null) {
+						if (exceptionDate.after(start) && exceptionDate.before(ende)) {
+							Calendar kalender = Calendar.getInstance(DateTools.getTimeZone());
+							kalender.setTime(exceptionDate);
+							vor_res[vorlesungNr][timeSlots[kalender.get(Calendar.DAY_OF_WEEK)][0]] = 0;
+							vor_res[vorlesungNr][timeSlots[kalender.get(Calendar.DAY_OF_WEEK)][1]] = 0;
+						}
+					}
+				}
+			}
 			vorlesungNr++;
 		}
 		if (!(veranstaltungenOhnePlanungsconstraints.isEmpty())) {
@@ -1143,8 +1161,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				for (Appointment a : splitIntoSingleAppointments(veranstaltung)) {
 					for (Date exceptionDate : exceptionsDates) {
 						if (exceptionDate != null) {
-							Calendar calApp = Calendar.getInstance();
-							Calendar calException = Calendar.getInstance();
+							Calendar calApp = Calendar.getInstance(DateTools.getTimeZone());
+							Calendar calException = Calendar.getInstance(DateTools.getTimeZone());
 							calApp.setTime(a.getStart());
 							calException.setTime(exceptionDate);
 							// prüfe, ob nicht an einem Exception Dates
