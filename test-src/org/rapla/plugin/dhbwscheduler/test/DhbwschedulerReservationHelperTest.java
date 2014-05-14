@@ -1,24 +1,15 @@
 package org.rapla.plugin.dhbwscheduler.test;
 
-//import java.util.Date;
 import java.util.Locale;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
-//import org.rapla.entities.Entity;
-//import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
-//import org.rapla.facade.AllocationChangeEvent;
 import org.rapla.facade.ClientFacade;
-//import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerReservationHelper;
-//import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
-
 
 public class DhbwschedulerReservationHelperTest extends RaplaTestCase {
 		ClientFacade facade;
@@ -77,19 +68,5 @@ public class DhbwschedulerReservationHelperTest extends RaplaTestCase {
 	    	status = helper.getStringStatus(5);
 	    	assertEquals("error", status);
 	    }
-	    
-//	    public void testGetStudiengang() throws RaplaException{
-//	    	DhbwschedulerReservationHelper helper = new DhbwschedulerReservationHelper(getContext());
-//	    	
-//	    	Reservation[] reservations = facade.getReservations(null, null, null, null);
-//	    	Reservation r = reservations[reservations.length-1];
-//	    	
-//	    	helper.changeReservationAttribute(r, "studiengang", "Wirtschaft/Wirtschaftsinformatik");
-//	    	String istStudiengang = (String) r.getClassification().getValue("studiengang");
-//	    	assertEquals("Wirtschaft/Wirtschaftsinformatik", istStudiengang);
-//	    	
-//	    	String studiengang = helper.getStudiengang(r);
-//	    	assertEquals("wirtschaftsinformatik", studiengang);
-//	    }
 	}
 

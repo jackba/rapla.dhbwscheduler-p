@@ -61,10 +61,6 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	
     	assertEquals("", ConstraintService.changeDozConstraint(null, "111", ConstraintService.CHANGE_SINGLECONSTRAINT, ""));
     }
-    
-    public void testcreateclass(){
-    	ConstraintService consserv = new ConstraintService();
-    }
 
     public void testGetDozConstraints_1Dozent(){
         String testConstraint = ""
