@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -524,7 +525,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 				private boolean checkCompleteReservation(List<Reservation> selectedReservations) {
 					// TODO Auto-generated method stub
-					String Message ="Folgende Veranstaltungen sind nicht valide: \n";
+					// TODO Übersetzung fehlt
+					String Message = getI18n().getString("Folgende_Veranstaltung") + "\n";
 					String Messagezusatz = "";
 					boolean returnValue = true;
 					boolean hasCourse = false;
@@ -534,7 +536,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						{
 							reservationValid = true;
 							hasCourse = false;
-							Messagezusatz = "Veranstaltung: " + (String) r.getClassification().getValue("title") + "\n";
+							Messagezusatz = getI18n().getString("Veranstaltung") + ": " + (String) r.getClassification().getValue("title") + "\n";
 							for (Allocatable kurs : r.getResources()){
 								if(kurs.getClassification().getType().getKey().equals("kurs")){
 									hasCourse = true;
@@ -543,19 +545,19 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							
 							if (!hasCourse){
 								reservationValid = false;
-								Messagezusatz += "    kein Kurs eingetragen \n";
+								Messagezusatz += "    " + getI18n().getString("kein_Kurs") + " \n";
 							}
 							
 							if(r.getPersons() != null && r.getPersons().length > 0){
 								for (Allocatable persons : r.getPersons()){
 									
 									if (persons.getClassification().getValue("email") == null || persons.getClassification().getValue("email").equals("")){
-										Messagezusatz += "    Email von "+persons.getClassification().getValue("surname")+" fehlt \n";
+										Messagezusatz += "    " + getI18n().getString("Email_von") + " " +persons.getClassification().getValue("surname")+ " " + getI18n().getString("fehlt") + " \n";
 										reservationValid = false;
 									}
 								}
 							}else{
-								Messagezusatz += "    Kein Dozent vorhanden \n";
+								Messagezusatz += "    " + getI18n().getString("kein_Dozent") + " \n";
 							}
 							
 							
@@ -565,28 +567,28 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 								
 								if(planzykl.getClassification().getValue("semester") == null || planzykl.getClassification().getValue("semester").equals("")){
 									reservationValid = false;
-									Messagezusatz += "    Das Semester im Planungszyklus ist nicht vorhanden \n";
+									Messagezusatz += "    " + getI18n().getString("semester_Planungszyklus") + " \n";
 								}
 								
 								if(planzykl.getClassification().getValue("startdate") == null || planzykl.getClassification().getValue("startdate").equals("")){
 									reservationValid = false;
-									Messagezusatz += "    Startdatum im Planungszyklus ist nicht vorhanden \n";
+									Messagezusatz += "    " + getI18n().getString("startDatum_Planungszyklus") + " \n";
 								}
 								
 								if(planzykl.getClassification().getValue("enddate") == null || planzykl.getClassification().getValue("enddate").equals("")){
 									reservationValid = false;
-									Messagezusatz += "    Enddatum im Planungszyklus ist nicht vorhanden \n";
+									Messagezusatz += "    " + getI18n().getString("endDatum_Planungszyklus") + " \n";
 								}
 								
 								
 							}else{
 								reservationValid = false;
-								Messagezusatz += "    Kein Planungszyklus vorhanden \n";
+								Messagezusatz += "    " + getI18n().getString("kein_Planungszyklus") + " \n";
 							}
 							
 							if(r.getClassification().getValue("studiengang") == null) {
 								reservationValid = false;
-								Messagezusatz += "    Kein Studiengang vorhanden \n";
+								Messagezusatz += "    " + getI18n().getString("kein_Studiengang") + " \n";
 							}
 							
 							
@@ -610,7 +612,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					}
 					
 					if(!returnValue){
-						Message += "\n Das Programm wird abgebrochen";
+						Message += "\n " + getI18n().getString("Programm_abgebrochen");
 						JOptionPane.showMessageDialog(null, Message);
 					}
 					
