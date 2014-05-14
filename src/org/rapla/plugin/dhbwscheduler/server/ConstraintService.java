@@ -118,8 +118,6 @@ public class ConstraintService{
 			newConstraint = ConstraintService.buildDozConstraint(dozentid, new String[dozID.length], new Date[dozID.length][], newStatus);
 			
 		}else{
-			
-			//ConstraintService.addorchangeSingleDozConstraint();
 			for (int x = 0; x < dozID.length; x++){
 				boolean hit = false;
 				
@@ -518,7 +516,7 @@ public class ConstraintService{
 		
 		if(eingeladen && erfasst || uneingeladen && erfasst || uneingeladen && eingeladen){
 			if(erfasst){
-				//Teilwese erfasst
+				//Teilweise erfasst
 				returnvalue = 4;
 			}else{
 				//teilweise eingeladen
