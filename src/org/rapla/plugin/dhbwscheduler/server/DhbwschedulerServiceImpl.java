@@ -39,6 +39,7 @@ import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.facade.ClientFacade;
 import org.rapla.facade.Conflict;
 import org.rapla.facade.RaplaComponent;
+import org.rapla.facade.internal.FacadeImpl;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
@@ -132,8 +133,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 		Date anfangWoche = startDatum;
-
 		tmp.setTime(anfangWoche);
+
+		if (DateTools.getWeekday(anfangWoche) != DateTools.MONDAY) {
+			tmp.add(Calendar.DAY_OF_YEAR, DateTools.MONDAY - DateTools.getWeekday(anfangWoche));
+			anfangWoche = new Date(tmp.getTimeInMillis());
+		}
+		
 		tmp.add(Calendar.DAY_OF_YEAR, 5);
 
 		Date endeWoche = new Date(tmp.getTimeInMillis());
@@ -715,6 +721,24 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					}
 				}
 			}
+			// Exceptiondates beachten - get Constraints
+			String dozentenConstraint = getDozentenConstraint(vorlesung);
+			if (planungsconstraint.isEmpty()) {
+				veranstaltungenOhnePlanungsconstraints.add(vorlesung);
+			} else {
+				// get Exception dates
+				Date[] exceptionsDates = ConstraintService.getExceptionDates(dozentenConstraint);
+				for (Date exceptionDate : exceptionsDates) {
+					if (exceptionDate != null) {
+						if (exceptionDate.after(start) && exceptionDate.before(ende)) {
+							Calendar kalender = Calendar.getInstance(DateTools.getTimeZone());
+							kalender.setTime(exceptionDate);
+							vor_res[vorlesungNr][timeSlots[kalender.get(Calendar.DAY_OF_WEEK)][0]] = 0;
+							vor_res[vorlesungNr][timeSlots[kalender.get(Calendar.DAY_OF_WEEK)][1]] = 0;
+						}
+					}
+				}
+			}
 			vorlesungNr++;
 		}
 		if (!(veranstaltungenOhnePlanungsconstraints.isEmpty())) {
@@ -1143,8 +1167,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				for (Appointment a : splitIntoSingleAppointments(veranstaltung)) {
 					for (Date exceptionDate : exceptionsDates) {
 						if (exceptionDate != null) {
-							Calendar calApp = Calendar.getInstance();
-							Calendar calException = Calendar.getInstance();
+							Calendar calApp = Calendar.getInstance(DateTools.getTimeZone());
+							Calendar calException = Calendar.getInstance(DateTools.getTimeZone());
 							calApp.setTime(a.getStart());
 							calException.setTime(exceptionDate);
 							// prüfe, ob nicht an einem Exception Dates
