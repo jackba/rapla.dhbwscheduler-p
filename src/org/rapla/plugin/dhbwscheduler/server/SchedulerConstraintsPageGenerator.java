@@ -166,11 +166,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 				}
 			}
+			int t = 0;
 			for (int i = 0; i < veranstaltung.getResources().length; i++)
 			{
 				if (veranstaltung.getResources()[i].getClassification().getType().getKey().equals("kurs"))
 				{
-					if (i==0)
+					if (t==0)
 					{
 
 						if (veranstaltung.getResources()[i].getClassification().getValue("name")!=null)
@@ -194,6 +195,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 						{
 							studiengang = "";
 						}
+						t = t + 1;
 					}
 					else
 					{
