@@ -29,11 +29,11 @@ import javax.swing.JTextArea;
 
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.RaplaObject;
-import org.rapla.entities.domain.Allocatable;
+//import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
-import org.rapla.entities.storage.RefEntity;
+//import org.rapla.entities.storage.RefEntity;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
@@ -46,7 +46,7 @@ import org.rapla.gui.toolkit.RaplaButton;
 import org.rapla.gui.toolkit.RaplaMenuItem;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 import org.rapla.plugin.urlencryption.UrlEncryption;
-import org.rapla.storage.StorageOperator;
+//import org.rapla.storage.StorageOperator;
 
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
@@ -66,7 +66,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public RaplaMenuItem[] create( final MenuContext menuContext, final RaplaObject focusedObject )
 	{
 		Collection selectedObjects = menuContext.getSelectedObjects();
@@ -423,7 +423,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							String veranstaltungsTitel = (String) r.getClassification().getValue("title");						
 							//Constraints initialisieren oder ändern. (Neuer Dozent = neuer Constraint.)
 							r = initConstraint(r);
-							int dozCount = 0;
+//							int dozCount = 0;
 							message += veranstaltungsTitel + ": \n"; 
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
@@ -453,7 +453,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 										isSend = false;
 									}
 										if (isSend){
-											dozCount++;
+//											dozCount++;
 											getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
 											//message += "\t email: check ";
 											//createMessage(getString("planning_open"), 200, 100, message, menuContext);
@@ -552,7 +552,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	
 	public String getUrl(String reservationID, String dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
-		String result = "";
+//		String result = "";
 
 		//Dynamische Generierung "Servername:Port"
 		StartupEnvironment env = getService( StartupEnvironment.class );
@@ -561,7 +561,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		String key;
 		//String strLanguage = this.getRaplaLocale().LANGUAGE_ENTRY;
 		
-		result = codeBase + "rapla?page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
+//		result = codeBase + "rapla?page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
 		try {
 			String encryptedParamters = urlEncryption.encrypt("page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId);
 			key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
