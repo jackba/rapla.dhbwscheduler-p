@@ -167,6 +167,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 		
 		postProcessingResults += resolveConflicts(startDatum, endeDatum);
+		
+		postProcessingResults += mindExceptionDates(startDatum, endeDatum);
 
 		if(reservations.size() == 0) {
 			// Alle Veranstaltungen geplant
@@ -1127,6 +1129,65 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 
 		return auslese;
+	}
+	
+	@SuppressWarnings("static-access")
+	private String mindExceptionDates(Date startDatum, Date endDatum)
+			throws RaplaException {
+
+		String notResolved = "";
+		// TODO
+		// gehe über alle Reservations
+		for (Reservation veranstaltung : reservationsPlannedByScheduler) {
+			veranstaltung = getClientFacade().edit(veranstaltung);
+			// get Constraints
+			String dozentenConstraint = getDozentenConstraint(veranstaltung);
+			// get Exception dates
+			Date[] exceptionsDates = ConstraintService
+					.getExceptionDates(dozentenConstraint);
+			// gehe über alle Appointment
+				for (Appointment a : splitIntoSingleAppointments(veranstaltung)) {
+					for (Date exceptionDate : exceptionsDates) {
+						if (exceptionDate != null) {
+							Calendar calApp = Calendar.getInstance();
+							Calendar calException = Calendar.getInstance();
+							calApp.setTime(a.getStart());
+							calException.setTime(exceptionDate);
+							// prüfe, ob nicht an einem Exception Dates
+							if ((calApp.YEAR == calException.YEAR)
+									&& (calApp.MONTH == calException.MONTH)
+									&& (calApp.DAY_OF_MONTH == calException.DAY_OF_MONTH)) {
+								// ggf. createNewAppointment() aufrufen
+								Appointment newApp = createNewAppointment(veranstaltung, a.getRepeating(),
+										startDatum, endDatum, a.getStart());
+								Boolean couldMove = moveAppointmentWithDozConstraints(startDatum, endDatum, veranstaltung, newApp);
+								if(!couldMove){
+									notResolved = notResolved + "\n" + veranstaltung.getName(getLocale()) + "\n";
+									break;
+								}
+							}
+						}
+					}
+				}
+				// Pruefung, ob noch innerhalb des Plannungszyklus
+				veranstaltung = getClientFacade().edit(veranstaltung);
+				for (Appointment a : splitIntoSingleAppointments(veranstaltung)) {
+					Date appointStart = a.getStart();
+					if (appointStart.after(endDatum)) {
+						Appointment newAppointment = createNewAppointment(
+								veranstaltung, a.getRepeating(), appointStart,
+								a.getEnd(), a.getStart());
+						boolean couldMove = moveAppointmentWithDozConstraints(
+								startDatum, endDatum, veranstaltung,
+								newAppointment);
+						if (!couldMove) {
+							notResolved += (veranstaltung.getName(getLocale())
+									+ "beyond_planning_peroid" + "\n");
+						}
+					}
+				}
+			}
+		return notResolved;
 	}
 
 	@Override
