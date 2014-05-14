@@ -39,6 +39,7 @@ import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.facade.ClientFacade;
 import org.rapla.facade.Conflict;
 import org.rapla.facade.RaplaComponent;
+import org.rapla.facade.internal.FacadeImpl;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaContextException;
 import org.rapla.framework.RaplaException;
@@ -132,7 +133,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 		Date anfangWoche = startDatum;
-
+// TODO: StartDatum ist kein Montag ??? Was machen wir dann?
 		tmp.setTime(anfangWoche);
 		tmp.add(Calendar.DAY_OF_YEAR, 5);
 
