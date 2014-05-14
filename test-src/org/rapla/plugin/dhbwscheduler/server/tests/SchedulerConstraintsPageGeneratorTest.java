@@ -165,11 +165,55 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		when(request.getParameter("hours")).thenReturn("10");
 		pg.generatePage(context, request, response);
 		
-		when(request.getParameter("exception")).thenReturn("exception,exception");
+		when(request.getParameter("exception")).thenReturn("2014-03-24,2014-03-25");
 		pg.generatePage(context, request, response);
 		
 		when(request.getHeader("accept-language")).thenReturn("de-de");
 		pg.generatePage(context, request, response);
+    }
+    
+    public void testvalidateGeneratePage() throws Exception{
+    	DefaultConfiguration config = new DefaultConfiguration("locale"); 
+    	SchedulerConstraintsPageGenerator pg = new SchedulerConstraintsPageGenerator(getContext(),config);
+
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		ServletContext context = mock(ServletContext.class);
+		
+		PrintWriter writer = new PrintWriter("servletvalidatetest.txt");
+        when(response.getWriter()).thenReturn(writer);
+        
+        StorageOperator lookup = getContext().lookup( StorageOperator.class);
+        Reservation r = (Reservation) lookup.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
+        
+        //r.getClassification().setValue("planungsconstraints",null);
+               
+        when(request.getParameter("id")).thenReturn(r.getId());
+		when(request.getParameter("dozent")).thenReturn(r.getPersons()[0].getId());
+		when(request.getParameter("exception")).thenReturn("2014-03-24,2014-03-25");
+		when(request.getParameter("time")).thenReturn("000000000000000000000000000000002222222222000000000000001111111111000000000000001111111111000000000000001111111111000000000000002222222222000000000000001111111111000000");
+		when(request.getParameter("changed")).thenReturn("1");
+        
+        pg.generatePage(context, request, response);
+        
+        Reservation ErgRes = (Reservation) lookup.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
+        String Constraint = (String) ErgRes.getClassification().getValue("planungsconstraints");
+        
+        //3faa3f42-51eb-4455-8294-8ce331d8f105_000000000000000000000000000000002222222222000000000000001111111111000000000000001111111111000000000000001111111111000000000000002222222222000000000000001111111111000000_1395615600000,1395702000000_2
+        String ErgConstraint = r.getPersons()[0].getId()
+        				+ 		"_000000000000000000000000000000002222222222000000000000001111111111000000000000001111111111000000000000001111111111000000000000002222222222000000000000001111111111000000"
+        				+ 		"_1395615600000,1395702000000"
+        				+		"_2";
+        assertEquals(ErgConstraint,Constraint);
+//        
+//        
+//        assertequals(Constraint,)
+        
+        
+        
+        
+        
+        
     }
     
 }

@@ -484,6 +484,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		DhbwschedulerReservationHelper helperClass = new DhbwschedulerReservationHelper( getContext());
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"erfassungsstatus",helperClass.getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
+		
 		if(veranstaltung == null){
 			return false;
 		}else{
