@@ -51,10 +51,6 @@ import org.rapla.plugin.mail.MailPlugin;
 import org.rapla.plugin.mail.server.MailInterface;
 import org.rapla.storage.StorageOperator;
 
-
-//TODO: Scheduler unter Linux zum Laufen bringen
-
-
 /**
  * @author DHBW
  *
@@ -403,7 +399,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	private String resolveConflicts(Date startDatum, Date endDatum) throws RaplaException {
 		String notResolved = "";
 		for (Reservation veranstaltung : reservationsPlannedByScheduler){
-			//TODO: to test / get all conflicts caused by this reservation
+			//get all conflicts caused by this reservation
 			while (getClientFacade().getConflicts(veranstaltung).length > 0) {
 				// if there are conflicts, move the appointment
 				Conflict[] conflicts = getClientFacade().getConflicts(veranstaltung);
@@ -728,7 +724,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			}
 			throw (new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
 		}
-		// TODO: ExceptionDates vom Dozenten beachten
 
 		return vor_res;
 	}
@@ -1136,7 +1131,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			throws RaplaException {
 
 		String notResolved = "";
-		// TODO
 		// gehe über alle Reservations
 		for (Reservation veranstaltung : reservationsPlannedByScheduler) {
 			veranstaltung = getClientFacade().edit(veranstaltung);
