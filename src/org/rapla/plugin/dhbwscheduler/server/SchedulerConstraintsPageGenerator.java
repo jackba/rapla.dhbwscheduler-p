@@ -167,11 +167,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 				}
 			}
+			int t = 0;
 			for (int i = 0; i < veranstaltung.getResources().length; i++)
 			{
 				if (veranstaltung.getResources()[i].getClassification().getType().getKey().equals("kurs"))
 				{
-					if (i==0)
+					if (t==0)
 					{
 
 						if (veranstaltung.getResources()[i].getClassification().getValue("name")!=null)
@@ -195,6 +196,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 						{
 							studiengang = "";
 						}
+						t = t + 1;
 					}
 					else
 					{
@@ -485,6 +487,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		DhbwschedulerReservationHelper helperClass = new DhbwschedulerReservationHelper( getContext());
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"erfassungsstatus",helperClass.getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
+		
 		if(veranstaltung == null){
 			return false;
 		}else{
