@@ -2,36 +2,26 @@ package org.rapla.plugin.dhbwscheduler.server.tests;
 
 import static org.mockito.Mockito.*;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.omg.CORBA.Request;
 import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
-import org.rapla.entities.Category;
-import org.rapla.entities.domain.Allocatable;
-import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.Reservation;
-import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.facade.ClientFacade;
-import org.rapla.framework.Configuration;
 import org.rapla.framework.DefaultConfiguration;
-import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
-import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 import org.rapla.plugin.dhbwscheduler.server.SchedulerConstraintsPageGenerator;
 import org.rapla.storage.StorageOperator;
 
+@SuppressWarnings("restriction")
 public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 	ClientFacade facade;
     Locale locale;
