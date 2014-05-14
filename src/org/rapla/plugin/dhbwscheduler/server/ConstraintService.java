@@ -2,22 +2,26 @@ package org.rapla.plugin.dhbwscheduler.server;
 
 import java.util.Date;
 
-public class ConstraintService{
+/**
+ * Constraint Service provides methods for building, changing and getting data from the constraints of the docents.
+ * The constraints are created in following form:
+ * 0: DozentID
+ * 1: Constraints
+ * 2: Dates
+ * 3: Status
+ * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
+ * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
+ */
 
-	/*Constraint:
-	 * 0: DozentID
-	 * 1: Constraints
-	 * 2: Dates
-	 * 3: Status
-	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
-	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
-	 */
+public class ConstraintService{
 
 	public static final int CHANGE_SINGLECONSTRAINT = 1;
 	public static final int CHANGE_SINGLEDATES = 2;
 	public static final int CHANGE_SINGLESTATUS = 3;
 
 	/**
+	 * putting param value (value of the change) into an array, 
+	 * so changeDozConstraint(String constraint, String doz_ID, int changevalue,Object[] value) can be used.
 	 * 
 	 * @param constraint
 	 * @param doz_ID
@@ -32,6 +36,12 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * changes the docent-constraint, depending on the changevalue.
+	 * changevalue = 1 = changes single constraint
+	 * changevalue = 2 = changes single dates
+	 * changevalue = 3 = changes single status
+	 * 
+	 * the value of the parameter value is used for the change and the docent-constraint is created with buildDozConst
 	 * 
 	 * @param constraint
 	 * @param doz_ID
@@ -45,21 +55,16 @@ public class ConstraintService{
 		if (constraint == null){
 			return result;
 		}
-		
-//		if(value == null || value[0] == null){
-//			//es soll doch keine änderung vorgenommen werden
-//			return constraint;
-//		}
-		
+				
 		String[] dozentIds = getDozIDs(constraint);
 		String[] dozentConstraints = new String[dozentIds.length];
 		
-		Date[][] execptions = new Date[dozentIds.length][];
+		Date[][] exceptions = new Date[dozentIds.length][];
 		int[] status = new int[dozentIds.length];
 		
 		for(int i = 0; i < dozentIds.length ; i++){
 			
-			Date[] dozentExecption = getExceptionDatesDoz(constraint, dozentIds[i]);			
+			Date[] dozentException = getExceptionDatesDoz(constraint, dozentIds[i]);			
 			int dozstatus = getStatus(constraint,dozentIds[i]);
 			dozentConstraints[i] = getDozStringConstraint(constraint, dozentIds[i]);
 			
@@ -67,7 +72,7 @@ public class ConstraintService{
 				try{
 					switch(changevalue){
 					case CHANGE_SINGLEDATES:
-						dozentExecption = (Date[]) value;
+						dozentException = (Date[]) value;
 						break;
 					case CHANGE_SINGLESTATUS:
 						dozstatus = (Integer) value[0];
@@ -83,15 +88,16 @@ public class ConstraintService{
 				
 			}
 			
-			execptions[i] 	= dozentExecption;
+			exceptions[i] 	= dozentException;
 			status[i] 		= dozstatus;
 		}
-		result = buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
+		result = buildDozConstraint(dozentIds,dozentConstraints,exceptions,status);
 		return result;
 	}
 	
 	/**
-	 * Initializing the Constraints
+	 * Initializing the constraint if its empty, or updating the constraint if an docent has been added 
+	 * 
 	 * @param constraint
 	 * @param dozID
 	 * @return
@@ -149,6 +155,8 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * changes the constraint of one single docent. 
+	 * If the constraint for this docent is not existing, it is added.
 	 * 
 	 * @param constraint
 	 * @param dozID
@@ -180,14 +188,12 @@ public class ConstraintService{
 			newConstraint += "\n" + buildDozConstraint(dozID,dozConst,exceptDate,status);
 		}
 		
-		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLEDATES,exceptDate);
-		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLECONSTRAINT,dozConst);
-		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLESTATUS,status);
-			
 		return newConstraint;
 	}
 	
 	/**
+	 * putting constraint-values into arrays,
+	 * so buildDozConstraint(String[] dozIDs, String[] dozConsts, Date[][] exceptDates, int[] status) can be used.
 	 * 
 	 * @param dozID
 	 * @param dozConst
@@ -220,6 +226,9 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * builds the docent-constraint in following form:
+	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
+	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
 	 * 
 	 * @param dozIDs
 	 * @param dozConsts
@@ -267,6 +276,7 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts docent-ID out of constraint and returns it
 	 * 
 	 * @param constraint
 	 * @return
@@ -288,6 +298,7 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts constraint from one docent out of constraint and returns it (as string)
 	 * 
 	 * @param constraint
 	 * @param dozID
@@ -315,6 +326,7 @@ public class ConstraintService{
 	}
 
 	/**
+	 * returns the constraints of all docents
 	 * 
 	 * @param constraint
 	 * @return
@@ -356,6 +368,7 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts constraint from one docent out of constraint and returns it (as int[])
 	 * 
 	 * @param constraint
 	 * @param doz_ID
@@ -388,6 +401,7 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts all exception dates out of the constraint and returns them
 	 * 
 	 * @param constraint
 	 * @return
@@ -427,6 +441,7 @@ public class ConstraintService{
 	}	
 	
 	/**
+	 * extracts the exception dates of one docent out of the constraint and returns them
 	 * 
 	 * @param constraint
 	 * @param doz_ID
@@ -471,6 +486,7 @@ public class ConstraintService{
 	}
 
 	/**
+	 * extracts the status of the reservation out of the constraint and returns it
 	 * 
 	 * @param constraint
 	 * @return
@@ -522,6 +538,7 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts the status of the constraint of one docent out of the constraint and returns it
 	 * 
 	 * @param constraint
 	 * @param doz_ID
