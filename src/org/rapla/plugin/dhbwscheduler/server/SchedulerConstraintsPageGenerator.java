@@ -1,7 +1,7 @@
 package org.rapla.plugin.dhbwscheduler.server;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+//import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +24,7 @@ import org.rapla.plugin.dhbwscheduler.DhbwschedulerReservationHelper;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
 
+@SuppressWarnings("restriction")
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 	
 	
@@ -99,13 +100,13 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String endZeit="dd.mm.jjjj";			//Ende der Veranstaltung
 		String vorlesungsZeit ="dd.mm.jj";		//Ende der Vorlesungszeit
 		String veranst="Unbekannt";				//Veranstaltungsname
-		String kontaktdaten="";					//Liste mit geänderten Kontaktdaten 
+//		String kontaktdaten="";					//Liste mit geänderten Kontaktdaten 
 		String time = "";							//Inhalt der StundenTabelle
 		String[] ausnahmenArray = null;				//Liste mit Daten der Ausnahmen
-		Date[] dateArr;
+//		Date[] dateArr;
 		int stunden = 4;						//Vorlesungsstunden am Stück
-		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
-		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
+//		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
+//		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
 		int dayTimeStart = 8;					//Benötigt zum Aufbauen der Stundentabelle
 		int dayTimeEnd = 18;					//Benötigt zum Aufbauen der Stundentabelle		
 		String key = request.getParameter("key"); 
@@ -130,7 +131,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			
 			
 			String dozentKey = lookup.resolve(dozentId).getId();
-			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
+//			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
 			
 			if (veranstaltung.getClassification().getValue("planungszyklus")!=null){
@@ -231,7 +232,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			//gesendete Daten werden hier ausgelesen, wenn eine Änderung vorgenommen wurde (changed = 1)
 			if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
 				time = request.getParameter("time");	
-				kontaktdaten= request.getParameter("contact");
+//				kontaktdaten= request.getParameter("contact");
 				try{stunden = Integer.parseInt(request.getParameter("hours"));}
 				catch(Exception e){}
 				if (request.getParameter("exception")!=null && request.getParameter("exception").contains(","))
