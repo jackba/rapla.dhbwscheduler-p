@@ -133,8 +133,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 		Date anfangWoche = startDatum;
-// TODO: StartDatum ist kein Montag ??? Was machen wir dann?
 		tmp.setTime(anfangWoche);
+
+		if (DateTools.getWeekday(anfangWoche) != DateTools.MONDAY) {
+			tmp.add(Calendar.DAY_OF_YEAR, DateTools.MONDAY - DateTools.getWeekday(anfangWoche));
+			anfangWoche = new Date(tmp.getTimeInMillis());
+		}
+		
 		tmp.add(Calendar.DAY_OF_YEAR, 5);
 
 		Date endeWoche = new Date(tmp.getTimeInMillis());
