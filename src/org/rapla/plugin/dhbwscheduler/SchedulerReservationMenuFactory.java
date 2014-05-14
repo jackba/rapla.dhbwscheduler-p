@@ -29,6 +29,7 @@ import javax.swing.JTextArea;
 
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.RaplaObject;
+import org.rapla.entities.domain.Allocatable;
 //import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
@@ -401,7 +402,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					
+					int result = -1;
 					//DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 					try {
 						getClientFacade().refresh();
@@ -410,10 +411,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					}
 					String strTitel = getString("Email_Title");
 					String strQuestion = getString("Email_senden_frage");
-
-					int result = JOptionPane.showConfirmDialog(null, strQuestion, strTitel, JOptionPane.YES_NO_CANCEL_OPTION);
+					
+					if (checkCompleteReservation(selectedReservations)){
+						result = JOptionPane.showConfirmDialog(null, strQuestion, strTitel, JOptionPane.YES_NO_CANCEL_OPTION);
+					}
+					
 					if (result == JOptionPane.YES_OPTION) {
-						getLogger().info("E-Mail wird rausgeschickt");
+						
+						
+						getLogger().info("E-Mail wird gesendet");
 						String message = "";
 
 						//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
@@ -514,6 +520,101 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					}
 
 
+				}
+
+				private boolean checkCompleteReservation(List<Reservation> selectedReservations) {
+					// TODO Auto-generated method stub
+					String Message ="Folgende Veranstaltungen sind nicht valide: \n";
+					String Messagezusatz = "";
+					boolean returnValue = true;
+					boolean hasCourse = false;
+					boolean reservationValid = true;
+					try{
+						for (Reservation r : selectedReservations)
+						{
+							reservationValid = true;
+							hasCourse = false;
+							Messagezusatz = "Veranstaltung: " + (String) r.getClassification().getValue("title") + "\n";
+							for (Allocatable kurs : r.getResources()){
+								if(kurs.getClassification().getType().getKey().equals("kurs")){
+									hasCourse = true;
+								}
+							}
+							
+							if (!hasCourse){
+								reservationValid = false;
+								Messagezusatz += "    kein Kurs eingetragen \n";
+							}
+							
+							if(r.getPersons() != null && r.getPersons().length > 0){
+								for (Allocatable persons : r.getPersons()){
+									
+									if (persons.getClassification().getValue("email") == null || persons.getClassification().getValue("email").equals("")){
+										Messagezusatz += "    Email von "+persons.getClassification().getValue("surname")+" fehlt \n";
+										reservationValid = false;
+									}
+								}
+							}else{
+								Messagezusatz += "    Kein Dozent vorhanden \n";
+							}
+							
+							
+							if(r.getClassification().getValue("planungszyklus") != null){
+								
+								Allocatable planzykl = (Allocatable) r.getClassification().getValue("planungszyklus");
+								
+								if(planzykl.getClassification().getValue("semester") == null || planzykl.getClassification().getValue("semester").equals("")){
+									reservationValid = false;
+									Messagezusatz += "    Das Semester im Planungszyklus ist nicht vorhanden \n";
+								}
+								
+								if(planzykl.getClassification().getValue("startdate") == null || planzykl.getClassification().getValue("startdate").equals("")){
+									reservationValid = false;
+									Messagezusatz += "    Startdatum im Planungszyklus ist nicht vorhanden \n";
+								}
+								
+								if(planzykl.getClassification().getValue("enddate") == null || planzykl.getClassification().getValue("enddate").equals("")){
+									reservationValid = false;
+									Messagezusatz += "    Enddatum im Planungszyklus ist nicht vorhanden \n";
+								}
+								
+								
+							}else{
+								reservationValid = false;
+								Messagezusatz += "    Kein Planungszyklus vorhanden \n";
+							}
+							
+							if(r.getClassification().getValue("studiengang") == null) {
+								reservationValid = false;
+								Messagezusatz += "    Kein Studiengang vorhanden \n";
+							}
+							
+							
+//
+//							kurs
+//							prof email name vorname
+//							stuga
+//							planzyklus start und enddat semester kurs
+							
+							
+							if(!reservationValid){
+								returnValue = false;
+								Message += Messagezusatz;
+							}
+						}
+					}catch(Exception e){
+						getLogger().error("Fehler bei der Überprüfung der Veranstaltung");
+						returnValue = false;
+						Message = "Fehler bei der der Überprüfung der Veranstaltungen";
+						e.printStackTrace();
+					}
+					
+					if(!returnValue){
+						Message += "\n Das Programm wird abgebrochen";
+						JOptionPane.showMessageDialog(null, Message);
+					}
+					
+					return returnValue;
 				}
 
 				
