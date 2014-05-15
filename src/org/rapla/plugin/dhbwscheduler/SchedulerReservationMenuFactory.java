@@ -568,8 +568,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				}else{
 					Messagezusatz += "    " + getI18n().getString("kein_Dozent") + " \n";
 				}
-				
-				
+
 				if(r.getClassification().getValue("planungszyklus") != null){
 					
 					Allocatable planzykl = (Allocatable) r.getClassification().getValue("planungszyklus");
@@ -589,7 +588,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						Messagezusatz += "    " + getI18n().getString("endDatum_Planungszyklus") + " \n";
 					}
 					
-					
 				}else{
 					reservationValid = false;
 					Messagezusatz += "    " + getI18n().getString("kein_Planungszyklus") + " \n";
@@ -599,14 +597,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					reservationValid = false;
 					Messagezusatz += "    " + getI18n().getString("kein_Studiengang") + " \n";
 				}
-				
-				
-//
-//				kurs
-//				prof email name vorname
-//				stuga
-//				planzyklus start und enddat semester kurs
-				
 				
 				if(!reservationValid){
 					returnValue = false;

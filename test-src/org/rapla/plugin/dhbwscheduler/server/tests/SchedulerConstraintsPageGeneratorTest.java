@@ -87,7 +87,12 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
         
         //Null Werte Testen
         pg.generatePage(context, request, response);
-
+        
+        when(request.getParameter("changed")).thenReturn("1");
+        
+        pg.generatePage(context, request, response);
+        
+        when(request.getParameter("changed")).thenReturn("0");
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
 		//String idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
 		Reservation r = (Reservation) lookup.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
@@ -142,6 +147,12 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		when(request.getParameter("dozent")).thenReturn(r.getPersons()[0].getId());
 		pg.generatePage(context, request, response);
 		
+		when(request.getParameter("exception")).thenReturn("2014-03-24,2014-03-25");
+		pg.generatePage(context, request, response);
+		
+		when(request.getParameter("exception")).thenReturn("lkahdf,2e3rd");
+		pg.generatePage(context, request, response);
+		
 		//ohne Stuga
 		when(request.getParameter("id")).thenReturn(r.getId());
 		when(request.getParameter("dozent")).thenReturn(r.getPersons()[1].getId());
@@ -156,6 +167,9 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		pg.generatePage(context, request, response);
 		
 		when(request.getParameter("exception")).thenReturn("2014-03-24,2014-03-25");
+		pg.generatePage(context, request, response);
+		
+		when(request.getParameter("exception")).thenReturn("lkahdf,2e3rd");
 		pg.generatePage(context, request, response);
 		
 		when(request.getHeader("accept-language")).thenReturn("de-de");

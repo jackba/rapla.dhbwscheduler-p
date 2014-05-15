@@ -656,6 +656,12 @@ public class ConstraintServiceTest extends RaplaTestCase {
 		assertEquals(erg_constraint1,ConstraintService.initDozConstraint(constraint1,dozid));
 		assertEquals(erg_constraint2,ConstraintService.initDozConstraint(null,dozid));
 	}
+	
+	public void testinitclass(){
+		ConstraintService csv = new ConstraintService();
+	}
+	
+	
 }
 
 
