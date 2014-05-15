@@ -2541,7 +2541,7 @@
       </relax:define>
 
       <relax:define name="planungszyklus">
-         <relax:element name="dynatt:planungszyklus" created-at="2014-05-07T10:52:55.0648Z" last-changed="2014-05-15T09:30:49.0045Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <relax:element name="dynatt:planungszyklus" created-at="2014-05-07T10:52:55.0648Z" last-changed="2014-05-15T09:30:49.0045Z">
             <doc:name lang="de">Planungszyklus</doc:name>
             <doc:annotations>
                <rapla:annotation key="colors">rapla:automated</rapla:annotation>
@@ -2759,8 +2759,8 @@
                               <rapla:mapentry key="only_own_reservations" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                              <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
+                              <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                            </rapla:map>
                         </options>
                         <filter>
@@ -2788,8 +2788,8 @@
                               <rapla:mapentry key="only_own_reservations" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                              <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                               <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
+                              <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                            </rapla:map>
                         </options>
                         <filter>
@@ -2818,8 +2818,8 @@
                               <rapla:mapentry key="only_own_reservations" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                              <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
+                              <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                            </rapla:map>
                         </options>
                         <filter>
@@ -2850,8 +2850,8 @@
                               <rapla:mapentry key="only_own_reservations" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                              <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                               <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
+                              <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                            </rapla:map>
                         </options>
                         <filter>
@@ -2908,8 +2908,8 @@
                         <rapla:mapentry key="only_own_reservations" value="true"/>
                         <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                         <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                        <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                         <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
+                        <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                      </rapla:map>
                   </options>
                </rapla:calendar>
@@ -5283,6 +5283,13 @@
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
+      <rapla:resource id="02e392fc-1f63-47ad-a3f4-89e3e96d6ff0" created-at="2014-05-15T09:54:11.0449Z" last-changed="2014-05-15T09:54:17.0347Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:planungszyklus>
+            <dynatt:name>empty</dynatt:name>
+            <dynatt:semester></dynatt:semester>
+         </dynatt:planungszyklus>
+         <rapla:permission/>
+      </rapla:resource>
 
    </rapla:resources>
 
@@ -5850,6 +5857,24 @@
          <rapla:allocate idref="13f0bf30-f660-43cc-a5d6-747416dec9a1"/>
          <rapla:allocate idref="fcac4af1-83e8-4547-b611-05d3eb186f97"/>
          <rapla:allocate idref="82529566-e106-481f-946f-9cf371e05ead"/>
+      </rapla:reservation>
+      <rapla:reservation id="158d3bdf-ec09-4df5-81a8-ccaf5c4a6b4a" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-05-15T09:54:23.0276Z" last-changed="2014-05-15T09:55:06.0126Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <dynatt:reservation2>
+            <dynatt:title>emptyZyklus</dynatt:title>
+            <dynatt:a3>category[key='c1']</dynatt:a3>
+            <dynatt:a2>false</dynatt:a2>
+            <dynatt:a4>20</dynatt:a4>
+            <dynatt:a1></dynatt:a1>
+            <dynatt:color>category[key='c2']</dynatt:color>
+            <dynatt:a6></dynatt:a6>
+            <dynatt:planungszyklus>02e392fc-1f63-47ad-a3f4-89e3e96d6ff0</dynatt:planungszyklus>
+            <dynatt:planungsstatus>in Planung</dynatt:planungsstatus>
+            <dynatt:erfassungsstatus>uneingeladen</dynatt:erfassungsstatus>
+         </dynatt:reservation2>
+         <rapla:appointment id="7e06943b-bd5e-4807-b4ad-dd5d3dbe0368" start-date="2014-05-14" start-time="10:45:00" end-date="2014-05-14" end-time="15:30:00"/>
+         <rapla:allocate idref="02e392fc-1f63-47ad-a3f4-89e3e96d6ff0"/>
+         <rapla:allocate idref="fcac4af1-83e8-4547-b611-05d3eb186f97"/>
+         <rapla:allocate idref="62a72f2c-1158-4bed-aea3-6594c2c265a9"/>
       </rapla:reservation>
    </rapla:reservations>
 

@@ -62,26 +62,42 @@ public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
 
 	public void testcreate() throws Exception {
 
-		RaplaMenuItem[] rawmenI = null;
-
 		StorageOperator lookup = getContext().lookup(StorageOperator.class);
 
 		Reservation reservation = (Reservation) lookup
 				.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
 
 		MenuContext menu = new MenuContext(getContext(), reservation);
-		SchedulerReservationMenuFactory menFac = new SchedulerReservationMenuFactory(
-				getContext(), config, service, urlcrypt);
+		SchedulerReservationMenuFactory menFac = 
+				new SchedulerReservationMenuFactory(getContext(), config, service, urlcrypt);
+		
 
+		//simple and all functions
+		menuclick(menFac,menu,reservation);
+		
+		//new empty res
+		Reservation reservation2  = facade.newReservation();
+		
+		menuclick(menFac,menu,reservation2);
+		
+		Reservation res3 = (Reservation) lookup.resolve("158d3bdf-ec09-4df5-81a8-ccaf5c4a6b4a");
+		menuclick(menFac,menu,res3);
+		
 		List<Reservation> rcs = new ArrayList<Reservation>();
-		Reservation res2 = (Reservation) lookup
-				.resolve("72860f35-7f63-4d69-bd66-4c27bb6204ac");
+		Reservation res2 = (Reservation) lookup.resolve("72860f35-7f63-4d69-bd66-4c27bb6204ac");
 		rcs.add(res2);
 		rcs.add(reservation);
-
+		
 		menu.setSelectedObjects(rcs);
+		
+		menuclick(menFac,menu,reservation);
+		
 
-		rawmenI = menFac.create(menu, reservation);
+	}
+
+	private void menuclick(SchedulerReservationMenuFactory menFac, MenuContext menu, Reservation reservation) {
+		
+		RaplaMenuItem[] rawmenI = menFac.create(menu, reservation);
 
 		for (int i = 0; i < rawmenI.length; i++) {
 			if (i == 5) {
@@ -89,6 +105,5 @@ public class SchedulerReservationMenuFactoryTest extends RaplaTestCase {
 			}
 			rawmenI[i].doClick();
 		}
-
 	}
 }

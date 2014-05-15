@@ -523,101 +523,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 				}
 
-				private boolean checkCompleteReservation(List<Reservation> selectedReservations) {
-					// TODO Auto-generated method stub
-					// TODO Übersetzung fehlt
-					String Message = getI18n().getString("Folgende_Veranstaltung") + "\n";
-					String Messagezusatz = "";
-					boolean returnValue = true;
-					boolean hasCourse = false;
-					boolean reservationValid = true;
-					try{
-						for (Reservation r : selectedReservations)
-						{
-							reservationValid = true;
-							hasCourse = false;
-							Messagezusatz = getI18n().getString("Veranstaltung") + ": " + (String) r.getClassification().getValue("title") + "\n";
-							for (Allocatable kurs : r.getResources()){
-								if(kurs.getClassification().getType().getKey().equals("kurs")){
-									hasCourse = true;
-								}
-							}
-							
-							if (!hasCourse){
-								reservationValid = false;
-								Messagezusatz += "    " + getI18n().getString("kein_Kurs") + " \n";
-							}
-							
-							if(r.getPersons() != null && r.getPersons().length > 0){
-								for (Allocatable persons : r.getPersons()){
-									
-									if (persons.getClassification().getValue("email") == null || persons.getClassification().getValue("email").equals("")){
-										Messagezusatz += "    " + getI18n().getString("Email_von") + " " +persons.getClassification().getValue("surname")+ " " + getI18n().getString("fehlt") + " \n";
-										reservationValid = false;
-									}
-								}
-							}else{
-								Messagezusatz += "    " + getI18n().getString("kein_Dozent") + " \n";
-							}
-							
-							
-							if(r.getClassification().getValue("planungszyklus") != null){
-								
-								Allocatable planzykl = (Allocatable) r.getClassification().getValue("planungszyklus");
-								
-								if(planzykl.getClassification().getValue("semester") == null || planzykl.getClassification().getValue("semester").equals("")){
-									reservationValid = false;
-									Messagezusatz += "    " + getI18n().getString("semester_Planungszyklus") + " \n";
-								}
-								
-								if(planzykl.getClassification().getValue("startdate") == null || planzykl.getClassification().getValue("startdate").equals("")){
-									reservationValid = false;
-									Messagezusatz += "    " + getI18n().getString("startDatum_Planungszyklus") + " \n";
-								}
-								
-								if(planzykl.getClassification().getValue("enddate") == null || planzykl.getClassification().getValue("enddate").equals("")){
-									reservationValid = false;
-									Messagezusatz += "    " + getI18n().getString("endDatum_Planungszyklus") + " \n";
-								}
-								
-								
-							}else{
-								reservationValid = false;
-								Messagezusatz += "    " + getI18n().getString("kein_Planungszyklus") + " \n";
-							}
-							
-							if(r.getClassification().getValue("studiengang") == null) {
-								reservationValid = false;
-								Messagezusatz += "    " + getI18n().getString("kein_Studiengang") + " \n";
-							}
-							
-							
-//
-//							kurs
-//							prof email name vorname
-//							stuga
-//							planzyklus start und enddat semester kurs
-							
-							
-							if(!reservationValid){
-								returnValue = false;
-								Message += Messagezusatz;
-							}
-						}
-					}catch(Exception e){
-						getLogger().error("Fehler bei der Überprüfung der Veranstaltung");
-						returnValue = false;
-						Message = "Fehler bei der der Überprüfung der Veranstaltungen";
-						e.printStackTrace();
-					}
-					
-					if(!returnValue){
-						Message += "\n " + getI18n().getString("Programm_abgebrochen");
-						JOptionPane.showMessageDialog(null, Message);
-					}
-					
-					return returnValue;
-				}
+				
 
 				
 			});
@@ -626,7 +532,101 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 		return menus.toArray(new RaplaMenuItem[] {});
 	}
-
+	private boolean checkCompleteReservation(List<Reservation> selectedReservations) {
+		// TODO Auto-generated method stub
+		// TODO Übersetzung fehlt
+		String Message = getI18n().getString("Folgende_Veranstaltung") + "\n";
+		String Messagezusatz = "";
+		boolean returnValue = true;
+		boolean hasCourse = false;
+		boolean reservationValid = true;
+		try{
+			for (Reservation r : selectedReservations)
+			{
+				reservationValid = true;
+				hasCourse = false;
+				Messagezusatz = getI18n().getString("Veranstaltung") + ": " + (String) r.getClassification().getValue("title") + "\n";
+				for (Allocatable kurs : r.getResources()){
+					if(kurs.getClassification().getType().getKey().equals("kurs")){
+						hasCourse = true;
+					}
+				}
+				
+				if (!hasCourse){
+					reservationValid = false;
+					Messagezusatz += "    " + getI18n().getString("kein_Kurs") + " \n";
+				}
+				
+				if(r.getPersons() != null && r.getPersons().length > 0){
+					for (Allocatable persons : r.getPersons()){
+						
+						if (persons.getClassification().getValue("email") == null || persons.getClassification().getValue("email").equals("")){
+							Messagezusatz += "    " + getI18n().getString("Email_von") + " " +persons.getClassification().getValue("surname")+ " " + getI18n().getString("fehlt") + " \n";
+							reservationValid = false;
+						}
+					}
+				}else{
+					Messagezusatz += "    " + getI18n().getString("kein_Dozent") + " \n";
+				}
+				
+				
+				if(r.getClassification().getValue("planungszyklus") != null){
+					
+					Allocatable planzykl = (Allocatable) r.getClassification().getValue("planungszyklus");
+					
+					if(planzykl.getClassification().getValue("semester") == null || planzykl.getClassification().getValue("semester").equals("")){
+						reservationValid = false;
+						Messagezusatz += "    " + getI18n().getString("semester_Planungszyklus") + " \n";
+					}
+					
+					if(planzykl.getClassification().getValue("startdate") == null || planzykl.getClassification().getValue("startdate").equals("")){
+						reservationValid = false;
+						Messagezusatz += "    " + getI18n().getString("startDatum_Planungszyklus") + " \n";
+					}
+					
+					if(planzykl.getClassification().getValue("enddate") == null || planzykl.getClassification().getValue("enddate").equals("")){
+						reservationValid = false;
+						Messagezusatz += "    " + getI18n().getString("endDatum_Planungszyklus") + " \n";
+					}
+					
+					
+				}else{
+					reservationValid = false;
+					Messagezusatz += "    " + getI18n().getString("kein_Planungszyklus") + " \n";
+				}
+				
+				if(r.getClassification().getValue("studiengang") == null) {
+					reservationValid = false;
+					Messagezusatz += "    " + getI18n().getString("kein_Studiengang") + " \n";
+				}
+				
+				
+//
+//				kurs
+//				prof email name vorname
+//				stuga
+//				planzyklus start und enddat semester kurs
+				
+				
+				if(!reservationValid){
+					returnValue = false;
+					Message += Messagezusatz;
+				}
+			}
+		}catch(Exception e){
+			getLogger().error("Fehler bei der Überprüfung der Veranstaltung");
+			returnValue = false;
+			Message = "Fehler bei der der Überprüfung der Veranstaltungen";
+			e.printStackTrace();
+		}
+		
+		if(!returnValue){
+			Message += "\n " + getI18n().getString("Programm_abgebrochen");
+			JOptionPane.showMessageDialog(null, Message);
+		}
+		
+		return returnValue;
+	}
 	private void createMessage(String title, String message, int x, int y, final MenuContext menuContext, boolean pack){
 		JTextArea content = new JTextArea();
 		content.setText(message);
