@@ -435,7 +435,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					Appointment newAppointment = createNewAppointment(veranstaltung, a.getRepeating(), appointStart, a.getEnd(), a.getStart());
 					boolean couldMove = moveAppointmentWithDozConstraints(startDatum, endDatum, veranstaltung, newAppointment);
 					if(!couldMove){
-						notResolved += (veranstaltung.getName(getLocale()) + "beyond_planning_peroid" + "\n");
+						notResolved += (veranstaltung.getName(getLocale()) + getString("beyond_planning_peroid") + "\n");
 					}
 				}
 			}
@@ -1202,7 +1202,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 								newAppointment);
 						if (!couldMove) {
 							notResolved += (veranstaltung.getName(getLocale())
-									+ "beyond_planning_peroid" + "\n");
+									+ getString("beyond_planning_peroid") + "\n");
 						}
 					}
 				}
