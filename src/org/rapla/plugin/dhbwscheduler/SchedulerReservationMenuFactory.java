@@ -67,7 +67,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		this.urlEncryption = urlEncryption;
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
-
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public RaplaMenuItem[] create( final MenuContext menuContext, final RaplaObject focusedObject )
 	{
@@ -532,9 +532,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 		return menus.toArray(new RaplaMenuItem[] {});
 	}
+	/**
+	 * Check the Reservation if they are validate for send to the Clients
+	 * @param selectedReservations
+	 * @return
+	 */
 	private boolean checkCompleteReservation(List<Reservation> selectedReservations) {
-		// TODO Auto-generated method stub
-		// TODO Übersetzung fehlt
 		String Message = getI18n().getString("Folgende_Veranstaltung") + "\n";
 		String Messagezusatz = "";
 		boolean returnValue = true;
@@ -617,6 +620,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		
 		return returnValue;
 	}
+	/**
+	 * Generate a Message with the Parameters
+	 * @param title
+	 * @param message
+	 * @param x
+	 * @param y
+	 * @param menuContext
+	 * @param pack
+	 */
 	private void createMessage(String title, String message, int x, int y, final MenuContext menuContext, boolean pack){
 		JTextArea content = new JTextArea();
 		content.setText(message);
@@ -643,6 +655,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 	}
 	
+	/**
+	 * Generate a URL for the Reservation and Person
+	 * @param reservationID
+	 * @param dozentId
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws RaplaException
+	 * @throws EntityNotFoundException
+	 */
 	public String getUrl(String reservationID, String dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
 //		String result = "";
@@ -672,7 +693,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 
 	}
-
+	
+	/**
+	 * Generate a new Constraint for this Reservation (r)
+	 * @param r
+	 * @return
+	 */
 	private Reservation initConstraint(Reservation r) {
 		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
@@ -690,8 +716,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	}
 
 
-	/*
-	 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
+
+	/**
+	 * Check Status value of the Reservation if an E-Mail can be send
+	 * @param r
+	 * @param dozentenID
+	 * @return
 	 */
 	private boolean EmailVersendeBerechtigung(Reservation r, String dozentenID) {
 
@@ -727,7 +757,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		return returnvalue;
 	}
 
-	
+	/**
+	 * returns the Status from this Reservation
+	 * @param r
+	 * @param key
+	 * @return
+	 */
 	private String getErfassungsstatusDoz(Reservation r, String key) {
 		
 		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());

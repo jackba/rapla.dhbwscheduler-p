@@ -396,14 +396,33 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 	}
 	
+	/**
+	 * create a hidden field with values.
+	 * @param fieldname
+	 * @param value
+	 * @return
+	 */
 	public String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
+	
+	/**
+	 * formats the Dates for the Datepicker object
+	 * @param str
+	 * @return
+	 */
 	public String formatDateForDatepicker(String str){
 		String[] strArr= str.split("\\.");
 		return strArr[2]+"-"+strArr[1]+"-"+strArr[0];		
 	}
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
+	/**
+	 * Changes a String to int Array[][] with 24x7 hours. 
+	 * @param str
+	 * @param dayTimeStart
+	 * @param dayTimeEnd
+	 * @return
+	 */
 	private String[][] formatTimeString(String str,int dayTimeStart, int dayTimeEnd){
 		//Überprüfen ob TimeString leer ist, ggf. füllen
 		if (str == null)
@@ -440,6 +459,15 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		return timeArray;
 	}
+	
+	/**
+	 * sends the formular to the Reservation an Store the information.
+	 * @param eventId
+	 * @param dozentId
+	 * @param time
+	 * @param ausnahmenArray
+	 * @return return true if the information can be stored
+	 */
 	private boolean sendConstrainttoReservation(String eventId, String dozentId,
 			String time, String[] ausnahmenArray) {
 		
