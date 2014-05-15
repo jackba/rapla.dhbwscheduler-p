@@ -2541,19 +2541,16 @@
       </relax:define>
 
       <relax:define name="planungszyklus">
-         <relax:element name="dynatt:planungszyklus" created-at="2014-05-07T10:52:55.0648Z" last-changed="2014-05-14T08:00:13.0807Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+         <relax:element name="dynatt:planungszyklus" created-at="2014-05-07T10:52:55.0648Z" last-changed="2014-05-15T09:30:49.0045Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
             <doc:name lang="de">Planungszyklus</doc:name>
             <doc:annotations>
                <rapla:annotation key="colors">rapla:automated</rapla:annotation>
                <rapla:annotation key="classification-type">resource</rapla:annotation>
-               <rapla:annotation key="nameformat">{kurs}</rapla:annotation>
+               <rapla:annotation key="nameformat">{name} S{semester}</rapla:annotation>
             </doc:annotations>
-            <relax:element name="kurs">
-               <doc:name lang="de">Kurs</doc:name>
-               <doc:name lang="en">name</doc:name>
-               <relax:data type="rapla:allocatable"/>
-               <rapla:constraint name="dynamic-type">kurs</rapla:constraint>
-               <rapla:constraint name="multi-select">true</rapla:constraint>
+            <relax:element name="name">
+               <doc:name lang="de">Name</doc:name>
+               <relax:data type="string"/>
             </relax:element>
             <relax:element name="semester">
                <doc:name lang="de">Semester</doc:name>
@@ -2762,8 +2759,8 @@
                               <rapla:mapentry key="only_own_reservations" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                              <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                               <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
+                              <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                            </rapla:map>
                         </options>
                         <filter>
@@ -2791,8 +2788,8 @@
                               <rapla:mapentry key="only_own_reservations" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                              <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
+                              <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                            </rapla:map>
                         </options>
                         <filter>
@@ -2821,8 +2818,8 @@
                               <rapla:mapentry key="only_own_reservations" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                              <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                               <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
+                              <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
                            </rapla:map>
                         </options>
                         <filter>
@@ -2853,8 +2850,8 @@
                               <rapla:mapentry key="only_own_reservations" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                              <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                               <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
+                              <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                            </rapla:map>
                         </options>
                         <filter>
@@ -2911,8 +2908,8 @@
                         <rapla:mapentry key="only_own_reservations" value="true"/>
                         <rapla:mapentry key="org.rapla.plugin.abstractcalendar.save_selected_date" value="false"/>
                         <rapla:mapentry key="org.rapla.plugin.urlencryption.selected" value="true"/>
-                        <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                         <rapla:mapentry key="org.rapla.plugin.autoexport.selected" value="true"/>
+                        <rapla:mapentry key="org.rapla.plugin.export2ical.selected" value="false"/>
                      </rapla:map>
                   </options>
                </rapla:calendar>
@@ -5224,65 +5221,65 @@
          </dynatt:freetimeType>
          <rapla:permission access="read_no_allocation"/>
       </rapla:resource>
-      <rapla:resource id="442e46c0-13c4-4164-81f4-f427b571c5f2" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-18T17:17:08.0000Z" last-changed="2014-05-14T08:00:35.0489Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+      <rapla:resource id="442e46c0-13c4-4164-81f4-f427b571c5f2" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-18T17:17:08.0000Z" last-changed="2014-05-15T09:31:04.0813Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
          <dynatt:planungszyklus>
-            <dynatt:kurs>62a72f2c-1158-4bed-aea3-6594c2c265a9</dynatt:kurs>
+            <dynatt:name>WWI11</dynatt:name>
             <dynatt:semester>2</dynatt:semester>
             <dynatt:startdate>2014-01-20</dynatt:startdate>
             <dynatt:enddate>2014-02-24</dynatt:enddate>
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
-      <rapla:resource id="2f9998d7-fbf3-466f-9c49-f79af1e39111" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-18T17:18:01.0000Z" last-changed="2014-05-14T08:01:14.0528Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+      <rapla:resource id="2f9998d7-fbf3-466f-9c49-f79af1e39111" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-18T17:18:01.0000Z" last-changed="2014-05-15T09:31:25.0130Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
          <dynatt:planungszyklus>
-            <dynatt:kurs>13f0bf30-f660-43cc-a5d6-747416dec9a1</dynatt:kurs>
+            <dynatt:name>WWI11</dynatt:name>
             <dynatt:semester>9</dynatt:semester>
             <dynatt:startdate>2014-03-10</dynatt:startdate>
             <dynatt:enddate>2014-03-14</dynatt:enddate>
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
-      <rapla:resource id="0485bac5-318f-42ed-970e-b7eff77c0c55" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T13:42:53.0000Z" last-changed="2014-05-14T08:00:59.0759Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+      <rapla:resource id="0485bac5-318f-42ed-970e-b7eff77c0c55" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T13:42:53.0000Z" last-changed="2014-05-15T09:30:59.0551Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
          <dynatt:planungszyklus>
-            <dynatt:kurs>62a72f2c-1158-4bed-aea3-6594c2c265a9</dynatt:kurs>
+            <dynatt:name>WWI12</dynatt:name>
             <dynatt:semester>1</dynatt:semester>
             <dynatt:startdate>2014-01-29</dynatt:startdate>
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
-      <rapla:resource id="b0531f85-9fe4-4ce3-a17e-ba9f94063de5" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T13:54:56.0000Z" last-changed="2014-05-14T08:01:07.0094Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+      <rapla:resource id="b0531f85-9fe4-4ce3-a17e-ba9f94063de5" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T13:54:56.0000Z" last-changed="2014-05-15T09:31:09.0714Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
          <dynatt:planungszyklus>
-            <dynatt:kurs>13f0bf30-f660-43cc-a5d6-747416dec9a1</dynatt:kurs>
+            <dynatt:name>WWI12</dynatt:name>
             <dynatt:semester>3</dynatt:semester>
             <dynatt:startdate>2014-02-24</dynatt:startdate>
             <dynatt:enddate>2014-02-28</dynatt:enddate>
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
-      <rapla:resource id="6eff9e5d-f953-4e5b-8725-22a1f637396d" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T14:22:25.0000Z" last-changed="2014-05-14T08:00:42.0623Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+      <rapla:resource id="6eff9e5d-f953-4e5b-8725-22a1f637396d" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T14:22:25.0000Z" last-changed="2014-05-15T09:30:54.0385Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
          <dynatt:planungszyklus>
-            <dynatt:kurs>13f0bf30-f660-43cc-a5d6-747416dec9a1</dynatt:kurs>
+            <dynatt:name>WWI11</dynatt:name>
             <dynatt:semester>1</dynatt:semester>
             <dynatt:startdate>2014-03-10</dynatt:startdate>
             <dynatt:enddate>2014-03-21</dynatt:enddate>
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
-      <rapla:resource id="fb9645bc-52c7-4b2e-9a92-6b325e3018f9" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T14:39:30.0000Z" last-changed="2014-05-14T08:00:51.0722Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+      <rapla:resource id="fb9645bc-52c7-4b2e-9a92-6b325e3018f9" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T14:39:30.0000Z" last-changed="2014-05-15T09:31:19.0994Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
          <dynatt:planungszyklus>
-            <dynatt:kurs>62a72f2c-1158-4bed-aea3-6594c2c265a9</dynatt:kurs>
+            <dynatt:name>WWI12</dynatt:name>
             <dynatt:semester>6</dynatt:semester>
             <dynatt:startdate>2014-02-10</dynatt:startdate>
             <dynatt:enddate>2014-02-14</dynatt:enddate>
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
-      <rapla:resource id="91a487a8-76d0-40d5-8872-e8dc1c13b014" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T15:26:52.0000Z" last-changed="2014-05-14T08:00:27.0203Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+      <rapla:resource id="91a487a8-76d0-40d5-8872-e8dc1c13b014" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-01-29T15:26:52.0000Z" last-changed="2014-05-15T09:31:14.0975Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
          <dynatt:planungszyklus>
-            <dynatt:kurs>62a72f2c-1158-4bed-aea3-6594c2c265a9</dynatt:kurs>
+            <dynatt:name>WWI11</dynatt:name>
             <dynatt:semester>4</dynatt:semester>
-            <dynatt:startdate>2014-03-23</dynatt:startdate>
-            <dynatt:enddate>2014-03-25</dynatt:enddate>
+            <dynatt:startdate>2014-03-24</dynatt:startdate>
+            <dynatt:enddate>2014-03-24</dynatt:enddate>
          </dynatt:planungszyklus>
          <rapla:permission/>
       </rapla:resource>
@@ -5759,7 +5756,7 @@
          <rapla:allocate idref="b1ffa3cd-034d-43b0-979c-104cfe3e3631"/>
          <rapla:allocate idref="3faa3f42-51eb-4455-8294-8ce331d8f105"/>
       </rapla:reservation>
-	  <rapla:reservation id="c6b8bce9-a173-4960-b760-a8840e07beeb" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-05-13T12:17:37.0331Z" last-changed="2014-05-13T12:20:22.0123Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
+      <rapla:reservation id="c6b8bce9-a173-4960-b760-a8840e07beeb" owner="3f49044c-1469-4699-8a66-5f46ec6c0a41" created-at="2014-05-13T12:17:37.0331Z" last-changed="2014-05-13T12:20:22.0123Z" last-changed-by="3f49044c-1469-4699-8a66-5f46ec6c0a41">
          <dynatt:reservation2>
             <dynatt:title>Arbeitsrecht</dynatt:title>
             <dynatt:a3>category[key='c1']</dynatt:a3>
