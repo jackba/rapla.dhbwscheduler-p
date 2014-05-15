@@ -452,6 +452,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			throws RaplaException {
 		Date nextStartDate = startDatum;
 		Date newStart = new Date();
+		Date newStartBackup = new Date();
 		int[] dozConstr = ConstraintService.getDozConstraints(getDozentenConstraint(veranstaltung));
 		int stelleConstraint = 0;
 		boolean breakLoop = false;
@@ -471,11 +472,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				slot = timeSlots[dayOfWeek][1];
 				stelleConstraint = 24 + ((slot - 1) * 12) + (hour - 12);
 			}
-			if(nextStartDate.after(endDatum)){
+			if(nextStartDate.after(endDatum) || newStart.equals(newStartBackup)){
 				veranstaltung.removeAppointment(newAppointment);
 				breakLoop = true;
 				break;
 			}
+			newStartBackup = newStart;
 		}
 		if (!breakLoop) {
 			newAppointment.move(newStart);
