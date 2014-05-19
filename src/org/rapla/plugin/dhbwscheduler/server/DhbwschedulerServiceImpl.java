@@ -53,7 +53,13 @@ import org.rapla.plugin.mail.server.MailInterface;
 import org.rapla.storage.StorageOperator;
 
 /**
+ * Implementierung des Scheduler-Plugins. Das Plugin plant Vorlesungen im Status "in Plannung geschlossen"
+ * 
  * @author DHBW
+ *
+ */
+/**
+ * @author Marc Dvorschak
  *
  */
 @SuppressWarnings({ "unused", "restriction" })
@@ -77,6 +83,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	private User user;
 
 	/**
+	 * Constructor 
+	 * 
 	 * @param context
 	 */
 	public DhbwschedulerServiceImpl(RaplaContext context, User user) {
@@ -85,11 +93,14 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Startet den Scheduler. Die übergebenen Vorlesungen müssen im Zustand "in Plannung geschlossen" sein und Dozenten-Constraints 
+	 * besitzen.
 	 * 
 	 * @see
 	 * org.rapla.plugin.dhbwscheduler.DhbwschedulerService#schedule(org.rapla.entities.storage.internal.SimpleIdentifier[])
+	 * 
+	 * @param String[] reservationIds - IDs der zu plannenden Vorlesungen
 	 */
 	@Override
 	public String schedule(String[] reservationIds)
@@ -187,6 +198,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 	}
 
+	/**
+	 * 
+	 * Startet den GPLK-Solver.
+	 * 
+	 * @throws RaplaException
+	 */
 	private void solve() throws RaplaException {
 		glp_prob lp = null;
 		glp_tran tran;
@@ -250,9 +267,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param startDatum
-	 * @param endeDatum
-	 * @return
+	 * Startet das Pre-Processing, das die Daten für den GLPK-Solver zusammenstellt.
+	 * 
+	 * @param startDatum - Beginn der zu plannenden Woche
+	 * @param endeDatum - Ende der zu plannenden Woche
 	 */
 	private void preProcessing(Date startDatum, Date endeDatum)
 			throws RaplaException {
@@ -293,7 +311,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @return
+	 * @return int[][] - Int-Array, das die Dozentenkosten der Form [Vorlesung][Zeitslots] abbildet
+	 * 
 	 * @throws RaplaException
 	 */
 	private int[][] buildDozentenKosten() throws RaplaException {
@@ -334,7 +353,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 
 	/**
-	 * @param Dozentenconstraint
+	 * Uebertraegt die Kosten der Dozenten aus dem String in ein int-Array, wobei die Kosten gleichzeitig aufaddiert werden.
+	 * 
+	 * @param String dozentenconstraint
+	 * 
 	 * @return int[]
 	 */
 	private int[] splitDozentenKostenSlots(String dozentenConstraint) {
@@ -356,9 +378,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 	
 	/**
+	 * Verschieben der Vorlesungen in die gefundenen Zeitslots und Auffraeumen der Dateien. 
 	 * 
-	 * @param startDatum
-	 * @param endeDatum
+	 * @param startDatum - Start der zu plannenden Woche
+	 * @param endeDatum - Ende der zu plannenden Woche
+	 * 
+	 * @return String - Ergebnis des Schedulers zur Ausgabe in einem Dialog.
 	 */
 	private String postProcessing(Date startDatum, Date endeDatum) throws RaplaContextException, RaplaException {
 		String solutionString = auslese_Solution(solution);
@@ -397,9 +422,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	
 	/**
 	 * 
-	 * @param startDatum
-	 * @param endDatum
-	 * @return
+	 * Lösen von möglichen Konflikten zwischen Terminen.
+	 * 
+	 * @param startDatum - Start des Plannungszyklus.
+	 * @param endDatum - Ende des Planungszyklus.
+	 * @return String - Mögliche Fehlermeldungen zur Ausgabe in einem Dialog.
 	 * @throws RaplaException
 	 */
 	private String resolveConflicts(Date startDatum, Date endDatum) throws RaplaException {
@@ -446,10 +473,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param startDatum
-	 * @param endDatum
-	 * @param veranstaltung
-	 * @param newAppointment
+	 * Verschiebt einzelne Termine von Veranstaltungen/Vorlesungen unter Beachtung der Dozentenvorgaben und des Planungszyklus.
+	 * 
+	 * @param startDatum - Start des Plaungszyklus
+	 * @param endDatum - Ende des Planungszyklus
+	 * @param veranstaltung - Zu planende Vorlesung
+	 * @param newAppointment - zu verschiebenderer Termin
 	 * @return true if it works, false if not
 	 * @throws RaplaException
 	 */
@@ -492,12 +521,14 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param veranstaltung
-	 * @param repeating
-	 * @param start
-	 * @param end
-	 * @param dateOfConflict
-	 * @return new Appointment
+	 * Erstellt einen neuen Termin fuer eine Veranstaltung - in der Regel ein Ausnahmetermin.
+	 * 
+	 * @param veranstaltung - zu planende Veranstaltung
+	 * @param repeating - Objekt, das die Wiederholung eines Termins kapselt
+	 * @param start - Start des Planungszyklus
+	 * @param end - Ende des Planungszyklus
+	 * @param dateOfConflict - Zeitpunkt des Konflikts zwischen Terminen oder mit Dozenten-Constraints.
+	 * @return new Appointment 
 	 * @throws RaplaException
 	 */
 	private Appointment createNewAppointment(Reservation veranstaltung, Repeating repeating, Date start, Date end, Date dateOfConflict) throws RaplaException {
@@ -512,9 +543,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 
 	/**
+	 * Schreibt den Loesungsstring in ein Int-Array.
 	 * 
 	 * @param solution
-	 * @return
+	 * @return int[][]
 	 */
 	private int[][] splitSolution(String solutionString) {
 		String[] solReservations = solutionString.split("\n");
@@ -535,13 +567,12 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param slot
-	 * @param startDate
-	 * @param endDate
-	 * @param appointment
-	 * @param allocatables
-	 * @param reservation
-	 * @return
+	 * Verschieben eines Termins auf eine Uhrzeit, die von den Dozenten-Constraints zugelassen wird.
+	 * 
+	 * @param slot - Slot, wo die Veranstaltung geplant hin geplant werden soll 
+	 * @param startDate - Startzeit des Termins
+	 * @param reservation - zu planende Veranstaltung
+	 * @return Date - der neue Startzeitpunkt
 	 * @throws RaplaException
 	 */
 	private Date setStartDate(int slot, Date startDate, Reservation reservation) throws RaplaException {
@@ -587,11 +618,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param allocatables
-	 * @param appointment
-	 * @param startDate
-	 * @param endDate
-	 * @return
+	 * Sucht für einen Termin und eine Menge von Resourcen den naechsten freien Termin.
+	 * 
+	 * @param allocatables - die Resourcen
+	 * @param appointment - der zu planende Termin
+	 * @param startDate - Start des Planungszyklus
+	 * @param endDate - Ende des Planungszyklus
+	 * @return Date - naechster freier Termin
 	 * @throws RaplaException
 	 */
 	private Date getNextFreeTime(Allocatable[] allocatables, Appointment appointment, Date startDate, Date endDate) throws RaplaException {
@@ -611,10 +644,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	
 	/**
 	 * 
-	 * @param allocatables
-	 * @param startDate
-	 * @param endDate
-	 * @return
+	 * Erstellt eine Liste mit bei Abfragen in Rapla zu ignorienden Veranstaltungen (v.a. Veranstaltungen "in Planung geöffnet"
+	 * und "Planung abgeschlossen" sollen ignoriert werden). 
+	 * 
+	 * @param allocatables - Resourcen
+	 * @param startDate - Start des Planungszyklus
+	 * @param endDate - Ende des Planungszyklus
+	 * @return HashSet - IgnoreList
 	 * @throws RaplaException
 	 */
 	private HashSet<Reservation> getIgnoreList(Allocatable[] allocatables, Date startDate, Date endDate) throws RaplaException {
@@ -634,9 +670,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 
 	/**
+	 * 
+	 * Baut die Matrix (int-Array), die enthält ob alle Resource in einem Slot für eine Veranstaltung verfügabr sind.
+	 * Feiertage werden nur beachtet, wenn das holiday-plugin aktiviert ist!
+	 * 
 	 * @param start - Anfang der Woche
 	 * @param ende  - Ende der Woche
-	 * @return int[][]
+	 * @return int[][] - die Matrix mit der Resourcenverfuegbarkeit
 	 * @throws RaplaException
 	 */
 	private int[][] buildAllocatableVerfuegbarkeit(Date start, Date ende) throws RaplaException {
@@ -757,15 +797,18 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param vorlesungMitGleicherResource
-	 * @return
+	 * Teilt zu Bearbeitung einzelner Termine, eine Veranstaltung, die normalerweise nur Wiederholungen enthaelt,
+	 * in mehrere Termine auf.
+	 * 
+	 * @param vorlesung - zu teilende Veranstaltung
+	 * @return Appointment[] - Array, das die einzelnen Termine enthaelt
 	 * @throws RaplaException
 	 */
-	private Appointment[] splitIntoSingleAppointments(Reservation vorlesungMitGleicherResource) throws RaplaException {
+	private Appointment[] splitIntoSingleAppointments(Reservation vorlesung) throws RaplaException {
 		List<Appointment> splitAppointments = new ArrayList<Appointment>();
 
 		// Generate time blocks from selected appointment
-		Appointment[] termine = vorlesungMitGleicherResource.getAppointments();
+		Appointment[] termine = vorlesung.getAppointments();
 		for (Appointment appointment : termine){
 			List<AppointmentBlock> splits = new ArrayList<AppointmentBlock>();
 			appointment.createBlocks(appointment.getStart(), DateTools.fillDate(appointment.getMaxEnd()), splits);
@@ -785,8 +828,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param reservation
-	 * @return
+	 * Gibt die Dozenten-Constraints zurueck, die an der uebergebenen Veranstaltung haengen. 
+	 * 
+	 * @param reservation - Veranstaltung, deren Dozenten-Constraints ausgegeben werden sollen
+	 * @return String - die unbearbeiteten Dozenten-Constraints, die an der uebergebenen Veranstaltung haengen
 	 */
 	private String getDozentenConstraint(Reservation reservation) {
 
@@ -799,8 +844,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 
 	/**
-	 * @param Dozentenconstraint
-	 * @return int[]
+	 * 
+	 * Uebertraegt die uebergebenen Dozenten-Constraints in ein int-Array, das die belegten Slots abbildet.
+	 * 
+	 * @param dozentenConstraint - die Dozenten-Constraint, die abgebildet werden sollen 
+	 * @return int[] - int-Array, das die belegten Slots abbildet
 	 */
 	private int[] splitDozentenConstraintSlots(String dozentenConstraint) {
 		int[] belegteSlots = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -824,8 +872,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 
 	/**
-	 * @param reservation
-	 * @return int[][]
+	 * 
+	 * Baut die Matrix (int-Array), die jeder Verantstaltung ihre(n) Dozenten zurordnet. 
+	 * Veranstaltungen muessen Dozenten zugeordnet sein! 
+	 * 
+	 * @return int[][] - die Matrix (int-Array), die jeder Verantstaltung ihre(n) Dozenten zurordnet
 	 * @throws RaplaException
 	 */
 	private int[][] buildZuordnungDozentenVorlesung() throws RaplaException {
@@ -883,8 +934,11 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	}
 
 	/**
-	 * @param reservation
-	 * @return int[][]
+	 * 
+	 *Baut die Matrix (int-Array), die jeder Verantstaltung ihre(n) Kurs(e) zurordnet. 
+	 *Veranstaltungen muss mindestens ein Kurs zugeordnet sein!  
+	 * 
+	 * @return int[][] - die Matrix (int-Array), die jeder Verantstaltung ihre(n) Kurs(e) zurordnet
 	 * @throws RaplaException
 	 */
 	private int[][] buildZuordnungKursVorlesung() throws RaplaException {
@@ -939,8 +993,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		return kurs_vor;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Implementiert wg. GLPK.
 	 * 
 	 * @see org.gnu.glpk.GLPK
 	 */
@@ -951,8 +1005,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * 
+	 * Implementiert wg. GLPK.
 	 * 
 	 * @see org.gnu.glpk.GLPK
 	 */
@@ -966,10 +1021,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param data_file
-	 * @param doz_vor
-	 * @param kurs_vor
-	 * @param vor_res
+	 * Schreibt die Daten in die Datei mit der Problembeschreibung für den GLPK-Solver.
+	 * 
+	 * @param data_file - die Datei mit der Problembeschreibung für den GLPK-Solver
+	 * @param doz_vor - die Matrix (int-Array), die jeder Verantstaltung ihre(n) Dozenten zurordnet
+	 * @param kurs_vor - die Matrix (int-Array), die jeder Verantstaltung ihre(n) Kurs(e) zurordnet
+	 * @param vor_res - die Matrix (int-Array) mit der Resourcenverfuegbarkeit
+	 * @param doz_cost - die Matrix (int-Array), welche die Dozentenkosten abbildet
 	 */
 	private void aufbau_scheduler_data(String data_file, int[][] doz_vor,
 			int[][] kurs_vor, int[][] vor_res, int[][] doz_cost) {
@@ -1062,8 +1120,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		}
 		file += "; \n";
 
-		// System.out.println(file);
-
 		// Datei schreiben
 		FileWriter fw;
 
@@ -1078,8 +1134,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param mod_file
-	 * @param sol_file
+	 * Schreibt den Kopf der Datei für den GLPK-Solver.
+	 * 
+	 * @param mod_file - Pfad zur Datei mit der Problembeschreibung
+	 * @param sol_file - Pfad zur Datei, in welche die Loesung geschrieben werden soll
 	 */
 	private void aufbau_scheduler_mod(String mod_file, String sol_file) {
 		String file = "param f, symbolic := \"" + sol_file + "\"; \n\n";
@@ -1131,8 +1189,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 
 	/**
 	 * 
-	 * @param sol_file
-	 * @return String
+	 * Liest die Loesung aus der entsprechenden Datei aus.
+	 * 
+	 * @param sol_file - Pfad zur Datei, in welche die Loesung geschrieben wurde
+	 * @return String - Loesung
 	 */
 	private String auslese_Solution(String sol_file) {
 		String auslese = "";
@@ -1153,6 +1213,15 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		return auslese;
 	}
 	
+	/**
+	 * 
+	 * Beachten von Ausnahmeterminen der Dozenten.
+	 * 
+	 * @param startDatum - Start des Plaungszyklus
+	 * @param endDatum - Ende des Planungszyklus
+	 * @return String - Fehlermeldungen
+	 * @throws RaplaException
+	 */
 	@SuppressWarnings("static-access")
 	private String mindExceptionDates(Date startDatum, Date endDatum)
 			throws RaplaException {
@@ -1211,6 +1280,17 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		return notResolved;
 	}
 
+	/**
+	 * Versendet die Mail mit dem Link zur Abfrage der Constraints an die Dozenten. 
+	 * Ist die Person noch nicht eingeladen, wird eine Einladung, andernsfalls eine Erinnerung versendet.
+	 * 
+	 * @param reservationID - ID der Veranstaltung
+	 * @param dozentId - ID des Dozenten, an den die Email verschickt werden soll
+	 * @param login - Name des eingeloggten Absenders
+	 * @param url - URL zum Erfassungslink der Dozenten-Constraints
+	 * 
+	 * @throws RaplaException
+	 */
 	@Override
 	public boolean sendMail(String reservationID, String dozentId, String login, String url) throws RaplaException {
 
