@@ -2,28 +2,32 @@ package org.rapla.plugin.dhbwscheduler.server;
 
 import java.util.Date;
 
-public class ConstraintService{
+/**
+ * Constraint Service provides methods for building, changing and getting data from the constraints of the docents.
+ * The constraints are created in following form:
+ * 0: DozentID
+ * 1: Constraints
+ * 2: Dates
+ * 3: Status
+ * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
+ * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
+ */
 
-	/*Constraint:
-	 * 0: DozentID
-	 * 1: Constraints
-	 * 2: Dates
-	 * 3: Status
-	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
-	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
-	 */
+public class ConstraintService{
 
 	public static final int CHANGE_SINGLECONSTRAINT = 1;
 	public static final int CHANGE_SINGLEDATES = 2;
 	public static final int CHANGE_SINGLESTATUS = 3;
 
 	/**
+	 * putting param value (value of the change) into an array, 
+	 * so changeDozConstraint(String constraint, String doz_ID, int changevalue,Object[] value) can be used.
 	 * 
-	 * @param constraint
-	 * @param doz_ID
-	 * @param changevalue
-	 * @param value
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @param doz_ID ID of the docent
+	 * @param changevalue change-mode
+	 * @param value new value after change
+	 * @return changedConstraint
 	 */
 	public static String changeDozConstraint(String constraint, String doz_ID, int changevalue,Object value){
 		Object[] obj = new Object[1];
@@ -32,12 +36,18 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * changes the docent-constraint, depending on the changevalue.
+	 * changevalue = 1 = changes single constraint
+	 * changevalue = 2 = changes single dates
+	 * changevalue = 3 = changes single status
 	 * 
-	 * @param constraint
-	 * @param doz_ID
-	 * @param changevalue
-	 * @param value
-	 * @return
+	 * the value of the parameter value is used for the change and the docent-constraint is created with buildDozConst
+	 * 
+	 * @param constraint full constraint of all docents as string
+	 * @param doz_ID ID of the docent
+	 * @param changevalue change-mode
+	 * @param value new value after change
+	 * @return changedConstraint
 	 */
 	public static String changeDozConstraint(String constraint, String doz_ID, int changevalue,Object[] value){
 		String result = "";
@@ -45,21 +55,16 @@ public class ConstraintService{
 		if (constraint == null){
 			return result;
 		}
-		
-//		if(value == null || value[0] == null){
-//			//es soll doch keine änderung vorgenommen werden
-//			return constraint;
-//		}
-		
+				
 		String[] dozentIds = getDozIDs(constraint);
 		String[] dozentConstraints = new String[dozentIds.length];
 		
-		Date[][] execptions = new Date[dozentIds.length][];
+		Date[][] exceptions = new Date[dozentIds.length][];
 		int[] status = new int[dozentIds.length];
 		
 		for(int i = 0; i < dozentIds.length ; i++){
 			
-			Date[] dozentExecption = getExceptionDatesDoz(constraint, dozentIds[i]);			
+			Date[] dozentException = getExceptionDatesDoz(constraint, dozentIds[i]);			
 			int dozstatus = getStatus(constraint,dozentIds[i]);
 			dozentConstraints[i] = getDozStringConstraint(constraint, dozentIds[i]);
 			
@@ -67,7 +72,7 @@ public class ConstraintService{
 				try{
 					switch(changevalue){
 					case CHANGE_SINGLEDATES:
-						dozentExecption = (Date[]) value;
+						dozentException = (Date[]) value;
 						break;
 					case CHANGE_SINGLESTATUS:
 						dozstatus = (Integer) value[0];
@@ -83,18 +88,19 @@ public class ConstraintService{
 				
 			}
 			
-			execptions[i] 	= dozentExecption;
+			exceptions[i] 	= dozentException;
 			status[i] 		= dozstatus;
 		}
-		result = buildDozConstraint(dozentIds,dozentConstraints,execptions,status);
+		result = buildDozConstraint(dozentIds,dozentConstraints,exceptions,status);
 		return result;
 	}
 	
 	/**
-	 * Initializing the Constraints
-	 * @param constraint
-	 * @param dozID
-	 * @return
+	 * Initializing the constraint if its empty, or updating the constraint if an docent has been added 
+	 * 
+	 * @param constraint full constraint of all docents as string
+	 * @param dozID ID of the docent
+	 * @return newConstraint
 	 */
 	public static String initDozConstraint(String constraint, String[] dozID){
 		
@@ -112,8 +118,6 @@ public class ConstraintService{
 			newConstraint = ConstraintService.buildDozConstraint(dozentid, new String[dozID.length], new Date[dozID.length][], newStatus);
 			
 		}else{
-			
-			//ConstraintService.addorchangeSingleDozConstraint();
 			for (int x = 0; x < dozID.length; x++){
 				boolean hit = false;
 				
@@ -149,13 +153,15 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * changes the constraint of one single docent. 
+	 * If the constraint for this docent is not existing, it is added.
 	 * 
-	 * @param constraint
-	 * @param dozID
-	 * @param dozConst
-	 * @param exceptDate
-	 * @param status
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @param dozID ID of the docent
+	 * @param dozConst constraint of one docent
+	 * @param exceptDate exceptionDates of one docent
+	 * @param status status of the constraint
+	 * @return newConstraint
 	 */
 	public static String addorchangeSingleDozConstraint(String constraint, String dozID, String dozConst, Date[] exceptDate, int status){
 		String newConstraint = constraint;
@@ -180,20 +186,18 @@ public class ConstraintService{
 			newConstraint += "\n" + buildDozConstraint(dozID,dozConst,exceptDate,status);
 		}
 		
-		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLEDATES,exceptDate);
-		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLECONSTRAINT,dozConst);
-		//newConstraint = changeDozConstraint(newConstraint,dozID,CHANGE_SINGLESTATUS,status);
-			
 		return newConstraint;
 	}
 	
 	/**
+	 * putting constraint-values into arrays,
+	 * so buildDozConstraint(String[] dozIDs, String[] dozConsts, Date[][] exceptDates, int[] status) can be used.
 	 * 
-	 * @param dozID
-	 * @param dozConst
-	 * @param exceptDate
-	 * @param status
-	 * @return
+	 * @param dozID IDs of the docents
+	 * @param dozConst constraints of the docents
+	 * @param exceptDate exceptionDates of the docents
+	 * @param status statuses of the constraints 
+	 * @return constraint
 	 */
 	public static String buildDozConstraint(String dozID, String dozConst, Date[] exceptDate, int status){
 		String[] dozIDs = new String[1];
@@ -220,12 +224,15 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * builds the docent-constraint in following form:
+	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
+	 * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
 	 * 
-	 * @param dozIDs
-	 * @param dozConsts
-	 * @param exceptDates
-	 * @param status
-	 * @return
+	 * @param dozID IDs of the docents
+	 * @param dozConst constraints of the docents
+	 * @param exceptDate exceptionDates of the docents
+	 * @param status statuses of the constraints 
+	 * @return constraint
 	 */
 	public static String buildDozConstraint(String[] dozIDs, String[] dozConsts, Date[][] exceptDates, int[] status){
  		String result = "";
@@ -267,9 +274,10 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts docent-ID out of constraint and returns it
 	 * 
-	 * @param constraint
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @return all docent-IDs
 	 */
 	public static String[] getDozIDs(String constraint){
 		String[] result = {};
@@ -288,10 +296,11 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts constraint from one docent out of constraint and returns it (as string)
 	 * 
-	 * @param constraint
-	 * @param dozID
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @param dozID ID of one docent
+	 * @return constraint of one docent (as string)
 	 */
 	public static String getDozStringConstraint (String constraint, String dozID){
 		String dozConstraints = "";
@@ -315,9 +324,10 @@ public class ConstraintService{
 	}
 
 	/**
+	 * returns the constraints of all docents
 	 * 
-	 * @param constraint
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @return constraints of all docents 
 	 */
 	public static int[] getDozConstraints (String constraint){
 		
@@ -356,10 +366,11 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts constraint from one docent out of constraint and returns it (as int[])
 	 * 
-	 * @param constraint
-	 * @param doz_ID
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @param dozID ID of one docent
+	 * @return constraint of one docent (as int)
 	 */
 	public static int[] getDozIntConstraints (String constraint, String doz_ID){
 		int [] ergebnis = {};
@@ -388,9 +399,10 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts all exception dates out of the constraint and returns them
 	 * 
-	 * @param constraint
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @return ExceptionDates of all docents
 	 */
 	public static Date[] getExceptionDates (String constraint){
 		Date[] ergebnis = {};
@@ -427,10 +439,11 @@ public class ConstraintService{
 	}	
 	
 	/**
+	 * extracts the exception dates of one docent out of the constraint and returns them
 	 * 
-	 * @param constraint
-	 * @param doz_ID
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @param doz_ID ID of one docent
+	 * @return ExceptionDates of one docents
 	 */
 	public static Date[] getExceptionDatesDoz (String constraint,String doz_ID ){
 		Date[] ergebnis = {};
@@ -471,9 +484,10 @@ public class ConstraintService{
 	}
 
 	/**
+	 * extracts the status of the reservation out of the constraint and returns it
 	 * 
-	 * @param constraint
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @return status of the reservation
 	 */
 	public static int getReservationStatus(String constraint){
 		String[] dozIDs = getDozIDs(constraint);
@@ -502,7 +516,7 @@ public class ConstraintService{
 		
 		if(eingeladen && erfasst || uneingeladen && erfasst || uneingeladen && eingeladen){
 			if(erfasst){
-				//Teilwese erfasst
+				//Teilweise erfasst
 				returnvalue = 4;
 			}else{
 				//teilweise eingeladen
@@ -522,10 +536,11 @@ public class ConstraintService{
 	}
 	
 	/**
+	 * extracts the status of the constraint of one docent out of the constraint and returns it
 	 * 
-	 * @param constraint
-	 * @param doz_ID
-	 * @return
+	 * @param constraint full constraint of all docents as string
+	 * @param doz_ID ID of one docent
+	 * @return status of the reservation of one docent
 	 */
 	public static int getStatus(String constraint, String doz_ID){
 		

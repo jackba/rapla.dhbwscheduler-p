@@ -61,10 +61,6 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	
     	assertEquals("", ConstraintService.changeDozConstraint(null, "111", ConstraintService.CHANGE_SINGLECONSTRAINT, ""));
     }
-    
-    public void testcreateclass(){
-    	ConstraintService consserv = new ConstraintService();
-    }
 
     public void testGetDozConstraints_1Dozent(){
         String testConstraint = ""
@@ -660,6 +656,12 @@ public class ConstraintServiceTest extends RaplaTestCase {
 		assertEquals(erg_constraint1,ConstraintService.initDozConstraint(constraint1,dozid));
 		assertEquals(erg_constraint2,ConstraintService.initDozConstraint(null,dozid));
 	}
+	
+	public void testinitclass(){
+		ConstraintService csv = new ConstraintService();
+	}
+	
+	
 }
 
 

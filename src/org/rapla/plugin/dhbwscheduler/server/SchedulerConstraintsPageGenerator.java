@@ -1,7 +1,7 @@
 package org.rapla.plugin.dhbwscheduler.server;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+//import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +24,7 @@ import org.rapla.plugin.dhbwscheduler.DhbwschedulerReservationHelper;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
 
+@SuppressWarnings("restriction")
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 	
 	
@@ -99,13 +100,13 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		String endZeit="dd.mm.jjjj";			//Ende der Veranstaltung
 		String vorlesungsZeit ="dd.mm.jj";		//Ende der Vorlesungszeit
 		String veranst="Unbekannt";				//Veranstaltungsname
-		String kontaktdaten="";					//Liste mit geänderten Kontaktdaten 
+//		String kontaktdaten="";					//Liste mit geänderten Kontaktdaten 
 		String time = "";							//Inhalt der StundenTabelle
 		String[] ausnahmenArray = null;				//Liste mit Daten der Ausnahmen
-		Date[] dateArr;
+//		Date[] dateArr;
 		int stunden = 4;						//Vorlesungsstunden am Stück
-		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
-		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
+//		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
+//		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
 		int dayTimeStart = 8;					//Benötigt zum Aufbauen der Stundentabelle
 		int dayTimeEnd = 18;					//Benötigt zum Aufbauen der Stundentabelle		
 		String key = request.getParameter("key"); 
@@ -130,7 +131,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			
 			
 			String dozentKey = lookup.resolve(dozentId).getId();
-			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
+//			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
 			
 			if (veranstaltung.getClassification().getValue("planungszyklus")!=null){
@@ -166,11 +167,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 				}
 			}
+			int t = 0;
 			for (int i = 0; i < veranstaltung.getResources().length; i++)
 			{
 				if (veranstaltung.getResources()[i].getClassification().getType().getKey().equals("kurs"))
 				{
-					if (i==0)
+					if (t==0)
 					{
 
 						if (veranstaltung.getResources()[i].getClassification().getValue("name")!=null)
@@ -194,6 +196,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 						{
 							studiengang = "";
 						}
+						t = t + 1;
 					}
 					else
 					{
@@ -231,7 +234,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			//gesendete Daten werden hier ausgelesen, wenn eine Änderung vorgenommen wurde (changed = 1)
 			if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
 				time = request.getParameter("time");	
-				kontaktdaten= request.getParameter("contact");
+//				kontaktdaten= request.getParameter("contact");
 				try{stunden = Integer.parseInt(request.getParameter("hours"));}
 				catch(Exception e){}
 				if (request.getParameter("exception")!=null && request.getParameter("exception").contains(","))
@@ -393,14 +396,33 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 
 	}
 	
+	/**
+	 * create a hidden field with values.
+	 * @param fieldname
+	 * @param value
+	 * @return
+	 */
 	public String getHiddenField( String fieldname, String value) {
 		return "<input type=\"hidden\" name=\"" + fieldname + "\" value=\"" + value + "\"/>";
 	}
+	
+	/**
+	 * formats the Dates for the Datepicker object
+	 * @param str
+	 * @return
+	 */
 	public String formatDateForDatepicker(String str){
 		String[] strArr= str.split("\\.");
 		return strArr[2]+"-"+strArr[1]+"-"+strArr[0];		
 	}
 	//Methode um TimeString (Werte der Stundentabelle) von einem String in Array umwandeln
+	/**
+	 * Changes a String to int Array[][] with 24x7 hours. 
+	 * @param str
+	 * @param dayTimeStart
+	 * @param dayTimeEnd
+	 * @return
+	 */
 	private String[][] formatTimeString(String str,int dayTimeStart, int dayTimeEnd){
 		//Überprüfen ob TimeString leer ist, ggf. füllen
 		if (str == null)
@@ -437,6 +459,15 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		}
 		return timeArray;
 	}
+	
+	/**
+	 * sends the formular to the Reservation an Store the information.
+	 * @param eventId
+	 * @param dozentId
+	 * @param time
+	 * @param ausnahmenArray
+	 * @return return true if the information can be stored
+	 */
 	private boolean sendConstrainttoReservation(String eventId, String dozentId,
 			String time, String[] ausnahmenArray) {
 		
@@ -484,6 +515,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		DhbwschedulerReservationHelper helperClass = new DhbwschedulerReservationHelper( getContext());
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"erfassungsstatus",helperClass.getStringStatus(ConstraintService.getReservationStatus(newConstraint)));
+		
 		if(veranstaltung == null){
 			return false;
 		}else{

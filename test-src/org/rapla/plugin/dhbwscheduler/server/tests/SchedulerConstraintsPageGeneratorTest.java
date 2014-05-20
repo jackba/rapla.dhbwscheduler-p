@@ -2,36 +2,26 @@ package org.rapla.plugin.dhbwscheduler.server.tests;
 
 import static org.mockito.Mockito.*;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.omg.CORBA.Request;
 import org.rapla.RaplaTestCase;
 import org.rapla.components.xmlbundle.impl.I18nBundleImpl;
-import org.rapla.entities.Category;
-import org.rapla.entities.domain.Allocatable;
-import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.Reservation;
-import org.rapla.entities.dynamictype.DynamicType;
 import org.rapla.facade.ClientFacade;
-import org.rapla.framework.Configuration;
 import org.rapla.framework.DefaultConfiguration;
-import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.DhbwschedulerPlugin;
-import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 import org.rapla.plugin.dhbwscheduler.server.SchedulerConstraintsPageGenerator;
 import org.rapla.storage.StorageOperator;
 
+@SuppressWarnings("restriction")
 public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 	ClientFacade facade;
     Locale locale;
@@ -97,7 +87,12 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
         
         //Null Werte Testen
         pg.generatePage(context, request, response);
-
+        
+        when(request.getParameter("changed")).thenReturn("1");
+        
+        pg.generatePage(context, request, response);
+        
+        when(request.getParameter("changed")).thenReturn("0");
 		StorageOperator lookup = getContext().lookup( StorageOperator.class);
 		//String idtype = new SimpleIdentifier(Reservation.TYPE, Integer.parseInt(eventId));
 		Reservation r = (Reservation) lookup.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
@@ -152,6 +147,12 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		when(request.getParameter("dozent")).thenReturn(r.getPersons()[0].getId());
 		pg.generatePage(context, request, response);
 		
+		when(request.getParameter("exception")).thenReturn("2014-03-24,2014-03-25");
+		pg.generatePage(context, request, response);
+		
+		when(request.getParameter("exception")).thenReturn("lkahdf,2e3rd");
+		pg.generatePage(context, request, response);
+		
 		//ohne Stuga
 		when(request.getParameter("id")).thenReturn(r.getId());
 		when(request.getParameter("dozent")).thenReturn(r.getPersons()[1].getId());
@@ -161,21 +162,62 @@ public class SchedulerConstraintsPageGeneratorTest  extends RaplaTestCase {
 		when(request.getParameter("id")).thenReturn(r2.getId());
 		when(request.getParameter("dozent")).thenReturn(r2.getPersons()[0].getId());
 		pg.generatePage(context, request, response);
-
-		
-		
-		
-		
-		
 		
 		when(request.getParameter("hours")).thenReturn("10");
 		pg.generatePage(context, request, response);
 		
-		when(request.getParameter("exception")).thenReturn("exception,exception");
+		when(request.getParameter("exception")).thenReturn("2014-03-24,2014-03-25");
+		pg.generatePage(context, request, response);
+		
+		when(request.getParameter("exception")).thenReturn("lkahdf,2e3rd");
 		pg.generatePage(context, request, response);
 		
 		when(request.getHeader("accept-language")).thenReturn("de-de");
 		pg.generatePage(context, request, response);
+    }
+    
+    public void testvalidateGeneratePage() throws Exception{
+    	DefaultConfiguration config = new DefaultConfiguration("locale"); 
+    	SchedulerConstraintsPageGenerator pg = new SchedulerConstraintsPageGenerator(getContext(),config);
+
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		ServletContext context = mock(ServletContext.class);
+		
+		PrintWriter writer = new PrintWriter("servletvalidatetest.txt");
+        when(response.getWriter()).thenReturn(writer);
+        
+        StorageOperator lookup = getContext().lookup( StorageOperator.class);
+        Reservation r = (Reservation) lookup.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
+        
+        //r.getClassification().setValue("planungsconstraints",null);
+               
+        when(request.getParameter("id")).thenReturn(r.getId());
+		when(request.getParameter("dozent")).thenReturn(r.getPersons()[0].getId());
+		when(request.getParameter("exception")).thenReturn("2014-03-24,2014-03-25");
+		when(request.getParameter("time")).thenReturn("000000000000000000000000000000002222222222000000000000001111111111000000000000001111111111000000000000001111111111000000000000002222222222000000000000001111111111000000");
+		when(request.getParameter("changed")).thenReturn("1");
+        
+        pg.generatePage(context, request, response);
+        
+        Reservation ErgRes = (Reservation) lookup.resolve("c6b8bce9-a173-4960-b760-a8840e07beeb");
+        String Constraint = (String) ErgRes.getClassification().getValue("planungsconstraints");
+        
+        //3faa3f42-51eb-4455-8294-8ce331d8f105_000000000000000000000000000000002222222222000000000000001111111111000000000000001111111111000000000000001111111111000000000000002222222222000000000000001111111111000000_1395615600000,1395702000000_2
+        String ErgConstraint = r.getPersons()[0].getId()
+        				+ 		"_000000000000000000000000000000002222222222000000000000001111111111000000000000001111111111000000000000001111111111000000000000002222222222000000000000001111111111000000"
+        				+ 		"_1395615600000,1395702000000"
+        				+		"_2";
+        assertEquals(ErgConstraint,Constraint);
+//        
+//        
+//        assertequals(Constraint,)
+        
+        
+        
+        
+        
+        
     }
     
 }

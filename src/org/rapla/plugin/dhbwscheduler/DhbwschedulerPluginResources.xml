@@ -125,7 +125,7 @@
 		<icon src="planning.png"/>
 	</entry>
 	<entry key="planning_gui">
-        <text lang="en"></text>
+        <text lang="en">Planning GUI</text>
         <text lang="de">PlanungsGUI</text>
         <text lang="fr"></text>
         <text lang="es"></text>
@@ -175,7 +175,7 @@
     	<text lang="de">Die folgenden Veranstaltungen konnten nicht geplant werden: </text>
     </entry>
     <entry key="Sprache">
-    	<text lang="en">Englisch</text>
+    	<text lang="en">English</text>
     	<text lang="de">Deutsch</text>
     </entry>
     <entry key="Semesterplanung">
@@ -313,5 +313,49 @@
     <entry key="check_planningperiod">
     	<text lang="en">For the given events, the planningperiod is corrupted.</text>
     	<text lang="de">Bei den übergebenen Verantstaltungen ist der Planungszyklus fehlerhaft.</text>
+    </entry>
+    <entry key="Folgende_Veranstaltung">
+    	<text lang="en">The following events are not valid:</text>
+    	<text lang="de">Folgende Veranstaltungen sind nicht valide:</text>
+    </entry>
+    <entry key="kein_Kurs">
+    	<text lang="en">registered no course</text>
+    	<text lang="de">kein Kurs eingetragen</text>
+    </entry>
+    <entry key="Email_von">
+    	<text lang="en">E-Mail from</text>
+    	<text lang="de">E-Mail von</text>
+    </entry>
+    <entry key="fehlt">
+    	<text lang="en">missing</text>
+    	<text lang="de">fehlt</text>
+    </entry>
+    <entry key="kein_Dozent">
+    	<text lang="en">No professor present</text>
+    	<text lang="de">Kein Dozent vorhanden</text>
+    </entry>
+    <entry key="semester_Planungszyklus">
+    	<text lang="en">The semester in the planning cycle does not exist</text>
+    	<text lang="de">Das Semester im Planungszyklus ist nicht vorhanden</text>
+    </entry>
+    <entry key="startDatum_Planungszyklus">
+    	<text lang="en">Start date in the planning cycle does not exist</text>
+    	<text lang="de">Startdatum im Planungszyklus ist nicht vorhanden</text>
+    </entry>
+    <entry key="endDatum_Planungszyklus">
+    	<text lang="en">End date in the planning cycle does not exist</text>
+    	<text lang="de">Enddatum im Planungszyklus ist nicht vorhanden</text>
+    </entry>
+    <entry key="kein_Planungszyklus">
+    	<text lang="en">No planning cycle exists</text>
+    	<text lang="de">Kein Planungszyklus vorhanden</text>
+    </entry>
+    <entry key="kein_Studiengang">
+    	<text lang="en">No course of studies available</text>
+    	<text lang="de">Kein Studiengang vorhanden</text>
+    </entry>
+    <entry key="Programm_abgebrochen">
+    	<text lang="en">Program is aborted</text>
+    	<text lang="de">Programm wird abgebrochen</text>
     </entry>
 </resources>

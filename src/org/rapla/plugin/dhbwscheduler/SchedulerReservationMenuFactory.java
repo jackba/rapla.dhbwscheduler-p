@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -30,10 +31,11 @@ import javax.swing.JTextArea;
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.RaplaObject;
 import org.rapla.entities.domain.Allocatable;
+//import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
-import org.rapla.entities.storage.RefEntity;
+//import org.rapla.entities.storage.RefEntity;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
@@ -46,7 +48,7 @@ import org.rapla.gui.toolkit.RaplaButton;
 import org.rapla.gui.toolkit.RaplaMenuItem;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 import org.rapla.plugin.urlencryption.UrlEncryption;
-import org.rapla.storage.StorageOperator;
+//import org.rapla.storage.StorageOperator;
 
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
@@ -65,8 +67,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		this.urlEncryption = urlEncryption;
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
 	}
-
-	@SuppressWarnings("rawtypes")
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public RaplaMenuItem[] create( final MenuContext menuContext, final RaplaObject focusedObject )
 	{
 		Collection selectedObjects = menuContext.getSelectedObjects();
@@ -401,7 +403,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			{
 				public void actionPerformed( ActionEvent e )
 				{
-					
+					int result = -1;
 					//DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 					try {
 						getClientFacade().refresh();
@@ -410,10 +412,15 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					}
 					String strTitel = getString("Email_Title");
 					String strQuestion = getString("Email_senden_frage");
-
-					int result = JOptionPane.showConfirmDialog(null, strQuestion, strTitel, JOptionPane.YES_NO_CANCEL_OPTION);
+					
+					if (checkCompleteReservation(selectedReservations)){
+						result = JOptionPane.showConfirmDialog(null, strQuestion, strTitel, JOptionPane.YES_NO_CANCEL_OPTION);
+					}
+					
 					if (result == JOptionPane.YES_OPTION) {
-						getLogger().info("E-Mail wird rausgeschickt");
+						
+						
+						getLogger().info("E-Mail wird gesendet");
 						String message = "";
 
 						//Für jede ausgewählt Reservierung wird eine E-Mail versendet.
@@ -423,7 +430,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							String veranstaltungsTitel = (String) r.getClassification().getValue("title");						
 							//Constraints initialisieren oder ändern. (Neuer Dozent = neuer Constraint.)
 							r = initConstraint(r);
-							int dozCount = 0;
+//							int dozCount = 0;
 							message += veranstaltungsTitel + ": \n"; 
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
@@ -453,7 +460,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 										isSend = false;
 									}
 										if (isSend){
-											dozCount++;
+//											dozCount++;
 											getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
 											//message += "\t email: check ";
 											//createMessage(getString("planning_open"), 200, 100, message, menuContext);
@@ -517,13 +524,111 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				}
 
 				
+
+				
 			});
 			menus.add( menu );
 		}
 
 		return menus.toArray(new RaplaMenuItem[] {});
 	}
+	/**
+	 * Check the Reservation if they are validate for send to the Clients
+	 * @param selectedReservations
+	 * @return
+	 */
+	private boolean checkCompleteReservation(List<Reservation> selectedReservations) {
+		String Message = getI18n().getString("Folgende_Veranstaltung") + "\n";
+		String Messagezusatz = "";
+		boolean returnValue = true;
+		boolean hasCourse = false;
+		boolean reservationValid = true;
+		try{
+			for (Reservation r : selectedReservations)
+			{
+				reservationValid = true;
+				hasCourse = false;
+				Messagezusatz = getI18n().getString("Veranstaltung") + ": " + (String) r.getClassification().getValue("title") + "\n";
+				for (Allocatable kurs : r.getResources()){
+					if(kurs.getClassification().getType().getKey().equals("kurs")){
+						hasCourse = true;
+					}
+				}
+				
+				if (!hasCourse){
+					reservationValid = false;
+					Messagezusatz += "    " + getI18n().getString("kein_Kurs") + " \n";
+				}
+				
+				if(r.getPersons() != null && r.getPersons().length > 0){
+					for (Allocatable persons : r.getPersons()){
+						
+						if (persons.getClassification().getValue("email") == null || persons.getClassification().getValue("email").equals("")){
+							Messagezusatz += "    " + getI18n().getString("Email_von") + " " +persons.getClassification().getValue("surname")+ " " + getI18n().getString("fehlt") + " \n";
+							reservationValid = false;
+						}
+					}
+				}else{
+					Messagezusatz += "    " + getI18n().getString("kein_Dozent") + " \n";
+				}
 
+				if(r.getClassification().getValue("planungszyklus") != null){
+					
+					Allocatable planzykl = (Allocatable) r.getClassification().getValue("planungszyklus");
+					
+					if(planzykl.getClassification().getValue("semester") == null || planzykl.getClassification().getValue("semester").equals("")){
+						reservationValid = false;
+						Messagezusatz += "    " + getI18n().getString("semester_Planungszyklus") + " \n";
+					}
+					
+					if(planzykl.getClassification().getValue("startdate") == null || planzykl.getClassification().getValue("startdate").equals("")){
+						reservationValid = false;
+						Messagezusatz += "    " + getI18n().getString("startDatum_Planungszyklus") + " \n";
+					}
+					
+					if(planzykl.getClassification().getValue("enddate") == null || planzykl.getClassification().getValue("enddate").equals("")){
+						reservationValid = false;
+						Messagezusatz += "    " + getI18n().getString("endDatum_Planungszyklus") + " \n";
+					}
+					
+				}else{
+					reservationValid = false;
+					Messagezusatz += "    " + getI18n().getString("kein_Planungszyklus") + " \n";
+				}
+				
+				if(r.getClassification().getValue("studiengang") == null) {
+					reservationValid = false;
+					Messagezusatz += "    " + getI18n().getString("kein_Studiengang") + " \n";
+				}
+				
+				if(!reservationValid){
+					returnValue = false;
+					Message += Messagezusatz;
+				}
+			}
+		}catch(Exception e){
+			getLogger().error("Fehler bei der Überprüfung der Veranstaltung");
+			returnValue = false;
+			Message = "Fehler bei der der Überprüfung der Veranstaltungen";
+			e.printStackTrace();
+		}
+		
+		if(!returnValue){
+			Message += "\n " + getI18n().getString("Programm_abgebrochen");
+			JOptionPane.showMessageDialog(null, Message);
+		}
+		
+		return returnValue;
+	}
+	/**
+	 * Generate a Message with the Parameters
+	 * @param title
+	 * @param message
+	 * @param x
+	 * @param y
+	 * @param menuContext
+	 * @param pack
+	 */
 	private void createMessage(String title, String message, int x, int y, final MenuContext menuContext, boolean pack){
 		JTextArea content = new JTextArea();
 		content.setText(message);
@@ -550,9 +655,18 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		}
 	}
 	
+	/**
+	 * Generate a URL for the Reservation and Person
+	 * @param reservationID
+	 * @param dozentId
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws RaplaException
+	 * @throws EntityNotFoundException
+	 */
 	public String getUrl(String reservationID, String dozentId) throws UnsupportedEncodingException,RaplaException,EntityNotFoundException
 	{
-		String result = "";
+//		String result = "";
 
 		//Dynamische Generierung "Servername:Port"
 		StartupEnvironment env = getService( StartupEnvironment.class );
@@ -561,7 +675,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		String key;
 		//String strLanguage = this.getRaplaLocale().LANGUAGE_ENTRY;
 		
-		result = codeBase + "rapla?page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
+//		result = codeBase + "rapla?page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
 		try {
 			String encryptedParamters = urlEncryption.encrypt("page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId);
 			key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
@@ -579,7 +693,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 
 	}
-
+	
+	/**
+	 * Generate a new Constraint for this Reservation (r)
+	 * @param r
+	 * @return
+	 */
 	private Reservation initConstraint(Reservation r) {
 		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
@@ -597,8 +716,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	}
 
 
-	/*
-	 *Überprüfung, ob bei dieser Veranstalltung eine E-Mail versendet wird.
+
+	/**
+	 * Check Status value of the Reservation if an E-Mail can be send
+	 * @param r
+	 * @param dozentenID
+	 * @return
 	 */
 	private boolean EmailVersendeBerechtigung(Reservation r, String dozentenID) {
 
@@ -634,7 +757,12 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		return returnvalue;
 	}
 
-	
+	/**
+	 * returns the Status from this Reservation
+	 * @param r
+	 * @param key
+	 * @return
+	 */
 	private String getErfassungsstatusDoz(Reservation r, String key) {
 		
 		DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
