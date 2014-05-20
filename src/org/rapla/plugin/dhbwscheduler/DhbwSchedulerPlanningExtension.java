@@ -21,9 +21,11 @@ import javax.swing.JTable;
 import javax.swing.MenuElement;
 import javax.swing.table.DefaultTableModel;
 
+import org.rapla.entities.User;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.dynamictype.DynamicType;
+import org.rapla.framework.DefaultConfiguration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
@@ -31,6 +33,9 @@ import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.IdentifiableMenuEntry;
 import org.rapla.gui.toolkit.RaplaWidget;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
+import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
+import org.rapla.plugin.urlencryption.UrlEncryption;
+import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
 
 public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		ActionListener, IdentifiableMenuEntry {
@@ -160,6 +165,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 			for (Reservation reservation : reservations){
 				String veranstaltung = reservation.getClassification().getName(getLocale());
 				String dozent = "";
+				String dozent_id = "";
 				Vector data_line = new Vector();
 
 				Allocatable[] ressourcen = reservation.getAllocatables();
@@ -170,6 +176,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 							dozent += "\n";
 						}
 						dozent += a.getClassification().getValue("title") + " " + a.getClassification().getValue("surname");
+						dozent_id = a.getId();
 					}
 				}
 				
@@ -200,6 +207,13 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 						break;
 				}
 				
+				User user = getClientFacade().getUser();
+				RaplaContext context = getContext();
+				DefaultConfiguration config = new DefaultConfiguration();
+				UrlEncryption urlcrypt = new UrlEncryptionService(context, config);
+				DhbwschedulerService service = new DhbwschedulerServiceImpl(context, user);
+				SchedulerReservationMenuFactory menuFactory = new SchedulerReservationMenuFactory(getContext(), config, service, urlcrypt);
+				
 				//Lehrveranstaltung
 				data_line.add(veranstaltung);
 				//Dozent
@@ -209,11 +223,11 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 				//Rückantwort eingegeben?
 				data_line.add(recorded);
 				//URL
-				data_line.add("");
+				data_line.add(menuFactory.getUrl(reservation.getId(), dozent_id));
 
 				data.add(data_line);
 			}
-		} catch (RaplaException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
