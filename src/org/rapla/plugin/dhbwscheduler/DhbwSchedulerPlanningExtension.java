@@ -155,7 +155,6 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Vector getData(String planungszyklus) {
 		Vector data = new Vector();
-		Vector data_line = new Vector();
 		Reservation[] reservations;
 		Allocatable zyklus;
 		Allocatable[] zyklen = new Allocatable[1];
@@ -170,7 +169,8 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 			reservations = getClientFacade().getReservationsForAllocatable(zyklen, start, end, null);
 			for (Reservation reservation : reservations){
 				String dozent = "";
-				
+				Vector data_line = new Vector();
+
 				// get all resources for all reservations
 				Allocatable[] ressourcen = reservation.getAllocatables();
 				for (Allocatable a : ressourcen) {
@@ -181,7 +181,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 						if (!dozent.equals("")) {
 							dozent += "\n";
 						}
-						dozent += allocatableType.getName(getLocale());
+						dozent += a.getClassification().getValue("title") + " " + a.getClassification().getValue("surname");
 					}
 				}
 				
