@@ -19,6 +19,12 @@ public class ConstraintService{
 	public static final int CHANGE_SINGLEDATES = 2;
 	public static final int CHANGE_SINGLESTATUS = 3;
 
+	public static final int STATUS_UNINVITED = 0;
+	public static final int STATUS_INVITED = 1;
+	public static final int STATUS_RECORDED = 2;
+	public static final int STATUS_PARTIAL_INVITED = 3;
+	public static final int STATUS_PARTIAL_RECORDED = 4;
+
 	/**
 	 * putting param value (value of the change) into an array, 
 	 * so changeDozConstraint(String constraint, String doz_ID, int changevalue,Object[] value) can be used.
@@ -517,18 +523,18 @@ public class ConstraintService{
 		if(eingeladen && erfasst || uneingeladen && erfasst || uneingeladen && eingeladen){
 			if(erfasst){
 				//Teilweise erfasst
-				returnvalue = 4;
+				returnvalue = STATUS_PARTIAL_RECORDED;
 			}else{
 				//teilweise eingeladen
-				returnvalue = 3;
+				returnvalue = STATUS_PARTIAL_INVITED;
 			}
 		}else{
 			if(uneingeladen)
-				returnvalue = 0;
+				returnvalue = STATUS_UNINVITED;
 			if(eingeladen)
-				returnvalue = 1;
+				returnvalue = STATUS_INVITED;
 			if(erfasst)
-				returnvalue = 2;
+				returnvalue = STATUS_RECORDED;
 		}
 		
 		return returnvalue;

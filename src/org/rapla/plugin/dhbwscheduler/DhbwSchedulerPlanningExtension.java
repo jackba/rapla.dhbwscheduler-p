@@ -6,12 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -27,21 +23,14 @@ import javax.swing.table.DefaultTableModel;
 
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
-import org.rapla.entities.dynamictype.Attribute;
-import org.rapla.entities.dynamictype.ClassificationFilter;
 import org.rapla.entities.dynamictype.DynamicType;
-import org.rapla.entities.dynamictype.internal.ClassificationFilterImpl;
-import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.RaplaGUIComponent;
-//import org.rapla.gui.internal.common.InternMenus;
 import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.IdentifiableMenuEntry;
-//import org.rapla.gui.toolkit.RaplaMenu;
 import org.rapla.gui.toolkit.RaplaWidget;
-
-//import org.rapla.plugin.dhbwscheduler.SchedulerHelpMenuExtension.MyDialog;
+import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 
 public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		ActionListener, IdentifiableMenuEntry {
@@ -49,7 +38,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 	String id;
 	JMenuItem item;
 	private static DefaultTableModel veranstaltungen_model;
-	HashMap<String, Allocatable> planungszyklen_allocatables = new HashMap();
+	HashMap<String, Allocatable> planungszyklen_allocatables = new HashMap<String, Allocatable>();
 	
 	public DhbwSchedulerPlanningExtension(RaplaContext context) {
 		super(context);
@@ -98,9 +87,9 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		public JComponent getComponent() {
 			return planungsgui;
 		}
-
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private JPanel getPlanungsGui() {
 
 		JPanel planungsgui = new JPanel();
@@ -114,8 +103,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 
 		JPanel planungszyklus_panel = new JPanel();
 		planungszyklus_panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		planungszyklus_panel.add(new JLabel(
-				"Wählen Sie bitte einen Planungszyklus aus:   "));
+		planungszyklus_panel.add(new JLabel("Wählen Sie bitte einen Planungszyklus aus:   "));
 
 		Vector<String> planungszyklen = getPlanungszyklen();
 		JComboBox comboBox = new JComboBox(planungszyklen);
@@ -132,6 +120,8 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		Vector data = getData(comboBox.getSelectedItem().toString());
 		veranstaltungen_model = new DefaultTableModel();
 		JTable veranstaltungen = new JTable(veranstaltungen_model) {
+
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public Class getColumnClass(int column) {
@@ -168,14 +158,12 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		try {
 			reservations = getClientFacade().getReservationsForAllocatable(zyklen, start, end, null);
 			for (Reservation reservation : reservations){
+				String veranstaltung = reservation.getClassification().getName(getLocale());
 				String dozent = "";
 				Vector data_line = new Vector();
 
-				// get all resources for all reservations
 				Allocatable[] ressourcen = reservation.getAllocatables();
 				for (Allocatable a : ressourcen) {
-					// if the resource is a professor, add it to the set (no
-					// duplicate elements allowed)
 					DynamicType allocatableType = a.getClassification().getType();
 					if (allocatableType.getKey().equals("professor")) {
 						if (!dozent.equals("")) {
@@ -185,17 +173,45 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 					}
 				}
 				
-				data_line.add(reservation.getClassification().getName(getLocale()));
+				boolean mail = false;
+				boolean recorded = false;
+				
+				int status = ConstraintService.getReservationStatus((String) reservation.getClassification().getValue("planungsconstraints"));
+				switch(status) {
+					case ConstraintService.STATUS_RECORDED:
+						mail = true;
+						recorded = true;
+						break;
+					case ConstraintService.STATUS_INVITED:
+						mail = true;
+						recorded = false;
+						break;
+					case ConstraintService.STATUS_PARTIAL_INVITED:
+						mail = false;
+						recorded = false;
+						break;
+					case ConstraintService.STATUS_PARTIAL_RECORDED:
+						mail = true;
+						recorded = false;
+						break;
+					case ConstraintService.STATUS_UNINVITED:
+						mail = false;
+						recorded = false;
+						break;
+				}
+				
+				//Lehrveranstaltung
+				data_line.add(veranstaltung);
+				//Dozent
 				data_line.add(dozent);
-				data_line.add(true);
-				data_line.add(false);
+				//Mail versandt?
+				data_line.add(mail);
+				//Rückantwort eingegeben?
+				data_line.add(recorded);
+				//URL
 				data_line.add("");
+
 				data.add(data_line);
-//					columnNames.add("Lehrveranstaltung");
-//					columnNames.add("Dozent");
-//					columnNames.add("Mail");
-//					columnNames.add("Rückantwort");
-//					columnNames.add("URL");
 			}
 		} catch (RaplaException e) {
 			e.printStackTrace();
@@ -216,6 +232,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		return columnNames;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void refreshData(String planungszyklus) {
 		Vector data = getData(planungszyklus);
 		Vector columnNames = getColumnNames();
@@ -225,14 +242,12 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 	private Vector<String> getPlanungszyklen() {
 		Vector<String> planungszyklen = new Vector<String>();
 		Allocatable[] ressourcen;
-		Allocatable[] planungszyklus_help;
 		try {
 			ressourcen = getClientFacade().getAllocatables();
 			for (Allocatable a : ressourcen) {
 				DynamicType allocatableType = a.getClassification().getType();
 				if (allocatableType.getKey().equals("planungszyklus")) {
-					Object semester = a.getClassification().getValue("semester");
-					String planungszyklus = "/Semester " + semester.toString();
+					String planungszyklus = a.getClassification().getValue("name") + " / Semester " + a.getClassification().getValue("semester");
 					planungszyklen.add(planungszyklus);
 					planungszyklen_allocatables.put(planungszyklus, a);
 				}

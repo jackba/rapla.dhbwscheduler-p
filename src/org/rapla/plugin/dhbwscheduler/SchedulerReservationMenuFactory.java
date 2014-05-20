@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -31,11 +30,9 @@ import javax.swing.JTextArea;
 import org.rapla.entities.EntityNotFoundException;
 import org.rapla.entities.RaplaObject;
 import org.rapla.entities.domain.Allocatable;
-//import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Appointment;
 import org.rapla.entities.domain.AppointmentBlock;
 import org.rapla.entities.domain.Reservation;
-//import org.rapla.entities.storage.RefEntity;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
@@ -48,7 +45,6 @@ import org.rapla.gui.toolkit.RaplaButton;
 import org.rapla.gui.toolkit.RaplaMenuItem;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 import org.rapla.plugin.urlencryption.UrlEncryption;
-//import org.rapla.storage.StorageOperator;
 
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
@@ -175,7 +171,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					for (Reservation editableEvent : selectedReservations){
 						String statusConstraint = (String) editableEvent.getClassification().getValue("planungsconstraints");
 						int status = ConstraintService.getReservationStatus(statusConstraint);
-						if (status != 2){
+						if (status != ConstraintService.STATUS_RECORDED){
 							veranstaltungen += "\n" + editableEvent.getClassification().getName(getLocale());
 						}
 						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_closed"));
@@ -276,15 +272,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									String resID =  rSI;
 
 									String studiengang = HelperClass.getStudiengang(r);
-//									if (r.getClassification().getValue("studiengang")!=null)
-//									{
-//										studiengang = r.getClassification().getValue("studiengang").toString();
-//										if (studiengang.contains(" "))
-//										{
-//											int pos = studiengang.indexOf(" ");
-//											studiengang = studiengang.substring(0, pos);
-//										}
-//									}
 
 									p1[i] = new JPanel();
 									p2[i] = new JPanel();
@@ -303,7 +290,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									bt[i] = new RaplaButton();
 									bt[i].setText(getString("Link_oeffnen2"));
 									bt[i].setToolTipText(getString("Link_oeffnen"));
-									//urlField[i] = new JTextField();
 									urlField[i] = new JTextArea();
 									urlField[i].setWrapStyleWord(true);
 									urlField[i].setLineWrap(true);
@@ -469,9 +455,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 											String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 
 											//nur Ändern wenn der Status nich schon 1 ist 1 = eingeladen
-											if(ConstraintService.getStatus(strConstraint, dozentID) != 1){
+											if(ConstraintService.getStatus(strConstraint, dozentID) != ConstraintService.STATUS_INVITED){
 
-												String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID, ConstraintService.CHANGE_SINGLESTATUS, 1);
+												String newConstraint = ConstraintService.changeDozConstraint(strConstraint, dozentID, ConstraintService.CHANGE_SINGLESTATUS, ConstraintService.STATUS_INVITED);
 												//Status auf eingeladen setzen;
 												if (newConstraint == null){
 													//Fehler beim ändern des Constraints
@@ -724,10 +710,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 	 * @return
 	 */
 	private boolean EmailVersendeBerechtigung(Reservation r, String dozentenID) {
-
-		final int intUneingeladen = 0;
-		final int intEingeladen = 1;
-		final int intErfasst = 2;
 		String strConstraint = (String) r.getClassification().getValue("planungsconstraints");
 		//ConstraintService.buildDozConstraint(dozentenID, null, null, status);
 		int erfassungsstatus = ConstraintService.getStatus(strConstraint, dozentenID);
@@ -739,13 +721,13 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			returnvalue = false;
 		}else{
 			switch(erfassungsstatus){
-			case intUneingeladen:
+			case ConstraintService.STATUS_UNINVITED:
 				returnvalue = true;
 				break;
-			case intEingeladen:
+			case ConstraintService.STATUS_INVITED:
 				returnvalue = true;
 				break;
-			case intErfasst:
+			case ConstraintService.STATUS_RECORDED:
 				returnvalue = false;
 				break;
 			default:

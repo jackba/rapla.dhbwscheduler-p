@@ -835,7 +835,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 	 */
 	private String getDozentenConstraint(Reservation reservation) {
 
-		Object constraintObj = reservation.getClassification().getValue(getString("planning_constraints"));
+		Object constraintObj = reservation.getClassification().getValue("planungsconstraints");
 		String result = "";
 		if (constraintObj != null) {
 			result = constraintObj.toString();

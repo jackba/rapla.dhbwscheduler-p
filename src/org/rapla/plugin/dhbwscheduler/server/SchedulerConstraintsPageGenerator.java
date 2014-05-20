@@ -473,7 +473,6 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		String constraint = "";
 		String newConstraint="";
-		int status = 2;
 		//int verId = Integer.parseInt(eventId);
 		Date[] ausnahmenDateArray = new Date[ausnahmenArray.length];
 		SimpleDateFormat strToDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -511,7 +510,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		
 		
 		constraint = (String) veranstaltung.getClassification().getValue("planungsconstraints"); 
-		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozentId, time, ausnahmenDateArray, status);
+		newConstraint = ConstraintService.addorchangeSingleDozConstraint(constraint, dozentId, time, ausnahmenDateArray, ConstraintService.STATUS_RECORDED);
 		DhbwschedulerReservationHelper helperClass = new DhbwschedulerReservationHelper( getContext());
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"planungsconstraints",newConstraint);
 		veranstaltung = helperClass.changeReservationAttribute(veranstaltung,"erfassungsstatus",helperClass.getStringStatus(ConstraintService.getReservationStatus(newConstraint)));

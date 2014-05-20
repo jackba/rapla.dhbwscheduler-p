@@ -572,12 +572,12 @@ public class ConstraintServiceTest extends RaplaTestCase {
 //		3 teilweise erfasst
 //		4 teilweise eingeladen
 		assertEquals(-1,ConstraintService.getReservationStatus(null));
-		assertEquals(4,ConstraintService.getReservationStatus(testConstraint0));
-		assertEquals(1,ConstraintService.getReservationStatus(testConstraint1));
-		assertEquals(0,ConstraintService.getReservationStatus(testConstraint2));
-		assertEquals(2,ConstraintService.getReservationStatus(testConstraint3));
-		assertEquals(4,ConstraintService.getReservationStatus(testConstraint4));
-		assertEquals(3,ConstraintService.getReservationStatus(testConstraint5));
+		assertEquals(ConstraintService.STATUS_PARTIAL_RECORDED,ConstraintService.getReservationStatus(testConstraint0));
+		assertEquals(ConstraintService.STATUS_INVITED,ConstraintService.getReservationStatus(testConstraint1));
+		assertEquals(ConstraintService.STATUS_UNINVITED,ConstraintService.getReservationStatus(testConstraint2));
+		assertEquals(ConstraintService.STATUS_RECORDED,ConstraintService.getReservationStatus(testConstraint3));
+		assertEquals(ConstraintService.STATUS_PARTIAL_RECORDED,ConstraintService.getReservationStatus(testConstraint4));
+		assertEquals(ConstraintService.STATUS_PARTIAL_INVITED,ConstraintService.getReservationStatus(testConstraint5));
 	}
 	
 	public void testaddorchangeSingleDozConstraint(){
@@ -656,12 +656,6 @@ public class ConstraintServiceTest extends RaplaTestCase {
 		assertEquals(erg_constraint1,ConstraintService.initDozConstraint(constraint1,dozid));
 		assertEquals(erg_constraint2,ConstraintService.initDozConstraint(null,dozid));
 	}
-	
-	public void testinitclass(){
-		ConstraintService csv = new ConstraintService();
-	}
-	
-	
 }
 
 
