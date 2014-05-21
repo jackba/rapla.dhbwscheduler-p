@@ -1,5 +1,6 @@
 package org.rapla.plugin.dhbwscheduler;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -141,7 +143,13 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 			}
 		};
 		veranstaltungen_model.setDataVector(data, columnNames);
+		veranstaltungen.setAutoResizeMode(veranstaltungen.AUTO_RESIZE_OFF);
 		JScrollPane veranstaltungen_scroll = new JScrollPane(veranstaltungen);
+		veranstaltungen.getColumnModel().getColumn(0).setPreferredWidth(200);
+		veranstaltungen.getColumnModel().getColumn(1).setPreferredWidth(200);
+		veranstaltungen.getColumnModel().getColumn(2).setPreferredWidth(70);
+		veranstaltungen.getColumnModel().getColumn(3).setPreferredWidth(70);
+//		veranstaltungen.getColumnModel().getColumn(4).setPreferredWidth(1000);
 		planungsgui.add(veranstaltungen_scroll);
 
 		return planungsgui;
@@ -239,8 +247,8 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		Vector columnNames = new Vector();
 		columnNames.add("Lehrveranstaltung");
 		columnNames.add("Dozent");
-		columnNames.add("Mail");
-		columnNames.add("Rückantwort");
+		columnNames.add("eingeladen");
+		columnNames.add("geantwortet");
 		columnNames.add("URL");
 
 		return columnNames;
