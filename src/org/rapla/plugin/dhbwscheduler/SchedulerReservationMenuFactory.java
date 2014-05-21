@@ -48,10 +48,6 @@ import org.rapla.plugin.urlencryption.UrlEncryption;
 
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
-	public static final String closed = new String("geplant");
-	public static final String planning_open = new String("in Planung");
-	public static final String planning_closed = new String("in Planung geschlossen");
-	public static final String planungsstatus = new String("planungsstatus");
 	DhbwschedulerService service;
 	DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 	UrlEncryption urlEncryption;
@@ -136,7 +132,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				{
 					
 					for (Reservation editableEvent : selectedReservations){
-						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("closed"));
+						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("closed"));
 						}
 					createMessage("planungsstatus", getString("closed"), 200, 100, menuContext, false);
 				}
@@ -152,7 +148,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				public void actionPerformed( ActionEvent e )
 				{
 					for (Reservation editableEvent : selectedReservations){
-						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_open"));
+						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_open"));
 					}
 					createMessage("planungsstatus", getString("planning_open"), 200, 100, menuContext, false);
 				}
@@ -174,7 +170,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						if (status != ConstraintService.STATUS_RECORDED){
 							veranstaltungen += "\n" + editableEvent.getClassification().getName(getLocale());
 						}
-						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_closed"));
+						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_closed"));
 					}
 					createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
 					if (veranstaltungen != ""){
@@ -211,7 +207,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						content.setText( result);
 						DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
 						dialogUI.setSize( 300, 300);
-						dialogUI.setTitle("Example Dialog");
+						dialogUI.setTitle(getString("Scheduling_results"));
 						if (menuContext.getPoint() != null)
 						{    
 							dialogUI.setLocation( menuContext.getPoint() );
@@ -235,142 +231,148 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				public void actionPerformed( ActionEvent e )
 				{
 					try 
-					{
+					{	
+						boolean isValidated = false;
 						//Anzahl benötigter Felder ermitteln
-						int felder = 0;
-						for (Reservation r : selectedReservations)
-						{
-							for (int t = 0; t < r.getPersons().length; t++)
-							{
-								felder++;
-							}
-						}
-
-						JLabel[] label = new JLabel[felder];
-						JLabel labelHead = new JLabel();
-						JPanel panel = new JPanel();
-						JPanel[] p1 = new JPanel[felder];
-						JPanel[] p2 = new JPanel[felder];
-						panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-						//JTextField[] urlField = new JTextField[felder];
-						JTextArea[] urlField = new JTextArea[felder];
-						RaplaButton[] copyButton = new RaplaButton[felder];
-						RaplaButton[] bt = new RaplaButton[felder];
-
-						try {
-							int i = 0;
+						isValidated = checkCompleteReservation(selectedReservations);
+						if(isValidated){
+							int felder = 0;
 							for (Reservation r : selectedReservations)
 							{
 								for (int t = 0; t < r.getPersons().length; t++)
 								{
-
-									String pTest =  r.getPersons()[t].getId();
-									String pID =  pTest;
-
-									String rSI =  r.getId();
-									String resID =  rSI;
-
-									String studiengang = HelperClass.getStudiengang(r);
-
-									p1[i] = new JPanel();
-									p2[i] = new JPanel();
-									p1[i].setLayout(new BoxLayout(p1[i], BoxLayout.Y_AXIS));
-									p2[i].setLayout(new BoxLayout(p2[i], BoxLayout.X_AXIS));
-
-									label[i] = new JLabel();
-									labelHead.setFont(new Font("Arial",Font.BOLD,16));
-									label[i].setFont(new Font("Arial",Font.CENTER_BASELINE,14));
-									labelHead.setText(getString("Studiengang") + ": " + studiengang
-											+ ", " + getString("Veranstaltung") + ": " + r.getName(getLocale()));
-									label[i].setText(getString("Dozent") + ": " 
-											+ r.getPersons()[t].getClassification().getValue("firstname").toString()
-											+ " " + r.getPersons()[t].getClassification().getValue("surname").toString());
-
-									bt[i] = new RaplaButton();
-									bt[i].setText(getString("Link_oeffnen2"));
-									bt[i].setToolTipText(getString("Link_oeffnen"));
-									urlField[i] = new JTextArea();
-									urlField[i].setWrapStyleWord(true);
-									urlField[i].setLineWrap(true);
-									urlField[i].setText(getUrl(resID,pID));
-									urlField[i].setSize(100, 20);
-									urlField[i].setEditable(false);
-									copyButton[i] = new RaplaButton();
-									copyButton[i].setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-									copyButton[i].setFocusable(false);
-									copyButton[i].setRolloverEnabled(false);
-									copyButton[i].setIcon(getIcon("icon.copy"));
-									copyButton[i].setToolTipText(getString("copy_to_clipboard"));
-									addCopyPaste(urlField[i]);
-									final String help = urlField[i].getText();
-									final URI uri = new URI(urlField[i].getText());
-									bt[i].addActionListener(new ActionListener() {
-										public void actionPerformed(ActionEvent e) {
-											if (Desktop.isDesktopSupported())
-											{
-												try {
-													Desktop.getDesktop().browse(uri);
-												}
-												catch (IOException ex)
-												{
-													;
-												}
-											}
-										}
-									});
-									copyButton[i].addActionListener(new ActionListener() {
-										public void actionPerformed(ActionEvent e) {
-											StringSelection stringSelection = new StringSelection(help);
-											Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
-											clipBoard.setContents(stringSelection, stringSelection);
-										}
-
-									});
-									urlField[i].setAlignmentX(Component.LEFT_ALIGNMENT);
-									p1[i].setAlignmentX(Component.LEFT_ALIGNMENT);
-									p2[i].setAlignmentX(Component.LEFT_ALIGNMENT);
-									Component placeHolderVb = Box.createVerticalStrut(20);
-									Component placeHolderVl = Box.createVerticalStrut(5);
-									Component placeHolderHl = Box.createHorizontalStrut(5);
-									if (i>0)
-									{
-										p1[i].add(placeHolderVb);
-									}
-									if (i==0)
-									{
-										p1[i].add(labelHead);
-										p1[i].add(placeHolderVb);
-									}
-									p1[i].add(label[i]);
-									p1[i].add(placeHolderVl);
-									p1[i].add(urlField[i]);
-									p1[i].add(placeHolderVl);
-									p2[i].add(bt[i]);
-									p2[i].add(placeHolderHl);
-									p2[i].add(copyButton[i]);
-									panel.add(p1[i]);
-									panel.add(p2[i]);
-									i++;
+									felder++;
 								}
 							}
 
-						} catch (UnsupportedEncodingException e1) {
-							getLogger().info("ERROR:" + e1.toString());
-							e1.printStackTrace();
-						} catch (URISyntaxException e1) {
-							getLogger().info("ERROR:" + e1.toString());
-							e1.printStackTrace();
-						}
+							JLabel[] label = new JLabel[felder];
+							JLabel labelHead = new JLabel();
+							JPanel panel = new JPanel();
+							JPanel[] p1 = new JPanel[felder];
+							JPanel[] p2 = new JPanel[felder];
+							panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-						DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,panel,new String[] {"OK"});
-						dialogUI.setSize( 600, 300);
-						dialogUI.setTitle(getString("Erfassungslink"));
-						if (menuContext.getPoint() != null)
-						{    
-							dialogUI.setLocation( menuContext.getPoint() );
+							//JTextField[] urlField = new JTextField[felder];
+							JTextArea[] urlField = new JTextArea[felder];
+							RaplaButton[] copyButton = new RaplaButton[felder];
+							RaplaButton[] bt = new RaplaButton[felder];
+
+							try {
+								int i = 0;
+								for (Reservation r : selectedReservations)
+								{
+									for (int t = 0; t < r.getPersons().length; t++)
+									{
+
+										String pTest =  r.getPersons()[t].getId();
+										String pID =  pTest;
+
+										String rSI =  r.getId();
+										String resID =  rSI;
+
+										String studiengang = HelperClass.getStudiengang(r);
+
+										p1[i] = new JPanel();
+										p2[i] = new JPanel();
+										p1[i].setLayout(new BoxLayout(p1[i], BoxLayout.Y_AXIS));
+										p2[i].setLayout(new BoxLayout(p2[i], BoxLayout.X_AXIS));
+
+										label[i] = new JLabel();
+										labelHead.setFont(new Font("Arial",Font.BOLD,16));
+										label[i].setFont(new Font("Arial",Font.CENTER_BASELINE,14));
+										labelHead.setText(getString("Studiengang") + ": " + studiengang
+												+ ", " + getString("Veranstaltung") + ": " + r.getName(getLocale()));
+										label[i].setText(getString("Dozent") + ": " 
+												+ r.getPersons()[t].getClassification().getValue("firstname").toString()
+												+ " " + r.getPersons()[t].getClassification().getValue("surname").toString());
+
+										bt[i] = new RaplaButton();
+										bt[i].setText(getString("Link_oeffnen2"));
+										bt[i].setToolTipText(getString("Link_oeffnen"));
+										urlField[i] = new JTextArea();
+										urlField[i].setWrapStyleWord(true);
+										urlField[i].setLineWrap(true);
+										urlField[i].setText(getUrl(resID,pID));
+										urlField[i].setSize(100, 20);
+										urlField[i].setEditable(false);
+										copyButton[i] = new RaplaButton();
+										copyButton[i].setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+										copyButton[i].setFocusable(false);
+										copyButton[i].setRolloverEnabled(false);
+										copyButton[i].setIcon(getIcon("icon.copy"));
+										copyButton[i].setToolTipText(getString("copy_to_clipboard"));
+										addCopyPaste(urlField[i]);
+										final String help = urlField[i].getText();
+										final URI uri = new URI(urlField[i].getText());
+										bt[i].addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												if (Desktop.isDesktopSupported())
+												{
+													try {
+														Desktop.getDesktop().browse(uri);
+													}
+													catch (IOException ex)
+													{
+														;
+													}
+												}
+											}
+										});
+										copyButton[i].addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												StringSelection stringSelection = new StringSelection(help);
+												Clipboard clipBoard = Toolkit.getDefaultToolkit().getSystemClipboard();
+												clipBoard.setContents(stringSelection, stringSelection);
+											}
+
+										});
+										urlField[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+										p1[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+										p2[i].setAlignmentX(Component.LEFT_ALIGNMENT);
+										Component placeHolderVb = Box.createVerticalStrut(20);
+										Component placeHolderVl = Box.createVerticalStrut(5);
+										Component placeHolderHl = Box.createHorizontalStrut(5);
+										if (i>0)
+										{
+											p1[i].add(placeHolderVb);
+										}
+										if (i==0)
+										{
+											p1[i].add(labelHead);
+											p1[i].add(placeHolderVb);
+										}
+										p1[i].add(label[i]);
+										p1[i].add(placeHolderVl);
+										p1[i].add(urlField[i]);
+										p1[i].add(placeHolderVl);
+										p2[i].add(bt[i]);
+										p2[i].add(placeHolderHl);
+										p2[i].add(copyButton[i]);
+										panel.add(p1[i]);
+										panel.add(p2[i]);
+										i++;
+									}
+								}
+
+							} catch (UnsupportedEncodingException e1) {
+								getLogger().info("ERROR:" + e1.toString());
+								e1.printStackTrace();
+							} catch (URISyntaxException e1) {
+								getLogger().info("ERROR:" + e1.toString());
+								e1.printStackTrace();
+							}
+
+							DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,panel,new String[] {"OK"});
+							dialogUI.setSize( 600, 300);
+							dialogUI.setTitle(getString("Erfassungslink"));
+							if (menuContext.getPoint() != null)
+							{    
+								dialogUI.setLocation( menuContext.getPoint() );
+							}
+							dialogUI.startNoPack();
+
 						}
-						dialogUI.startNoPack();
+					
 					}
 					catch (RaplaException ex )
 					{
@@ -716,8 +718,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 		boolean returnvalue = false;
 
-		if(r.getClassification().getValue("planungsstatus").equals(planning_closed) ||
-				r.getClassification().getValue("planungsstatus").equals(closed)){
+		if(r.getClassification().getValue("planungsstatus").equals(HelperClass.PLANNING_CLOSED) ||
+				r.getClassification().getValue("planungsstatus").equals(HelperClass.CLOSED)){
 			returnvalue = false;
 		}else{
 			switch(erfassungsstatus){
