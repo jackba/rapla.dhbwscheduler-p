@@ -1,6 +1,6 @@
 $('document').ready(function(){	
-	$('#inpTimeTable').val(getTimeTableToString());
-	$('#inpAusnahmen').val(getDatelist());
+	getTimeTableToString();
+	getDatelist();
 	$('#inpStunden').val(('#numberVorlesungsstunden').val());
 	//Erlaubt das Auswählen mehrer Zellen der Stundentabelle
 	$(function (){
@@ -39,14 +39,14 @@ $('document').ready(function(){
 		for(var i in obj){
 			obj[i].remove();
 		}
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
+		getTimeTableToString();
+		getDatelist();
 		$('#inpStunden').val(('#numberVorlesungsstunden').val());
 		$('#inpChanged').val(1);
 	});
 	$('#numberVorlesungsstunden').change(function(){
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
+		getTimeTableToString();
+		getDatelist();
 		$('#inpStunden').val($(this).val());
 		$('#inpChanged').val(1);
 	});
@@ -71,8 +71,8 @@ $('document').ready(function(){
 			obj[i].addClass('tdMinus');
 			obj[i].html('-');
 		}
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
+		getTimeTableToString();
+		getDatelist();
 		$('#inpStunden').val(('#numberVorlesungsstunden').val());
 		$('#inpChanged').val(1);
 	});
@@ -84,8 +84,8 @@ $('document').ready(function(){
 			obj[i].addClass('tdNeutral');
 			obj[i].html('');
 		}		
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
+		getTimeTableToString();
+		getDatelist();
 		$('#inpStunden').val(('#numberVorlesungsstunden').val());
 		$('#inpChanged').val(1);
 	});
@@ -111,8 +111,8 @@ $('document').ready(function(){
 					$(this).addClass("tdSelect");
 				}
 			});
-			$('#inpTimeTable').val(getTimeTableToString());
-			$('#inpAusnahmen').val(getDatelist());
+			getTimeTableToString();
+			getDatelist();
 			$('#inpStunden').val(('#numberVorlesungsstunden').val());
 			$('#inpChanged').val(1);
 		}
@@ -150,7 +150,7 @@ function getDatelist(){
 		dateArray[counter]=$(this).html();
 		counter++;
 	});
-	return dateArray;
+	$('#inpAusnahmen').val(dateArray);
 }
 //Methode liest Daten der Stundentabelle
 function getTimeTableToString(){
@@ -186,5 +186,5 @@ function getTimeTableToString(){
 			str+='0';
 		}
 	}
-	return str;
+	$('#inpTimeTable').val(str);
 }
