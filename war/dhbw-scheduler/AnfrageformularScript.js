@@ -1,7 +1,7 @@
 $('document').ready(function(){	
-	$('#inpTimeTable').val(getTimeTableToString());
-	$('#inpAusnahmen').val(getDatelist());
-	$('#inpStunden').val(('#numberVorlesungsstunden').val());
+	getTimeTableToString();
+	getDatelist();
+	$('#inpStunden').val($('#numberVorlesungsstunden').val());
 	//Erlaubt das Ausw�hlen mehrer Zellen der Stundentabelle
 	$(function (){
 		var isMouseDown = false;
@@ -39,14 +39,14 @@ $('document').ready(function(){
 		for(var i in obj){
 			obj[i].remove();
 		}
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
-		$('#inpStunden').val(('#numberVorlesungsstunden').val());
+		getTimeTableToString();
+		getDatelist();
+		$('#inpStunden').val($('#numberVorlesungsstunden').val());
 		$('#inpChanged').val(1);
 	});
 	$('#numberVorlesungsstunden').change(function(){
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
+		getTimeTableToString();
+		getDatelist();
 		$('#inpStunden').val($(this).val());
 		$('#inpChanged').val(1);
 	});
@@ -58,9 +58,9 @@ $('document').ready(function(){
 			obj[i].addClass('tdPlus');
 			obj[i].html('+');
 		}
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
-		$('#inpStunden').val(('#numberVorlesungsstunden').val());
+		getTimeTableToString();
+		getDatelist();
+		$('#inpStunden').val($('#numberVorlesungsstunden').val());
 		$('#inpChanged').val(1);
 	});
 	//Markiert alle ausgewählten Zellen mit -
@@ -71,9 +71,9 @@ $('document').ready(function(){
 			obj[i].addClass('tdMinus');
 			obj[i].html('-');
 		}
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
-		$('#inpStunden').val(('#numberVorlesungsstunden').val());
+		getTimeTableToString();
+		getDatelist();
+		$('#inpStunden').val($('#numberVorlesungsstunden').val());
 		$('#inpChanged').val(1);
 	});
 	//Macht alle ausgewählten Zellen leer
@@ -84,9 +84,9 @@ $('document').ready(function(){
 			obj[i].addClass('tdNeutral');
 			obj[i].html('');
 		}		
-		$('#inpTimeTable').val(getTimeTableToString());
-		$('#inpAusnahmen').val(getDatelist());
-		$('#inpStunden').val(('#numberVorlesungsstunden').val());
+		getTimeTableToString();
+		getDatelist();
+		$('#inpStunden').val($('#numberVorlesungsstunden').val());
 		$('#inpChanged').val(1);
 	});
 	//Datum der Liste hinzufügen, falls noch nicht vorhanden
@@ -111,9 +111,9 @@ $('document').ready(function(){
 					$(this).addClass("tdSelect");
 				}
 			});
-			$('#inpTimeTable').val(getTimeTableToString());
-			$('#inpAusnahmen').val(getDatelist());
-			$('#inpStunden').val(('#numberVorlesungsstunden').val());
+			getTimeTableToString();
+			getDatelist();
+			$('#inpStunden').val($('#numberVorlesungsstunden').val());
 			$('#inpChanged').val(1);
 		}
 	});			
@@ -150,7 +150,7 @@ function getDatelist(){
 		dateArray[counter]=$(this).html();
 		counter++;
 	});
-	return dateArray;
+	$('#inpAusnahmen').val(dateArray);
 }
 //Methode liest Daten der Stundentabelle
 function getTimeTableToString(){
@@ -186,5 +186,5 @@ function getTimeTableToString(){
 			str+='0';
 		}
 	}
-	return str;
+	$('#inpTimeTable').val(str);
 }
