@@ -38,19 +38,8 @@ public class DhbwschedulerAdminOption extends DefaultPluginOption {
 
     protected JPanel createPanel() throws RaplaException {
         JPanel panel = super.createPanel();
-        JPanel content = new JPanel();
-        double[][] sizes = new double[][] {
-            {5,TableLayout.PREFERRED, 5,TableLayout.PREFERRED,TableLayout.FILL,5}
-            ,{TableLayout.PREFERRED,5,TableLayout.PREFERRED,5,TableLayout.PREFERRED}
-        };
-        addCopyPaste( attributeField);
-        attributeField.setColumns( 10);
-        TableLayout tableLayout = new TableLayout(sizes);
-        content.setLayout(tableLayout);
-        content.add(new JLabel("Description of attribute."), "1,0,4,0");
-        content.add(new JLabel("test attribute:"), "1,4");
-        content.add( attributeField, "3,4");
-        panel.add( content, BorderLayout.CENTER);
+        //Hier zusätzliche Einstellungsmöglichkeiten implemetieren
+        //Implement new options here
         return panel;
     }
 
