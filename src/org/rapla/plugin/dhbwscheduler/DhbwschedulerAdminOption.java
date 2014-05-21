@@ -12,14 +12,11 @@
  *--------------------------------------------------------------------------*/
 package org.rapla.plugin.dhbwscheduler;
 
-import java.awt.BorderLayout;
 import java.util.Locale;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.rapla.components.layout.TableLayout;
 import org.rapla.framework.Configuration;
 import org.rapla.framework.DefaultConfiguration;
 import org.rapla.framework.PluginDescriptor;
