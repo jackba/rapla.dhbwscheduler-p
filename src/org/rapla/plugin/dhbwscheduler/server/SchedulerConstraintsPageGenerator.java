@@ -47,6 +47,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 //       // response.sendRedirect("pasoServlet.jsp");
 //    }
 	
+	/**
+	 * A helper method for searching a string in a field
+	 * @param feld
+	 * @param suche
+	 * @return
+	 */
 	public static String getInformation(String[] feld, String suche)
 	{
 		String ergebnis = "";
@@ -60,6 +66,9 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		return ergebnis;
 	}
 	
+	/**
+	 * Generate page for lecturer
+	 */
 	public void generatePage(ServletContext context,
 			HttpServletRequest request, HttpServletResponse response)
 					throws IOException, ServletException 
