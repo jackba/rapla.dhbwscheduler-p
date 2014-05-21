@@ -26,7 +26,11 @@ import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.IdentifiableMenuEntry;
 import org.rapla.gui.toolkit.RaplaWidget;
 
-
+/**
+ * 
+ * @author DHBW (Dieckmann, Daniel; Dvorschak, Marc; Flickinger, Marco; Geissel, Markus; Gemeinhardt, Christian; Henne, Adrian; Köhler, Christoffer; Schaller, Benjamin; Werner, Benjamin)
+ *
+ */
 public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements IdentifiableMenuEntry, ActionListener
 {
 	String id = "help";

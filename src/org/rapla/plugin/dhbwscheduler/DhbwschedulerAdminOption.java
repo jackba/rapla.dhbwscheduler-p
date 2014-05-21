@@ -24,7 +24,11 @@ import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.gui.DefaultPluginOption;
 
-/** Not used yet */
+/**
+ * 
+ * @author DHBW (Dieckmann, Daniel; Dvorschak, Marc; Flickinger, Marco; Geissel, Markus; Gemeinhardt, Christian; Henne, Adrian; Köhler, Christoffer; Schaller, Benjamin; Werner, Benjamin)
+ *
+ */
 public class DhbwschedulerAdminOption extends DefaultPluginOption {
     JTextField attributeField = new JTextField();
     

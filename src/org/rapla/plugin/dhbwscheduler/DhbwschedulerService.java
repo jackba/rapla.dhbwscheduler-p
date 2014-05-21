@@ -4,6 +4,11 @@ import javax.jws.WebService;
 
 import org.rapla.framework.RaplaException;
 
+/**
+ * 
+ * @author DHBW (Dieckmann, Daniel; Dvorschak, Marc; Flickinger, Marco; Geissel, Markus; Gemeinhardt, Christian; Henne, Adrian; Köhler, Christoffer; Schaller, Benjamin; Werner, Benjamin)
+ *
+ */
 @WebService
 public interface DhbwschedulerService {
 	

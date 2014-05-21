@@ -41,6 +41,11 @@ import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 import org.rapla.plugin.urlencryption.UrlEncryption;
 import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
 
+/**
+ * 
+ * @author DHBW (Dieckmann, Daniel; Dvorschak, Marc; Flickinger, Marco; Geissel, Markus; Gemeinhardt, Christian; Henne, Adrian; Köhler, Christoffer; Schaller, Benjamin; Werner, Benjamin)
+ *
+ */
 public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		ActionListener, IdentifiableMenuEntry {
 

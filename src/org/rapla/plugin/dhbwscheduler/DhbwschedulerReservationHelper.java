@@ -7,6 +7,12 @@ import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 
+/**
+ * 
+ * @author DHBW (Dieckmann, Daniel; Dvorschak, Marc; Flickinger, Marco; Geissel, Markus; Gemeinhardt, Christian; Henne, Adrian; Köhler, Christoffer; Schaller, Benjamin; Werner, Benjamin)
+ *
+ */
+
 public class DhbwschedulerReservationHelper extends RaplaComponent
 {
 

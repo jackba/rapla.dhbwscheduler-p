@@ -55,7 +55,8 @@ import org.rapla.storage.StorageOperator;
 /**
  * Implementierung des Scheduler-Plugins. Das Plugin plant Vorlesungen im Status "in Plannung geschlossen"
  * 
- * @author DHBW
+ * @author DHBW (Dieckmann, Daniel; Dvorschak, Marc; Flickinger, Marco; Geissel, Markus; Gemeinhardt, Christian; Henne, Adrian; Köhler, Christoffer; Schaller, Benjamin; Werner, Benjamin)
+
  *
  */
  

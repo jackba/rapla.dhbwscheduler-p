@@ -24,6 +24,11 @@ import org.rapla.plugin.dhbwscheduler.DhbwschedulerReservationHelper;
 import org.rapla.servletpages.RaplaPageGenerator;
 import org.rapla.storage.StorageOperator;
 
+/**
+ * 
+ * @author DHBW (Dieckmann, Daniel; Dvorschak, Marc; Flickinger, Marco; Geissel, Markus; Gemeinhardt, Christian; Henne, Adrian; Köhler, Christoffer; Schaller, Benjamin; Werner, Benjamin)
+ *
+ */
 @SuppressWarnings("restriction")
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 	

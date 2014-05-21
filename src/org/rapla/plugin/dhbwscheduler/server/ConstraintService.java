@@ -11,6 +11,9 @@ import java.util.Date;
  * 3: Status
  * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status\n
  * DOZID_000000000000000000000000...111111111111111111111111_ExceptionDate,ExceptionDate_Status
+ *
+ * @author DHBW (Dieckmann, Daniel; Dvorschak, Marc; Flickinger, Marco; Geissel, Markus; Gemeinhardt, Christian; Henne, Adrian; Köhler, Christoffer; Schaller, Benjamin; Werner, Benjamin)
+ * 
  */
 
 public class ConstraintService{
