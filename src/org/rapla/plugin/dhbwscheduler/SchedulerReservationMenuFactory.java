@@ -110,7 +110,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					for (Reservation editableEvent : selectedReservations){
 						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("closed"));
 						}
-					createMessage("planungsstatus", getString("closed"), 200, 100, menuContext, false);
+					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("closed"), 200, 100, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -126,7 +126,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					for (Reservation editableEvent : selectedReservations){
 						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_open"));
 					}
-					createMessage("planungsstatus", getString("planning_open"), 200, 100, menuContext, false);
+					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("planning_open"), 200, 100, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -148,9 +148,9 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						}
 						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_closed"));
 					}
-					createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
+					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("planning_closed"), 200, 100, menuContext, false);
 					if (veranstaltungen != ""){
-						createMessage("planungsstatus", "Folgende Veranstalungen besitzen keine Dozentenconstrains: "+ veranstaltungen, 200, 100, menuContext, false);
+						createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " +  getString("planning_closed") + getString("missing_planing_constraints") + veranstaltungen, 200, 100, menuContext, false);
 					}
 				}
 			});

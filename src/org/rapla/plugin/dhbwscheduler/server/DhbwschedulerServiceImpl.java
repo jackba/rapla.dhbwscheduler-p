@@ -58,10 +58,7 @@ import org.rapla.storage.StorageOperator;
  * @author DHBW
  *
  */
-/**
- * @author Marc Dvorschak
- *
- */
+ 
 @SuppressWarnings({ "unused", "restriction" })
 public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		GlpkCallbackListener, GlpkTerminalListener, DhbwschedulerService {
@@ -169,8 +166,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			solve();
 
 			// POST-Processing
-			postProcessingResults += ("\n" + postProcessing(anfangWoche, endeWoche));
-
+			String resultProcessing = postProcessing(anfangWoche, endeWoche);
+			getLogger().info("Planung:\n" + resultProcessing);
+			
 			// neue Woche planen
 			tmp.setTime(anfangWoche);
 			tmp.add(Calendar.DAY_OF_YEAR, 7);
@@ -179,6 +177,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			endeWoche = new Date(tmp.getTimeInMillis());
 		}
 		
+		postProcessingResults += getString("planning_finished");
+
 		postProcessingResults += resolveConflicts(startDatum, endeDatum);
 		
 		postProcessingResults += mindExceptionDates(startDatum, endeDatum);
@@ -388,13 +388,13 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		String result = "";
 		Calendar tmp = Calendar.getInstance(DateTools.getTimeZone());
 
-		Date newStart = new Date(tmp.getTimeInMillis());
-		Date startWeek = startDatum;
-		tmp.setTimeInMillis(startWeek.getTime());
-
 		int[][] solRes = splitSolution(solutionString);
 
 		for (int i = solRes.length - 1; i >= 0; i--) {
+			Date newStart = new Date(tmp.getTimeInMillis());
+			Date startWeek = startDatum;
+			tmp.setTimeInMillis(startWeek.getTime());
+			
 			Reservation reservation = reservations.get((solRes[i][0]) - 1);
 			result += reservation.getClassification().getName(getLocale()) + ": " + solRes[i][1] + "\n";
 			reservation = getClientFacade().edit(reservation);
@@ -409,10 +409,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			reservations.remove((solRes[i][0]) - 1);
 			reservationsPlannedByScheduler.add(reservation);
 		}
-		
-		getLogger().info("Planung:\n" + result);
-		
-		result = getString("planning_finished");
 		
 		// Dateien aufraeumen
 		new File(model).delete();
@@ -442,6 +438,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				Appointment newApp = null;
 				String appointmentId = conflict.getAppointment1();
 				// add an exception to the conflicting appointment for the conflicting date
+				veranstaltung = getClientFacade().edit(veranstaltung);
 				Appointment conflictingAppointment = (Appointment)((ReservationImpl)veranstaltung).findEntityForId(appointmentId);
 				Date dateOfConflict = conflict.getStartDate();
 				Repeating repeating = conflictingAppointment.getRepeating();
@@ -453,19 +450,8 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 				// get next free time for all resources of the reservation with the new appointment
 				Boolean couldMove = moveAppointmentWithDozConstraints(startDatum, endDatum, veranstaltung, newApp);
 				if(!couldMove){
-					notResolved = notResolved + "\n" + veranstaltung.getName(getLocale()) + "\n";
+					notResolved = notResolved + "\n" + getString("conflict_resolving_not_successful") + veranstaltung.getName(getLocale()) + "\n";
 					break;
-				}
-			}
-			veranstaltung = getClientFacade().edit(veranstaltung);
-			for(Appointment a : splitIntoSingleAppointments(veranstaltung)){
-				Date appointStart = a.getStart();
-				if(appointStart.after(endDatum)){
-					Appointment newAppointment = createNewAppointment(veranstaltung, a.getRepeating(), appointStart, a.getEnd(), a.getStart());
-					boolean couldMove = moveAppointmentWithDozConstraints(startDatum, endDatum, veranstaltung, newAppointment);
-					if(!couldMove){
-						notResolved += (veranstaltung.getName(getLocale()) + getString("beyond_planning_peroid") + "\n");
-					}
 				}
 			}
 		}
@@ -595,11 +581,9 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		// Dozenten Constraint beachten
 
 		int[] dozConstr = ConstraintService.getDozConstraints(getDozentenConstraint(reservation));
-		getLogger().info("Beginn: " + cal.get(Calendar.HOUR_OF_DAY));
 		int start = 24 + ((slot - 1) * 12);
 		for (int i = start; i < start + 12; i++) {
 			int index = i;
-			getLogger().info("" + (slot % 2));
 			if ((slot % 2) != 0) {
 				// Abends
 				index += cal.get(Calendar.HOUR_OF_DAY) - 1;
@@ -1262,6 +1246,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 					}
 				}
 				// Pruefung, ob noch innerhalb des Plannungszyklus
+				boolean couldMove = true;
 				veranstaltung = getClientFacade().edit(veranstaltung);
 				for (Appointment a : splitIntoSingleAppointments(veranstaltung)) {
 					Date appointStart = a.getStart();
@@ -1269,14 +1254,17 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 						Appointment newAppointment = createNewAppointment(
 								veranstaltung, a.getRepeating(), appointStart,
 								a.getEnd(), a.getStart());
-						boolean couldMove = moveAppointmentWithDozConstraints(
+						boolean appMoved = moveAppointmentWithDozConstraints(
 								startDatum, endDatum, veranstaltung,
 								newAppointment);
-						if (!couldMove) {
-							notResolved += (veranstaltung.getName(getLocale())
-									+ getString("beyond_planning_peroid") + "\n");
+						if(!appMoved){
+							couldMove = false;
 						}
 					}
+				}
+				if (!couldMove) {
+					notResolved += (veranstaltung.getName(getLocale())
+							+ getString("beyond_planning_peroid") + "\n");
 				}
 			}
 		return notResolved;

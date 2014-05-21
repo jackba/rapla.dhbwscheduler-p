@@ -151,8 +151,8 @@
     	<text lang="de">in Planung geschlossen</text>
     </entry>
     <entry key="missing_planing_constraints">
-    	<text lang="en">For the following events, the constraints of the lecturers are missing</text>
-    	<text lang="de">Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten</text>
+    	<text lang="en">For the following events, the constraints of the professor are missing: </text>
+    	<text lang="de">Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten/in: </text>
     </entry>
     <entry key="missing_allocatables">
     	<text lang="en">For the following events, some allocatables are missing</text>
@@ -163,8 +163,8 @@
     	<text lang="de">Der Feiertagskalender ist nicht verfügbar. Der Scheduler beachtet keine Feiertage.</text>
     </entry>
      <entry key="conflict_resolving_not_successful">
-    	<text lang="en">The conflicts for the following reservations could not be resolved:</text>
-    	<text lang="de">Die Konflikte für folgende Veranstaltungen konnten nicht aufgelöst werden:</text>
+    	<text lang="en">The conflicts for the following reservations could not be resolved: </text>
+    	<text lang="de">Die Konflikte für folgende Veranstaltungen konnten nicht aufgelöst werden: </text>
     </entry>
      <entry key="planning_not_successful">
     	<text lang="en">For the following events, the planning was not successful: </text>
