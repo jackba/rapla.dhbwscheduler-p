@@ -67,7 +67,7 @@ public class SchedulerHelpMenuExtension extends RaplaGUIComponent implements Ide
 	    public MyDialog(RaplaContext sm) throws RaplaException {
 	        super(sm);
 	        setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
-	        getLogger().info("Help Dialog started");
+//	        getLogger().info("Help Dialog started");
 //	        String helpText = "Hallo, ist da wer?";
 //			label.setText( helpText);
 	    }
