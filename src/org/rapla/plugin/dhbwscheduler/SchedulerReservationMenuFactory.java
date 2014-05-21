@@ -97,31 +97,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 			return RaplaMenuItem.EMPTY_ARRAY;
 		}
 		List<RaplaMenuItem> menus = new ArrayList<RaplaMenuItem>();
-		// create the menu entry
-		/*        {
-		    final RaplaMenuItem menu = new RaplaMenuItem("MY_ACTION_1");
-		    menu.setText( "My Action1" );
-		    // Last the action for the marked menu 
-		    menu.addActionListener( new ActionListener()
-		    {
-		        public void actionPerformed( ActionEvent e )
-		        {
-		            try 
-		            {
-		                Entity event = selectedReservations.get( 0);
-						Reservation editableEvent = getClientFacade().edit( event);
-		                // do something with the reservation
-		                getClientFacade().store( editableEvent ); 
-		            }
-		            catch (RaplaException ex )
-		            {
-		                showException( ex, menuContext.getComponent());
-		            }
-		        }
-		     });
-		    menus.add( menu );
-        }
-		 */
+		
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("PLANUNG_ABSCHLIESSEN");
 			menu.setText(getString("Planung_abschliessen"));
@@ -183,7 +159,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		{
 			final RaplaMenuItem menu = new RaplaMenuItem("SCHEDULING_ANSTOSSEN");
 			menu.setText( getString("Scheduling_anstossen"));
-			//menu.setIcon( getIcon("icon.help"));
 			menu.addActionListener( new ActionListener()
 			{
 				public void actionPerformed( ActionEvent e )
@@ -418,7 +393,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 							String veranstaltungsTitel = (String) r.getClassification().getValue("title");						
 							//Constraints initialisieren oder ändern. (Neuer Dozent = neuer Constraint.)
 							r = initConstraint(r);
-//							int dozCount = 0;
 							message += veranstaltungsTitel + ": \n"; 
 							//Jeder Dozent bekommt eine E-Mail
 							for (int t = 0; t < r.getPersons().length; t++)
@@ -448,9 +422,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 										isSend = false;
 									}
 										if (isSend){
-//											dozCount++;
 											getLogger().info( veranstaltungsTitel + ": e-mail sent to " + email);
-											//message += "\t email: check ";
 											//createMessage(getString("planning_open"), 200, 100, message, menuContext);
 
 											//ändere nun den Constraint!
@@ -463,7 +435,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 												//Status auf eingeladen setzen;
 												if (newConstraint == null){
 													//Fehler beim ändern des Constraints
-													//	createMessage(getString("planning_open"), 200, 100, message, menuContext);
 												}else{
 													r = HelperClass.changeReservationAttribute(r,"planungsconstraints",newConstraint );
 													
@@ -483,7 +454,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 								//email
 								if(isSend){
-									//message += "\t email: sent ";
 									message += "\t " + getString("E-Mail") + ": " + getString("gesendet") + " ";
 								}else{
 									//message += "\t email: not sent ";
@@ -502,10 +472,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						}		
 						// Veranstaltung, Dozent, Senden, speichern /n
 						createMessage(getString("planning_open"), message, 400,200 , menuContext, true);
-						//System.exit(0);
 					} else if (result == JOptionPane.NO_OPTION) {
 						getLogger().info("E-Mail senden abgebrochen");
-						//System.exit(0);
 					}
 
 
@@ -661,9 +629,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 		URL codeBase = env.getDownloadURL();
 
 		String key;
-		//String strLanguage = this.getRaplaLocale().LANGUAGE_ENTRY;
-		
-//		result = codeBase + "rapla?page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId;
 		try {
 			String encryptedParamters = urlEncryption.encrypt("page=scheduler-constraints&id=" + reservationID + "&dozent=" + dozentId);
 			key = UrlEncryption.ENCRYPTED_PARAMETER_NAME+"="+encryptedParamters;
