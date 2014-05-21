@@ -28,7 +28,6 @@ import org.rapla.storage.StorageOperator;
 public class SchedulerConstraintsPageGenerator extends RaplaComponent implements RaplaPageGenerator {
 	
 	
-	
 	public SchedulerConstraintsPageGenerator(RaplaContext context,Configuration config) {
 		super(context);
 		setChildBundleName( DhbwschedulerPlugin.RESOURCE_FILE);
@@ -101,7 +100,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 		//Boolean Peng ist als Flag gedacht
 		boolean peng = false;
 		String strdisabled= "";
-		String semester = "?";			//Zahl des Semesters (Beispiel: 2.)
+		String semester = "?";					//Zahl des Semesters (Beispiel: 2.)
 		String dozent = "?";					//Name Dozent
 		String studiengang = "Unbekannt";		//Studiengang
 		String kursName="Unbekannt";			//Kursname
