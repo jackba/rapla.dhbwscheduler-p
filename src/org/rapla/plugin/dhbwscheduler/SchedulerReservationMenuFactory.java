@@ -257,7 +257,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 										label[i].setFont(new Font("Arial",Font.CENTER_BASELINE,14));
 										labelHead.setText(getString("Studiengang") + ": " + studiengang
 												+ ", " + getString("Veranstaltung") + ": " + r.getName(getLocale()));
-										label[i].setText(getString("Dozent") + ": " 
+										label[i].setText(getString("Dozent_in") + ": " 
 												+ r.getPersons()[t].getClassification().getValue("firstname").toString()
 												+ " " + r.getPersons()[t].getClassification().getValue("surname").toString());
 
