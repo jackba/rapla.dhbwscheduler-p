@@ -1,6 +1,7 @@
 $('document').ready(function(){	
 	$('#inpTimeTable').val(getTimeTableToString());
 	$('#inpAusnahmen').val(getDatelist());
+	$('#inpStunden').val($(this).val());
 	//Erlaubt das Auswählen mehrer Zellen der Stundentabelle
 	$(function (){
 		var isMouseDown = false;
