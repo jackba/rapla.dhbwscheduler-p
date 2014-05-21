@@ -1,5 +1,5 @@
 body{
-	background-color:#CCC;
+	background-color:#cccccc;
 	margin:0;
 	font-family: Helvetica,Arial,sans-serif;
 	padding:0;
@@ -10,7 +10,7 @@ body{
 	font-size:130%;
 }
 #mainHeader{
-	background-color:#FFF;
+	background-color:#ffffff;
 	padding: 30px;
 	border-radius:15px;
 	-moz-border-radius:15px;
@@ -25,12 +25,8 @@ body{
 	margin:10px 30px 10px 0;
 	width: 300px;
 }
-#hideSpan{
-	display:none;
-	cursor:help;
-}
 #content{
-	background-color:#FFF;
+	background-color:#ffffff;
 	padding: 2% 4%;
 	margin: 3% 0;
 	border-radius:15px;
@@ -46,6 +42,7 @@ content{
 #numberVorlesungsstunden{
 	height:30px;
 	font-size:120%;
+	width: 10%;
 }
 #timeTable{
 	margin:3% auto;
@@ -94,7 +91,7 @@ content{
 	font-size:120%;
 }
 #dateTable{
-	border-collapse:collapse;
+	border-collapse:seperate;
 	margin:3% auto;
 	width:20%;
 }
@@ -124,13 +121,13 @@ content{
 }
 input{
 	text-align:center;
-	vertical-align:center;
-	font-size:120%;
-	height:30px;
+	vertical-align:middle;
+	font-size:110%;
+	height:35px;
 }
 input:hover{
 	border:1px solid;
-	border-color:#CCC;/*e2001a*/
+	border-color:#cccccc;/*e2001a*/
 	border-radius:2px;
 	-moz-border-radius:2px;
 	-webkit-border-radius:2px;
@@ -148,7 +145,6 @@ input:hover{
 		
 	}
 	#mainHeader{
-		background-color:#FFF;
 		padding: 5px 10px;
 	}
 	#mainHeader h1{
@@ -172,12 +168,6 @@ input:hover{
 		width: 100px;
 		display:inline-block;
 		
-	}
-	#fullSpan{
-		display:none;
-	}
-	#hideSpan{
-		display:inline-block;
 	}
 	#numberVorlesungsstunden{
 		height:25px;
@@ -231,7 +221,6 @@ input:hover{
 		margin:0;
 	}
 	#mainHeader{
-		background-color:#FFF;
 		padding: 0 10px;
 		border-radius:0;
 		-moz-border-radius:0;
@@ -254,9 +243,6 @@ input:hover{
 	}
 	#logo{
 		display:none;
-	}
-	#hideSpan{
-		display:inline-block;
 	}
 	#content{
 		padding: 2% 5%;
