@@ -110,7 +110,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					for (Reservation editableEvent : selectedReservations){
 						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("closed"));
 						}
-					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("closed"), 200, 100, menuContext, false);
+					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("closed"), 200, 200, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -126,7 +126,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 					for (Reservation editableEvent : selectedReservations){
 						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_open"));
 					}
-					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("planning_open"), 200, 100, menuContext, false);
+					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("planning_open"), 200, 200, menuContext, false);
 				}
 			});
 			menus.add( menu );
@@ -148,7 +148,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						}
 						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_closed"));
 					}
-					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("planning_closed"), 200, 100, menuContext, false);
+					createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " + getString("planning_closed"), 200, 200, menuContext, false);
 					if (veranstaltungen != ""){
 						createMessage(getString("planning_status"), getString("planningGui_status_changed") + " " +  getString("planning_closed") + getString("missing_planing_constraints") + veranstaltungen, 200, 100, menuContext, false);
 					}
