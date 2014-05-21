@@ -25,10 +25,6 @@ body{
 	margin:10px 30px 10px 0;
 	width: 300px;
 }
-#hideSpan{
-	display:none;
-	cursor:help;
-}
 #content{
 	background-color:#ffffff;
 	padding: 2% 4%;
@@ -173,12 +169,6 @@ input:hover{
 		display:inline-block;
 		
 	}
-	#fullSpan{
-		display:none;
-	}
-	#hideSpan{
-		display:inline-block;
-	}
 	#numberVorlesungsstunden{
 		height:25px;
 		font-size:110%;
@@ -253,9 +243,6 @@ input:hover{
 	}
 	#logo{
 		display:none;
-	}
-	#hideSpan{
-		display:inline-block;
 	}
 	#content{
 		padding: 2% 5%;
