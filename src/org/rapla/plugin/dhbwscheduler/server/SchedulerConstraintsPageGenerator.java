@@ -528,15 +528,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			//SimpleIdentifier idtype = new SimpleIdentifier(Reservation.TYPE, verId);
 			veranstaltung = (Reservation) lookup.resolve(eventId);
 			
-		} catch (RaplaContextException e1) {
-			getLogger().error(e1.toString());
-			e1.printStackTrace();
-			return false;
-		} catch (EntityNotFoundException e) {
+		} catch (RaplaContextException | RuntimeException | EntityNotFoundException e) {
 			getLogger().error(e.toString());
 			e.printStackTrace();
 			return false;
 		}
+		
 		
 		if (ausnahmenArray != null ){
 			for(int i = 0 ; i< ausnahmenArray.length; i++){
