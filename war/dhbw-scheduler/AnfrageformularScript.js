@@ -38,13 +38,14 @@ $('document').ready(function(){
 		for(var i in obj){
 			obj[i].remove();
 		}
-		$('#inpChanged').val(1);
-	});
-	$('#taKontakt').change(function(){
-		$('#inpKontakt').val($(this).val());
+		$('#inpTimeTable').val(getTimeTableToString());
+		$('#inpAusnahmen').val(getDatelist());
+		$('#inpStunden').val($(this).val());
 		$('#inpChanged').val(1);
 	});
 	$('#numberVorlesungsstunden').change(function(){
+		$('#inpTimeTable').val(getTimeTableToString());
+		$('#inpAusnahmen').val(getDatelist());
 		$('#inpStunden').val($(this).val());
 		$('#inpChanged').val(1);
 	});
@@ -57,6 +58,8 @@ $('document').ready(function(){
 			obj[i].html('+');
 		}
 		$('#inpTimeTable').val(getTimeTableToString());
+		$('#inpAusnahmen').val(getDatelist());
+		$('#inpStunden').val($(this).val());
 		$('#inpChanged').val(1);
 	});
 	//Markiert alle ausgewählten Zellen mit -
@@ -68,6 +71,8 @@ $('document').ready(function(){
 			obj[i].html('-');
 		}
 		$('#inpTimeTable').val(getTimeTableToString());
+		$('#inpAusnahmen').val(getDatelist());
+		$('#inpStunden').val($(this).val());
 		$('#inpChanged').val(1);
 	});
 	//Macht alle ausgewählten Zellen leer
@@ -79,6 +84,8 @@ $('document').ready(function(){
 			obj[i].html('');
 		}		
 		$('#inpTimeTable').val(getTimeTableToString());
+		$('#inpAusnahmen').val(getDatelist());
+		$('#inpStunden').val($(this).val());
 		$('#inpChanged').val(1);
 	});
 	//Datum der Liste hinzufügen, falls noch nicht vorhanden
@@ -103,23 +110,12 @@ $('document').ready(function(){
 					$(this).addClass("tdSelect");
 				}
 			});
+			$('#inpTimeTable').val(getTimeTableToString());
 			$('#inpAusnahmen').val(getDatelist());
+			$('#inpStunden').val($(this).val());
 			$('#inpChanged').val(1);
 		}
-	});
-	$('#cbNo').change(function(){
-		$('#inpAufsicht').val($(this).val());
-		$('#inpChanged').val(1);
-	});
-	$('#cbYes').change(function(){
-		$('#inpAufsicht').val($(this).val());
-		$('#inpChanged').val(1);
-	});
-	$('#taBemerkungen').change(function(){
-		$('#inpBemerkungen').val($(this).val());
-		$('#inpChanged').val(1);
-	});
-			
+	});			
 });
 //Gibt alle ausgewählten Zellen der Stundentabelle
 function getSelectedTd(){
