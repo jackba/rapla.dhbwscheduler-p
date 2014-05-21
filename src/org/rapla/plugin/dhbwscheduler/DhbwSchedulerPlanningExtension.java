@@ -29,6 +29,7 @@ import javax.swing.table.DefaultTableModel;
 import org.rapla.entities.domain.Allocatable;
 import org.rapla.entities.domain.Reservation;
 import org.rapla.entities.dynamictype.DynamicType;
+import org.rapla.framework.Configuration;
 import org.rapla.framework.DefaultConfiguration;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
@@ -37,17 +38,11 @@ import org.rapla.gui.toolkit.DialogUI;
 import org.rapla.gui.toolkit.IdentifiableMenuEntry;
 import org.rapla.gui.toolkit.RaplaWidget;
 import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
-import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.plugin.urlencryption.UrlEncryption;
 import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
 
-//TODO: Buttons einbauen
-//TODO: Button für URL
-
-
 public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		ActionListener, IdentifiableMenuEntry {
-
 
 	DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 
@@ -60,18 +55,14 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 	HashMap<String, Allocatable> planungszyklen_allocatables = new HashMap<String, Allocatable>();
 	HashSet<Reservation> reservationList = new HashSet<Reservation>();
 	
-	public DhbwSchedulerPlanningExtension(RaplaContext context) {
+	public DhbwSchedulerPlanningExtension(RaplaContext context, Configuration config, DhbwschedulerService service) {
 		super(context);
 		setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
 		id = getString("planning_gui");
 		item = new JMenuItem(id);
 		item.setIcon(getIcon("icon.planning"));
 		item.addActionListener(this);
-		try {
-			service = new DhbwschedulerServiceImpl(getContext(), getClientFacade().getUser());
-		} catch (RaplaException e) {
-			getLogger().debug(e.getMessage());
-		}
+		this.service = service;
 	}
 
 	public void actionPerformed(ActionEvent evt) {
