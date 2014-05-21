@@ -181,7 +181,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						JTextArea content = new JTextArea();
 						content.setText( result);
 						DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
-						dialogUI.setSize( 300, 300);
+						dialogUI.setSize( 500, 300);
 						dialogUI.setTitle(getString("Scheduling_results"));
 						if (menuContext.getPoint() != null)
 						{    

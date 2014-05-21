@@ -179,7 +179,7 @@
     	<text lang="de">Semesterplanung</text>
     </entry>
     <entry key="planninggui_choose">
-    	<text lang="en"></text>
+    	<text lang="en">Please choose a planning period.</text>
     	<text lang="de">Wählen Sie bitte einen Planungszyklus aus</text>
     </entry>
     <entry key="Planung_des">
@@ -312,7 +312,7 @@
     </entry>
      <entry key="beyond_planning_peroid">
     	<text lang="en"> is planned beyond the planning peroid.</text>
-    	<text lang="de"> wurde über den Plaungszyklys hinaus geplant.</text>
+    	<text lang="de"> wurde über den Plaungszyklus hinaus geplant.</text>
     </entry>
     <entry key="check_planningperiod">
     	<text lang="en">For the given events, the planningperiod is corrupted.</text>
@@ -366,5 +366,8 @@
     	<text lang="en">set planning status to: </text>
     	<text lang="de">Planungsstatus wie folgt gesetzt: </text>
     </entry>
-    
+    <entry key="planning_finished">
+    	<text lang="en">Planning finished. Be aware of possible messages.</text>
+    	<text lang="de">Planung abegschlossen. Bitte beachten Sie mögliche Meldungen.</text>
+    </entry>
 </resources>

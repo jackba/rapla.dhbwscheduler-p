@@ -188,7 +188,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			getLogger().info(postProcessingResults);
 			return postProcessingResults;
 		} else {
-			String result = getString("planning_not_successful") + "\n" + postProcessingResults;
+			String result = postProcessingResults + "\n" + getString("planning_not_successful");
 			for(int i = 0; i < reservations.size(); i++) {
 				result += reservations.get(0).getClassification().getName(getLocale()) + "\n";
 				reservations.remove(0);
@@ -409,6 +409,10 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			reservations.remove((solRes[i][0]) - 1);
 			reservationsPlannedByScheduler.add(reservation);
 		}
+		
+		getLogger().info("Planung:\n" + result);
+		
+		result = getString("planning_finished");
 		
 		// Dateien aufraeumen
 		new File(model).delete();
