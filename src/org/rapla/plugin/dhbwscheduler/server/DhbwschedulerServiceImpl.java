@@ -127,7 +127,7 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 		try {
 			freetimeService = getService(FreetimeService.class);
 		} catch (UnsupportedOperationException e) {
-			postProcessingResults += "<br>" + getString("no_holiday_plugin") + "<br/";
+			postProcessingResults += "<br>" + getString("no_holiday_plugin") + "<br/>";
 		}
 
 		Allocatable planning = (Allocatable) reservations.get(0).getClassification().getValue("planungszyklus");
@@ -345,8 +345,6 @@ public class DhbwschedulerServiceImpl extends RaplaComponent implements
 			for (Reservation r : veranstaltungenOhnePlanungsconstraints) {
 				veranstaltungenOhnePlanungsconstraintsListe = veranstaltungenOhnePlanungsconstraintsListe + "<br>" + r.getName(getLocale()) + "<br/>";
 			}
-			// Keinen Text für die Exception mehr werfen, da in Methode buildAllocatableVerfuegbarkeit schon geworfen
-			//throw (new RaplaException("<br>" + getString("missing_planing_constraints") + "<br/>" + veranstaltungenOhnePlanungsconstraintsListe));
 			throw (new RaplaException(""));
 		}
 		return doz_cost;
