@@ -280,7 +280,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.println("<head>");
 			out.println("  <title>" + getI18n().getString("Semesterplanung",new Locale(lang)) + "</title>");
 			out.println("	<meta charset='UTF-8'>");
-			out.println("	<meta name='viewport' content='width=device-width, initial-scale=1.0'/>");
+			out.println("	<meta name='viewport' content='width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no'/>");
 			out.println("	<link REL=\"stylesheet\" type=\"text/css\" href=\""+linkPrefix+"dhbw-scheduler/AnfrageformularStylesheet.css\">");
 			out.println("	<script type=\"text/javascript\" src=\""+linkPrefix+"dhbw-scheduler/Modernizr.js\"></script>");
 			out.println("	<script type=\"text/javascript\" src=\""+linkPrefix+"dhbw-scheduler/respond.js\"></script>");
@@ -299,8 +299,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.println("<img id='logo' name='dhbwLogo' alt='DHBW Karlsruhe' src='"+linkPrefix+"dhbw_logo.jpg'/>");
 			out.println("<h1>");
 			out.println(""+ getI18n().getString("Planung_des", new Locale(lang)) + " "+semester+". " + getI18n().getString("Semesters", new Locale(lang)) + " " + studiengang +  "</br>");
-			out.println("<span id='hideSpan' title='" + getI18n().getString("Kurs", new Locale(lang)) + " " + kursName + ", "+beginZeit+" " + getI18n().getString("bis", new Locale(lang)) + " "+endZeit+"'>...</span>");
-			out.println("<span id='fullSpan'></br> " + getI18n().getString("Kurs", new Locale(lang)) + " " + kursName + ", "+beginZeit+" " + getI18n().getString("bis", new Locale(lang)) + " "+endZeit+"</span>");
+			out.println("</br> " + getI18n().getString("Kurs", new Locale(lang)) + " " + kursName + ", "+beginZeit+" " + getI18n().getString("bis", new Locale(lang)) + " "+endZeit);
 			out.println("</h1>");
 			out.println("</header>");
 			
