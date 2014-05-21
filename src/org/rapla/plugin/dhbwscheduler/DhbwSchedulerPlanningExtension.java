@@ -1,14 +1,16 @@
 package org.rapla.plugin.dhbwscheduler;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -17,9 +19,11 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.MenuElement;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,13 +43,24 @@ import org.rapla.plugin.dhbwscheduler.server.DhbwschedulerServiceImpl;
 import org.rapla.plugin.urlencryption.UrlEncryption;
 import org.rapla.plugin.urlencryption.server.UrlEncryptionService;
 
+//TODO: Buttons einbauen
+//TODO: Button für URL
+
+
 public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		ActionListener, IdentifiableMenuEntry {
+
+
+	DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
+
+	DhbwschedulerService service;
 
 	String id;
 	JMenuItem item;
 	private static DefaultTableModel veranstaltungen_model;
+	private JTable veranstaltungen_table;
 	HashMap<String, Allocatable> planungszyklen_allocatables = new HashMap<String, Allocatable>();
+	HashSet<Reservation> reservationList = new HashSet<Reservation>();
 	
 	public DhbwSchedulerPlanningExtension(RaplaContext context) {
 		super(context);
@@ -54,6 +69,11 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		item = new JMenuItem(id);
 		item.setIcon(getIcon("icon.planning"));
 		item.addActionListener(this);
+		try {
+			service = new DhbwschedulerServiceImpl(getContext(), getClientFacade().getUser());
+		} catch (RaplaException e) {
+			getLogger().debug(e.getMessage());
+		}
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -85,9 +105,6 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		public MyDialog(RaplaContext sm) throws RaplaException {
 			super(sm);
 			setChildBundleName(DhbwschedulerPlugin.RESOURCE_FILE);
-			// getLogger().info("Help Dialog started");
-			// String helpText = "Bla Bsasdasdla Bla";
-			// label.setText( helpText);
 			planungsgui = getPlanungsGui();
 		}
 
@@ -103,14 +120,14 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		planungsgui.setLayout(new BoxLayout(planungsgui, BoxLayout.Y_AXIS));
 
 		JPanel ueberschrift_panel = new JPanel();
-		JLabel ueberschrift = new JLabel("Semesterplanung");
+		JLabel ueberschrift = new JLabel(getString("Semesterplanung"));
 		ueberschrift.setFont(new Font("Sans_Serif", Font.ITALIC, 38));
 		ueberschrift_panel.add(ueberschrift);
 		planungsgui.add(ueberschrift_panel);
 
 		JPanel planungszyklus_panel = new JPanel();
 		planungszyklus_panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		planungszyklus_panel.add(new JLabel("Wählen Sie bitte einen Planungszyklus aus:   "));
+		planungszyklus_panel.add(new JLabel(getString("planninggui_choose")));
 
 		Vector<String> planungszyklen = getPlanungszyklen();
 		JComboBox comboBox = new JComboBox(planungszyklen);
@@ -126,7 +143,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		Vector columnNames = getColumnNames();
 		Vector data = getData(comboBox.getSelectedItem().toString());
 		veranstaltungen_model = new DefaultTableModel();
-		JTable veranstaltungen = new JTable(veranstaltungen_model) {
+		veranstaltungen_table = new JTable(veranstaltungen_model) {
 
 			private static final long serialVersionUID = 1L;
 
@@ -143,18 +160,93 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 			}
 		};
 		veranstaltungen_model.setDataVector(data, columnNames);
-		veranstaltungen.setAutoResizeMode(veranstaltungen.AUTO_RESIZE_OFF);
-		JScrollPane veranstaltungen_scroll = new JScrollPane(veranstaltungen);
-		veranstaltungen.getColumnModel().getColumn(0).setPreferredWidth(200);
-		veranstaltungen.getColumnModel().getColumn(1).setPreferredWidth(200);
-		veranstaltungen.getColumnModel().getColumn(2).setPreferredWidth(70);
-		veranstaltungen.getColumnModel().getColumn(3).setPreferredWidth(70);
-//		veranstaltungen.getColumnModel().getColumn(4).setPreferredWidth(1000);
+		JScrollPane veranstaltungen_scroll = new JScrollPane(veranstaltungen_table);
+		setColumnWidth();
+		
 		planungsgui.add(veranstaltungen_scroll);
+		
+		JPanel buttonPanel = new JPanel();
+		JButton buttonPlanningOpen = new JButton();
+		buttonPlanningOpen.setText(getString("Planung_oeffnen"));
+		buttonPlanningOpen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				for (Reservation editableEvent : reservationList){
+					HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_open"));
+				}
+				
+				JOptionPane.showMessageDialog(null, getString("planningGui_status_changed") + getString("planning_open"), getString("planning_status"), JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		
+		JButton buttonPlanningClose = new JButton();
+		buttonPlanningClose.setText(getString("Planung_schliessen"));
+		buttonPlanningClose.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				for (Reservation editableEvent : reservationList){
+					HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_closed"));
+				}
+				
+				JOptionPane.showMessageDialog(null, getString("planningGui_status_changed") + getString("planning_closed"), getString("planning_status"), JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		
+		JButton buttonSchedule = new JButton();
+		buttonSchedule.setText(getString("Scheduling_anstossen"));
+		buttonSchedule.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				List<String> reservationIds = new ArrayList<String>();
+				try 
+				{
+					for (Reservation editableEvent : reservationList){
+						String id = editableEvent.getId();
+						reservationIds.add(id);
+					}
 
+					String[] ids = reservationIds.toArray( new String[] {});
+					String result = service.schedule(ids);
+					getClientFacade().refresh();
+					JOptionPane.showMessageDialog(null, result, getString("Scheduling_results"), JOptionPane.INFORMATION_MESSAGE);
+				}
+				catch (RaplaException ex )
+				{
+					showException( ex, null);
+				}
+				
+			}
+		});
+		
+		JButton buttonPlanningClosed = new JButton();
+		buttonPlanningClosed.setText(getString("Planung_abschliessen"));
+		buttonPlanningClosed.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				for (Reservation editableEvent : reservationList){
+					HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("closed"));
+				}
+				
+				JOptionPane.showMessageDialog(null, getString("planningGui_status_changed") + getString("closed"), getString("planning_status"), JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+
+		buttonPanel.add(buttonPlanningOpen);
+		buttonPanel.add(buttonPlanningClose);
+		buttonPanel.add(buttonSchedule);
+		buttonPanel.add(buttonPlanningClosed);
+		
+		planungsgui.add(buttonPanel);
 		return planungsgui;
 	}
-
+	
+	private void setColumnWidth() {
+		veranstaltungen_table.getColumnModel().getColumn(0).setPreferredWidth(200);
+		veranstaltungen_table.getColumnModel().getColumn(1).setPreferredWidth(200);
+		veranstaltungen_table.getColumnModel().getColumn(2).setPreferredWidth(70);
+		veranstaltungen_table.getColumnModel().getColumn(3).setPreferredWidth(70);
+	}
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Vector getData(String planungszyklus) {
 		Vector data = new Vector();
@@ -169,74 +261,79 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		end = (Date) zyklus.getClassification().getValue("enddate");
 		zyklen[0] = zyklus;
 		try {
-			reservations = getClientFacade().getReservationsForAllocatable(zyklen, start, end, null);
+			reservations = getClientFacade().getReservations(null, start, end);
+			reservationList = new HashSet<Reservation>();
+			
 			for (Reservation reservation : reservations){
-				String veranstaltung = reservation.getClassification().getName(getLocale());
-				String dozent = "";
-				String dozent_id = "";
-				Vector data_line = new Vector();
-
-				Allocatable[] ressourcen = reservation.getAllocatables();
-				for (Allocatable a : ressourcen) {
-					DynamicType allocatableType = a.getClassification().getType();
-					if (allocatableType.getKey().equals("professor")) {
-						if (!dozent.equals("")) {
-							dozent += "\n";
+				Allocatable planning = (Allocatable) reservation.getClassification().getValue("planungszyklus");
+				if(planning.equals(zyklus)) {
+					String veranstaltung = reservation.getClassification().getName(getLocale());
+					String dozent = "";
+					String dozent_id = "";
+					Vector data_line = new Vector();
+					
+					reservationList.add(reservation);
+					
+					Allocatable[] ressourcen = reservation.getAllocatables();
+					for (Allocatable a : ressourcen) {
+						DynamicType allocatableType = a.getClassification().getType();
+						if (allocatableType.getKey().equals("professor")) {
+							if (!dozent.equals("")) {
+								dozent += "\n";
+							}
+							dozent += a.getClassification().getValue("title") + " " + a.getClassification().getValue("surname");
+							dozent_id = a.getId();
 						}
-						dozent += a.getClassification().getValue("title") + " " + a.getClassification().getValue("surname");
-						dozent_id = a.getId();
 					}
+					
+					boolean mail = false;
+					boolean recorded = false;
+					
+					int status = ConstraintService.getReservationStatus((String) reservation.getClassification().getValue("planungsconstraints"));
+					switch(status) {
+						case ConstraintService.STATUS_RECORDED:
+							mail = true;
+							recorded = true;
+							break;
+						case ConstraintService.STATUS_INVITED:
+							mail = true;
+							recorded = false;
+							break;
+						case ConstraintService.STATUS_PARTIAL_INVITED:
+							mail = false;
+							recorded = false;
+							break;
+						case ConstraintService.STATUS_PARTIAL_RECORDED:
+							mail = true;
+							recorded = false;
+							break;
+						case ConstraintService.STATUS_UNINVITED:
+							mail = false;
+							recorded = false;
+							break;
+					}
+					
+					RaplaContext context = getContext();
+					DefaultConfiguration config = new DefaultConfiguration();
+					UrlEncryption urlcrypt = new UrlEncryptionService(context, config);
+					SchedulerReservationMenuFactory menuFactory = new SchedulerReservationMenuFactory(getContext(), config, service, urlcrypt);
+					
+					//Lehrveranstaltung
+					data_line.add(veranstaltung);
+					//Dozent
+					data_line.add(dozent);
+					//Mail versandt?
+					data_line.add(mail);
+					//Rückantwort eingegeben?
+					data_line.add(recorded);
+					//URL
+					data_line.add(menuFactory.getUrl(reservation.getId(), dozent_id));
+	
+					data.add(data_line);
 				}
-				
-				boolean mail = false;
-				boolean recorded = false;
-				
-				int status = ConstraintService.getReservationStatus((String) reservation.getClassification().getValue("planungsconstraints"));
-				switch(status) {
-					case ConstraintService.STATUS_RECORDED:
-						mail = true;
-						recorded = true;
-						break;
-					case ConstraintService.STATUS_INVITED:
-						mail = true;
-						recorded = false;
-						break;
-					case ConstraintService.STATUS_PARTIAL_INVITED:
-						mail = false;
-						recorded = false;
-						break;
-					case ConstraintService.STATUS_PARTIAL_RECORDED:
-						mail = true;
-						recorded = false;
-						break;
-					case ConstraintService.STATUS_UNINVITED:
-						mail = false;
-						recorded = false;
-						break;
-				}
-				
-				User user = getClientFacade().getUser();
-				RaplaContext context = getContext();
-				DefaultConfiguration config = new DefaultConfiguration();
-				UrlEncryption urlcrypt = new UrlEncryptionService(context, config);
-				DhbwschedulerService service = new DhbwschedulerServiceImpl(context, user);
-				SchedulerReservationMenuFactory menuFactory = new SchedulerReservationMenuFactory(getContext(), config, service, urlcrypt);
-				
-				//Lehrveranstaltung
-				data_line.add(veranstaltung);
-				//Dozent
-				data_line.add(dozent);
-				//Mail versandt?
-				data_line.add(mail);
-				//Rückantwort eingegeben?
-				data_line.add(recorded);
-				//URL
-				data_line.add(menuFactory.getUrl(reservation.getId(), dozent_id));
-
-				data.add(data_line);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			getLogger().debug(e.getMessage());
 		}
 		
 		return data;
@@ -245,10 +342,10 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Vector getColumnNames() {
 		Vector columnNames = new Vector();
-		columnNames.add("Lehrveranstaltung");
-		columnNames.add("Dozent");
-		columnNames.add("eingeladen");
-		columnNames.add("geantwortet");
+		columnNames.add(getString("Lehrveranstaltung"));
+		columnNames.add(getString("Dozent_in"));
+		columnNames.add(getString("eingeladen"));
+		columnNames.add(getString("erfasst"));
 		columnNames.add("URL");
 
 		return columnNames;
@@ -259,6 +356,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		Vector data = getData(planungszyklus);
 		Vector columnNames = getColumnNames();
 		veranstaltungen_model.setDataVector(data, columnNames);
+		setColumnWidth();
 	}
 
 	private Vector<String> getPlanungszyklen() {
@@ -269,7 +367,7 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 			for (Allocatable a : ressourcen) {
 				DynamicType allocatableType = a.getClassification().getType();
 				if (allocatableType.getKey().equals("planungszyklus")) {
-					String planungszyklus = a.getClassification().getValue("name") + " / Semester " + a.getClassification().getValue("semester");
+					String planungszyklus = a.getClassification().getValue("name") + " / " + getString("Semester") + a.getClassification().getValue("semester");
 					planungszyklen.add(planungszyklus);
 					planungszyklen_allocatables.put(planungszyklus, a);
 				}
@@ -278,8 +376,6 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 			e.printStackTrace();
 		}
 		
-//		Set set = new HashSet(planungszyklen);
-//		planungszyklen = new Vector(set);
 		return planungszyklen;
 	}
 
