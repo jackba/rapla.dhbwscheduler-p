@@ -113,6 +113,11 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		}
 	}
 
+	/**
+	 * Baut das JPanel der PlanungsGUI mit allen notwendigen Daten zusammen
+	 * 
+	 * @return JPanel
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private JPanel getPlanungsGui() {
 
@@ -240,6 +245,9 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		return planungsgui;
 	}
 	
+	/**
+	 * Passt die Spaltenbreite der JTable an
+	 */
 	private void setColumnWidth() {
 		veranstaltungen_table.getColumnModel().getColumn(0).setPreferredWidth(200);
 		veranstaltungen_table.getColumnModel().getColumn(1).setPreferredWidth(200);
@@ -247,6 +255,12 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		veranstaltungen_table.getColumnModel().getColumn(3).setPreferredWidth(70);
 	}
 	
+	/**
+	 * Ließt Informationen zu den Lehrveranstaltungen eines Planungszykluses aus
+	 * 
+	 * @param planungszyklus - ausgewählter Planungsstatus als String
+	 * @return - Vector mit den Daten für die JTable
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Vector getData(String planungszyklus) {
 		Vector data = new Vector();
@@ -339,6 +353,11 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		return data;
 	}
 
+	/**
+	 * Definiert die Bezeichnungen der einzelnen Spalten der Tabelle
+	 * 
+	 * @return - Liefert einen Vector mit den TableHeadern
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Vector getColumnNames() {
 		Vector columnNames = new Vector();
@@ -350,7 +369,13 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 
 		return columnNames;
 	}
-
+	
+	
+	/**
+	 * aktualisiert die Daten der JTable mit einem neuen Planungszyklus
+	 * 
+	 * @param planungszyklus
+	 */
 	@SuppressWarnings("rawtypes")
 	private void refreshData(String planungszyklus) {
 		Vector data = getData(planungszyklus);
@@ -359,6 +384,11 @@ public class DhbwSchedulerPlanningExtension extends RaplaGUIComponent implements
 		setColumnWidth();
 	}
 
+	/**
+	 * Ließt alle Planungszyklen aus der zugrundeliegenden Datenbank aus
+	 * 
+	 * @return - Vector vom Typ String mit allen gefundenen Planungszyklen
+	 */
 	private Vector<String> getPlanungszyklen() {
 		Vector<String> planungszyklen = new Vector<String>();
 		Allocatable[] ressourcen;
