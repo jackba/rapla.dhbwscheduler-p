@@ -112,18 +112,50 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 //		String kontaktdaten="";					//Liste mit geänderten Kontaktdaten 
 		String time = "";							//Inhalt der StundenTabelle
 		String[] ausnahmenArray = null;				//Liste mit Daten der Ausnahmen
-//		Date[] dateArr;
+		Date[] ausnahmenDateArray = null;
 		int stunden = 4;						//Vorlesungsstunden am Stück
 //		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
 //		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
 		int dayTimeStart = 8;					//Benötigt zum Aufbauen der Stundentabelle
 		int dayTimeEnd = 18;					//Benötigt zum Aufbauen der Stundentabelle		
 		String key = request.getParameter("key"); 
-
+		String alertmessage = "";
 		String eventId = request.getParameter("id");	//ID der Veranstaltung
 		String dozentId = request.getParameter("dozent");	//ID des Dozenten
 		String linkPrefix = request.getPathTranslated() != null ? "../": "";
 		
+		
+		//gesendete Daten werden hier ausgelesen, wenn eine Änderung vorgenommen wurde (changed = 1)
+		if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
+			time = request.getParameter("time");	
+//			kontaktdaten= request.getParameter("contact");
+			try{stunden = Integer.parseInt(request.getParameter("hours"));}
+			catch(Exception e){}
+			if (request.getParameter("exception")!=null && request.getParameter("exception").contains(","))
+			{
+				ausnahmenArray = request.getParameter("exception").split(",");	
+			}
+			else
+			{
+				ausnahmenArray = new String[1];
+				ausnahmenArray[0] = request.getParameter("exception");
+			}
+//			if(request.getParameter("control").equals("1")){
+//				aufsicht= true;
+//			}else if(request.getParameter("control").equals("0")){
+//				aufsicht = false;
+//			}
+//			bemerkung=request.getParameter("comment");
+			boolean constraintIsSend = sendConstrainttoReservation(eventId,dozentId,time,ausnahmenArray);
+			
+			if(!constraintIsSend){
+				getLogger().info("Daten wurden nicht gesendet");
+				alertmessage = "Daten wurden nicht gesendet!";
+			}else{
+				alertmessage = "Daten gesendet!";
+			}
+			
+		}
 		
 		StorageOperator lookup;
 		if (eventId != null || dozentId != null)
@@ -142,6 +174,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			String dozentKey = lookup.resolve(dozentId).getId();
 //			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
+			ausnahmenDateArray = ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			
 			if (veranstaltung.getClassification().getValue("planungszyklus")!=null){
 				Allocatable xy = (Allocatable) veranstaltung.getClassification().getValue("planungszyklus");
@@ -239,44 +272,12 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 							
 			out.println("<!DOCTYPE html>"); // we have HTML5 
 			out.println("<html>");
-
-			//gesendete Daten werden hier ausgelesen, wenn eine Änderung vorgenommen wurde (changed = 1)
+		
 			if (request.getParameter("changed") != null && request.getParameter("changed").equals("1")){
-				time = request.getParameter("time");	
-//				kontaktdaten= request.getParameter("contact");
-				try{stunden = Integer.parseInt(request.getParameter("hours"));}
-				catch(Exception e){}
-				if (request.getParameter("exception")!=null && request.getParameter("exception").contains(","))
-				{
-					ausnahmenArray = request.getParameter("exception").split(",");	
-				}
-				else
-				{
-					ausnahmenArray = new String[1];
-					ausnahmenArray[0] = request.getParameter("exception");
-				}
-//				if(request.getParameter("control").equals("1")){
-//					aufsicht= true;
-//				}else if(request.getParameter("control").equals("0")){
-//					aufsicht = false;
-//				}
-//				bemerkung=request.getParameter("comment");
-				boolean constraintIsSend = sendConstrainttoReservation(eventId,dozentId,time,ausnahmenArray);
-				
-				if(!constraintIsSend){
-					getLogger().info("Daten wurden nicht gesendet");
-					out.println("<script type='text/javascript'>");
-					out.print("alert('Daten wurden nicht gesendet!');");
-					out.println("</script>");
-				}else{
-					out.println("<script type='text/javascript'>");
-					out.print("alert('Daten gesendet!');");
-					out.println("</script>");
-				}
-				
+				out.println("<script type='text/javascript'>");
+				out.print("alert('"+alertmessage+"');");
+				out.println("</script>");
 			}
-			
-			
 			out.println("<head>");
 			
 			out.println("  <title>" + getI18n().getString("Semesterplanung",new Locale(lang)) + "</title>");
@@ -370,9 +371,16 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.println("		<input id='btnDeleteDate' type='button' "+ strdisabled +" value='" + getI18n().getString("loeschen", new Locale(lang)) + "'/>");
 			out.println("		<ul id='ulDateList'>");
 			
-			//for(int i=0;i<ausnahmenArray.length;i++){
-			//	out.print("<li>"+ausnahmenArray[i]+"</li>");
-			//}
+			SimpleDateFormat ausnahmedateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			
+			if(ausnahmenDateArray != null){
+				for(int i=0;i<ausnahmenDateArray.length;i++){
+					if (ausnahmenDateArray[i] != null){
+					out.print("<li>"+ausnahmedateFormat.format(ausnahmenDateArray[i])+"</li>");
+					}
+				}
+			}
+			
 			 
 			out.println("		</ul>");
 			out.println("		<form action=\"rapla\" method=\"get\">");
