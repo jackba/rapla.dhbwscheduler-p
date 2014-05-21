@@ -2,7 +2,7 @@ $('document').ready(function(){
 	getTimeTableToString();
 	getDatelist();
 	$('#inpStunden').val($('#numberVorlesungsstunden').val());
-	//Erlaubt das Auswählen mehrer Zellen der Stundentabelle
+	//Erlaubt das Auswählen mehrer Zellen der Stundentabelle (Multi-Select für Stundentabelle)
 	$(function (){
 		var isMouseDown = false;
 		var isHighlighted;
@@ -22,6 +22,7 @@ $('document').ready(function(){
 			isMouseDown= false;			
 		});
 	});
+	//Erlaubt das Auswählen mehrer Zellen der Ausnahmedatenliste
 	$('#ulDateList li').each(function(){
 		$(this).on('click',function(){
 			if($(this).hasClass("tdSelect")){
@@ -33,7 +34,7 @@ $('document').ready(function(){
 			}
 		});
 	});
-	//Erlaubt das Auswählen mehrer Zellen der Ausnahmedaten Liste
+	//Löscht die ausgewählten Daten aus der Ausnahmendatenliste
 	$('#btnDeleteDate').on('click',function(){
 		var obj=getSelectedLi();
 		for(var i in obj){
@@ -44,6 +45,7 @@ $('document').ready(function(){
 		$('#inpStunden').val($('#numberVorlesungsstunden').val());
 		$('#inpChanged').val(1);
 	});
+	//Ändert die Anzahl der Vorlesungsstunden
 	$('#numberVorlesungsstunden').change(function(){
 		getTimeTableToString();
 		getDatelist();
@@ -130,7 +132,7 @@ function getSelectedTd(){
 	});
 	return selectedTds;
 }
-//Gibt alle ausgewÃ¤hlten Zellen der Ausnahmedaten Liste
+//Gibt alle ausgewÃ¤hlten Zellen der Ausnahmedatenliste
 function getSelectedLi(){
 	var counter=0;
 	var selectedLis=new Array();
@@ -142,7 +144,7 @@ function getSelectedLi(){
 	});
 	return selectedLis;
 }
-//Holt die Daten der Ausnahmen
+//Holt die Daten der Ausnahmendatenliste
 function getDatelist(){
 	var dateArray=new Array();
 	var counter=0;
