@@ -111,7 +111,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 //		String kontaktdaten="";					//Liste mit geänderten Kontaktdaten 
 		String time = "";							//Inhalt der StundenTabelle
 		String[] ausnahmenArray = null;				//Liste mit Daten der Ausnahmen
-//		Date[] dateArr;
+		Date[] ausnahmenDateArray = null;
 		int stunden = 4;						//Vorlesungsstunden am Stück
 //		boolean aufsicht = false;				//Klausuraufsicht teilnehmen (ja | nein)
 //		String bemerkung = "";					//Inhalt des Bemerkungsfeldes
@@ -141,6 +141,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			String dozentKey = lookup.resolve(dozentId).getId();
 //			dateArr=ConstraintService.getExceptionDatesDoz(vs, dozentKey);
 			time = ConstraintService.getDozStringConstraint(vs, dozentKey);
+			ausnahmenDateArray = ConstraintService.getExceptionDates(vs);
 			
 			if (veranstaltung.getClassification().getValue("planungszyklus")!=null){
 				Allocatable xy = (Allocatable) veranstaltung.getClassification().getValue("planungszyklus");
@@ -369,9 +370,10 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.println("		<input id='btnDeleteDate' type='button' "+ strdisabled +" value='" + getI18n().getString("loeschen", new Locale(lang)) + "'/>");
 			out.println("		<ul id='ulDateList'>");
 			
-			//for(int i=0;i<ausnahmenArray.length;i++){
-			//	out.print("<li>"+ausnahmenArray[i]+"</li>");
-			//}
+			SimpleDateFormat ausnahmedateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			for(int i=0;i<ausnahmenDateArray.length;i++){
+				out.print("<li>"+ausnahmedateFormat.format(ausnahmenDateArray[i])+"</li>");
+			}
 			 
 			out.println("		</ul>");
 			out.println("		<form action=\"rapla\" method=\"get\">");
