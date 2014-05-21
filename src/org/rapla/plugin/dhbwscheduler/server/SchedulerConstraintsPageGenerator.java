@@ -296,7 +296,7 @@ public class SchedulerConstraintsPageGenerator extends RaplaComponent implements
 			out.print("		<div id='wrapper'>");
 			
 			out.println("<header id='mainHeader'>");
-			out.println("<img id='logo' name='dhbwLogo' alt='DHBW Karlsruhe' src='"+linkPrefix+"dhbw_logo.jpg'/>");
+			out.println("<img id='logo' name='dhbwLogo' alt='DHBW Karlsruhe' src='dhbw_logo.jpg'/>");
 			out.println("<h1>");
 			out.println(""+ getI18n().getString("Planung_des", new Locale(lang)) + " "+semester+". " + getI18n().getString("Semesters", new Locale(lang)) + " " + studiengang +  "</br>");
 			out.println("</br> " + getI18n().getString("Kurs", new Locale(lang)) + " " + kursName + ", "+beginZeit+" " + getI18n().getString("bis", new Locale(lang)) + " "+endZeit);
