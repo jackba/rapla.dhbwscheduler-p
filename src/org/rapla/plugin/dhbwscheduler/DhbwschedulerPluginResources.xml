@@ -53,6 +53,10 @@
 		<text lang="en">Initiate scheduling</text>
 		<text lang="de">Scheduling anstossen</text>
 	</entry>
+	<entry key="Scheduling_results">
+		<text lang="en">Scheduling finished</text>
+		<text lang="de">Scheduling abgeschlossen</text>
+	</entry>
 	<entry key="Planung_schliessen">
 		<text lang="en">Close planing</text>
 		<text lang="de">Planung schliessen</text>
@@ -76,10 +80,6 @@
 	<entry key="Veranstaltung">
 		<text lang="en">Event</text>
 		<text lang="de">Veranstaltung</text>
-	</entry>
-	<entry key="Dozent">
-		<text lang="en">Instructor</text>
-		<text lang="de">Dozent</text>
 	</entry>
 	<entry key="uneingeladen">
 		<text lang="en">uninvited</text>
@@ -134,10 +134,10 @@
         <text lang="pl"></text>
 		<text lang="pt"></text>
     </entry>
-<!--	<entry key="design_status">
-    	<text lang="en">design status</text>
-    	<text lang="de">planungsstatus</text>
-    </entry> -->
+	<entry key="planning_status">
+    	<text lang="en">Planning Status</text>
+    	<text lang="de">Planungsstatus</text>
+    </entry> 
      <entry key="closed">
     	<text lang="en">planned</text>
     	<text lang="de">geplant</text>
@@ -175,8 +175,12 @@
     	<text lang="de">Deutsch</text>
     </entry>
     <entry key="Semesterplanung">
-    	<text lang="en">Term planning</text>
+    	<text lang="en">semester planning</text>
     	<text lang="de">Semesterplanung</text>
+    </entry>
+    <entry key="planninggui_choose">
+    	<text lang="en"></text>
+    	<text lang="de">Wählen Sie bitte einen Planungszyklus aus</text>
     </entry>
     <entry key="Planung_des">
     	<text lang="en">Planning of the </text>
@@ -185,6 +189,10 @@
     <entry key="Semesters">
     	<text lang="en">semester </text>
     	<text lang="de">Semesters </text>
+    </entry>
+    <entry key="Semester">
+    	<text lang="en">semester</text>
+    	<text lang="de">Semester</text>
     </entry>
     <entry key="Kurs">
     	<text lang="en">Course </text>
@@ -354,4 +362,9 @@
     	<text lang="en">Program is aborted</text>
     	<text lang="de">Programm wird abgebrochen</text>
     </entry>
+    <entry key="planningGui_status_changed">
+    	<text lang="en">set planning status to: </text>
+    	<text lang="de">Planungsstatus wie folgt gesetzt: </text>
+    </entry>
+    
 </resources>
