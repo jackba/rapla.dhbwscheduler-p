@@ -48,10 +48,6 @@ import org.rapla.plugin.urlencryption.UrlEncryption;
 
 public class SchedulerReservationMenuFactory extends RaplaGUIComponent implements ObjectMenuFactory
 {
-	public static final String closed = new String("geplant");
-	public static final String planning_open = new String("in Planung");
-	public static final String planning_closed = new String("in Planung geschlossen");
-	public static final String planungsstatus = new String("planungsstatus");
 	DhbwschedulerService service;
 	DhbwschedulerReservationHelper HelperClass = new DhbwschedulerReservationHelper(getContext());
 	UrlEncryption urlEncryption;
@@ -136,7 +132,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				{
 					
 					for (Reservation editableEvent : selectedReservations){
-						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("closed"));
+						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("closed"));
 						}
 					createMessage("planungsstatus", getString("closed"), 200, 100, menuContext, false);
 				}
@@ -152,7 +148,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				public void actionPerformed( ActionEvent e )
 				{
 					for (Reservation editableEvent : selectedReservations){
-						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_open"));
+						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_open"));
 					}
 					createMessage("planungsstatus", getString("planning_open"), 200, 100, menuContext, false);
 				}
@@ -174,7 +170,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						if (status != ConstraintService.STATUS_RECORDED){
 							veranstaltungen += "\n" + editableEvent.getClassification().getName(getLocale());
 						}
-						HelperClass.changeReservationAttribute(editableEvent , planungsstatus, getString("planning_closed"));
+						HelperClass.changeReservationAttribute(editableEvent , HelperClass.PLANUNGSSTATUS, getString("planning_closed"));
 					}
 					createMessage("planungsstatus", getString("planning_closed"), 200, 100, menuContext, false);
 					if (veranstaltungen != ""){
@@ -194,8 +190,6 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 				{
 					try 
 					{
-
-
 						List<String> reservationIds = new ArrayList<String>();
 
 						for ( Reservation obj: selectedReservations)
@@ -211,7 +205,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 						content.setText( result);
 						DialogUI dialogUI = DialogUI.create( getContext(), menuContext.getComponent(), false,content,new String[] {"OK"});
 						dialogUI.setSize( 300, 300);
-						dialogUI.setTitle("Example Dialog");
+						dialogUI.setTitle(getString("Scheduling_results"));
 						if (menuContext.getPoint() != null)
 						{    
 							dialogUI.setLocation( menuContext.getPoint() );
@@ -283,7 +277,7 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 									label[i].setFont(new Font("Arial",Font.CENTER_BASELINE,14));
 									labelHead.setText(getString("Studiengang") + ": " + studiengang
 											+ ", " + getString("Veranstaltung") + ": " + r.getName(getLocale()));
-									label[i].setText(getString("Dozent") + ": " 
+									label[i].setText(getString("Dozent_in") + ": " 
 											+ r.getPersons()[t].getClassification().getValue("firstname").toString()
 											+ " " + r.getPersons()[t].getClassification().getValue("surname").toString());
 
@@ -716,8 +710,8 @@ public class SchedulerReservationMenuFactory extends RaplaGUIComponent implement
 
 		boolean returnvalue = false;
 
-		if(r.getClassification().getValue("planungsstatus").equals(planning_closed) ||
-				r.getClassification().getValue("planungsstatus").equals(closed)){
+		if(r.getClassification().getValue("planungsstatus").equals(HelperClass.PLANNING_CLOSED) ||
+				r.getClassification().getValue("planungsstatus").equals(HelperClass.CLOSED)){
 			returnvalue = false;
 		}else{
 			switch(erfassungsstatus){

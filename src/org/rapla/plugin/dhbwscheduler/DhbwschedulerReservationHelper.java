@@ -5,9 +5,15 @@ import org.rapla.entities.domain.Reservation;
 import org.rapla.facade.RaplaComponent;
 import org.rapla.framework.RaplaContext;
 import org.rapla.framework.RaplaException;
+import org.rapla.plugin.dhbwscheduler.server.ConstraintService;
 
 public class DhbwschedulerReservationHelper extends RaplaComponent
 {
+
+	public final String CLOSED = new String("geplant");
+	public final String PLANNING_OPEN = new String("in Planung");
+	public final String PLANNING_CLOSED = new String("in Planung geschlossen");
+	public final String PLANUNGSSTATUS = new String("planungsstatus");
 
 	public DhbwschedulerReservationHelper(RaplaContext context) {
 		super(context);
@@ -47,19 +53,19 @@ public class DhbwschedulerReservationHelper extends RaplaComponent
 	public String getStringStatus(int status) {
 		String returnvalue = "";
 		switch(status){
-		case 0:
+		case ConstraintService.STATUS_UNINVITED:
 			returnvalue = getString("uneingeladen");
 			break;
-		case 1:
+		case ConstraintService.STATUS_INVITED:
 			returnvalue = getString("eingeladen");
 			break;
-		case 2:
+		case ConstraintService.STATUS_RECORDED:
 			returnvalue = getString("erfasst");
 			break;
-		case 3:
+		case ConstraintService.STATUS_PARTIAL_INVITED:
 			returnvalue = getString("teileingeladen");
 			break;
-		case 4:
+		case ConstraintService.STATUS_PARTIAL_RECORDED:
 			returnvalue = getString("teilerfasst");
 			break;
 		default:
