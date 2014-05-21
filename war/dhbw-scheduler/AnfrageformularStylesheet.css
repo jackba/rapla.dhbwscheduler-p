@@ -255,17 +255,18 @@ input:hover{
 		height:20px;
 		font-size:100%;
 	}
+	#dateTable td{
+		display:block;
+	}
 	#dateTable{
-		border-collapse:collapse;
-		margin:3% auto;
 		max-width:300px;
 	}
 	#inpDatepicker{
 		height:20px;
 		font-size:100%;
 	}
-	#ulDateList{
-		width: 80%;
+	#btnSetDate, #btnDeleteDate{
+		width:100px;
 	}
 	#ulDateList li{
 		font-size:100%;
@@ -280,7 +281,7 @@ input:hover{
 		padding:0;
 		margin:0;
 		font-size:90%;
-		height:20px;
+		height:25px;
 	}
 	#timeTable{
 		display:block;
@@ -304,7 +305,7 @@ input:hover{
 		font-size:100%;
 	}
 }
-
+/****************************************************************/
 .tdNeutral{
 	background-color:white;
 	border: 1px solid;
