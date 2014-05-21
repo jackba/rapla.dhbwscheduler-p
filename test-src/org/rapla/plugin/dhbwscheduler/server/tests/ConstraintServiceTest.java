@@ -109,6 +109,9 @@ public class ConstraintServiceTest extends RaplaTestCase {
     	
     }
     
+    public void testgenerateClass(){
+    	ConstraintService test = new ConstraintService();
+    }
     public void testGetDozConstraints_3Dozenten(){
         String testConstraint = ""
         		+ "111_"
