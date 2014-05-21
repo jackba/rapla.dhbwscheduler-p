@@ -144,7 +144,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			String[] reservationIds = {"28ba686c-3613-46cd-a5cf-79b325ba812a","3a8b2511-ef26-47d5-a960-a2754a3cb644","ae459332-521c-494f-89dc-0709bc316951" };
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
-			String erwartet = "<br>Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten<br/><br>Test_ConstraintLeer1<br/><br>Test_ConstraintLeer2<br/>";
+			String erwartet = "<br>Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten/in: <br/><br>Test_ConstraintLeer1<br/><br>Test_ConstraintLeer2<br/>";
 			assertEquals(erwartet, e.getMessage());
 		}
 	}
@@ -154,7 +154,7 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			String[] reservationIds = {"28ba686c-3613-46cd-a5cf-79b325ba812a"};
 			service.schedule(reservationIds);
 		} catch (RaplaException e) {
-			String erwartet = "<br>Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten<br/><br>Test_ConstraintLeer1<br/>";
+			String erwartet = "<br>Bei folgenden Verantstaltungen fehlen die Planungsconstraints der Dozenten/in: <br/><br>Test_ConstraintLeer1<br/>";
 			assertEquals(erwartet, e.getMessage());
 		}
 	}
@@ -169,9 +169,9 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			fail(e.getMessage());
 		}
 
-		String erwartet = "Test2: 7";
+		String erwartet = "Planung abgeschlossen. Bitte beachten Sie mögliche Meldungen.";
 		//Da der Feiertagskalender in den Tests leider nicht funktioniert, wird bis zur Behebung dieses "Fehlers" ein anderer String erwartet.
-		erwartet = "<br>Der Feiertagskalender ist nicht verfügbar. Der Scheduler beachtet keine Feiertage.<br/" + "\nTest2: 2\n";
+		erwartet = "<br>Der Feiertagskalender ist nicht verfügbar. Der Scheduler beachtet keine Feiertage.<br/>" + "Planung abgeschlossen. Bitte beachten Sie mögliche Meldungen.";
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
@@ -208,9 +208,9 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			fail(e.getMessage());
 		}
 
-		String erwartet = "Test3: 2";
+		String erwartet = "Planung abgeschlossen. Bitte beachten Sie mögliche Meldungen.";
 		//Da der Feiertagskalender in den Tests leider nicht funktioniert, wird bis zur Behebung dieses "Fehlers" ein anderer String erwartet.
-		erwartet = "<br>Der Feiertagskalender ist nicht verfügbar. Der Scheduler beachtet keine Feiertage.<br/" + "\nTest3: 2\n";
+		erwartet = "<br>Der Feiertagskalender ist nicht verfügbar. Der Scheduler beachtet keine Feiertage.<br/>" + "Planung abgeschlossen. Bitte beachten Sie mögliche Meldungen.";
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
@@ -264,9 +264,9 @@ public class DhbwschedulerServiceTest extends RaplaTestCase {
 			fail(e.getMessage());
 		}
 
-		String erwartet = "Test_Prof1_Montagmorgen_9: 1";
+		String erwartet = "Planung abgeschlossen. Bitte beachten Sie mögliche Meldungen.";
 		//Da der Feiertagskalender in den Tests leider nicht funktioniert, wird bis zur Behebung dieses "Fehlers" ein anderer String erwartet.
-		erwartet = "<br>Der Feiertagskalender ist nicht verfügbar. Der Scheduler beachtet keine Feiertage.<br/" + "\nTest_Prof1_Montagmorgen_9: 1\n";
+		erwartet = "<br>Der Feiertagskalender ist nicht verfügbar. Der Scheduler beachtet keine Feiertage.<br/>Planung abgeschlossen. Bitte beachten Sie mögliche Meldungen.";
 		assertEquals(erwartet, ergebnis);
 
 		StorageOperator lookup;
